@@ -1,7 +1,12 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Counter</string>
     <string name="edit_message">Saisissez un message</string>
     <string name="button_send">Envoyer</string>
     <string name="maintext">Texte en français</string>
+
+    <!-- Ajout du tableau de langues -->
+    <string-array name="language_options">
+        <item>Français</item>
+        <item>Anglais</item>
+    </string-array>
 </resources>
