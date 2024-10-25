@@ -11,70 +11,64 @@
         android:id="@+id/gameMode_PvP"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:text="PvP"
-        android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
         android:layout_marginRight="450dp"
         android:background="#FF4B70F5"
+        android:text="PvP"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/gameMode_Solo"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:text="Solo"
-        android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
         android:background="#FF4B70F5"
+        android:text="Solo"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/mini_jeux"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:text="Mini Jeux"
-        android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
         android:layout_marginLeft="450dp"
         android:background="#FF4B70F5"
+        android:text="Mini Jeux"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/option"
         android:layout_width="150dp"
         android:layout_height="50dp"
-        android:text="Option"
-        android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
         android:layout_marginLeft="700dp"
         android:layout_marginBottom="300dp"
         android:background="#FF4B70F5"
+        android:text="Option"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <FrameLayout
         android:id="@+id/gameFrame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:rotationX="2"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="#FF3DC2EC"
         tools:layout_editor_absoluteX="-64dp">
-
     </FrameLayout>
 
 

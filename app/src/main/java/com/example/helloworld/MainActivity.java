@@ -6,20 +6,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.Switch;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.content.Intent;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -36,6 +28,19 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+
+        Button gameMode_Solo = findViewById(R.id.gameMode_Solo);
+        gameMode_Solo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, SoloActivity.class);
+                startActivity(intent);
+            }
+        });
+
+
+        hideNavigationBar();
+
         // Get instance of Vibrator from current Context
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         // Créer une instance de GameView et l'ajouter au FrameLayout
@@ -43,12 +48,11 @@ public class MainActivity extends AppCompatActivity {
         gameView = new GameView(this);
         gameFrame.addView(gameView);
 
-        // Associer le bouton
-        changeSpriteButton = findViewById(R.id.changeSpriteButton);
+
         //VibrationEffect vibrationEffect = VibrationEffect.createWaveform(timings, amplitudes, -1);
 
         // Définir l'écouteur d'événements pour changer le spritesheet
-        changeSpriteButton.setOnTouchListener(new View.OnTouchListener() {
+        /*changeSpriteButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -65,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 return true;
             }
-        });
+        });*/
     }
 
     @Override
@@ -78,5 +82,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         gameView.resume();
+    }
+
+    private void hideNavigationBar() {
+        getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        );
     }
 }
