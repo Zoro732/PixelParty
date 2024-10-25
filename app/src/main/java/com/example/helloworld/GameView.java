@@ -22,7 +22,8 @@ public class GameView extends SurfaceView implements Runnable {
     private long lastFrameTime;
     private int frameDuration = 100; // Durée d'affichage de chaque frame en millisecondes
     private float speedFactor = 100; // Facteur de vitesse pour ajuster le mouvement
-    private Paint paint; // Objet Paint pour dessiner
+    private Paint ball_color; // Objet Paint pour dessiner
+    private Paint obstacle_color; // Objet Paint pour dessiner
     private float ballX = 200;  // Position initiale de la boule
     private float ballY = 200;
     private float ballRadius = 50; // Rayon de la boule
@@ -32,6 +33,26 @@ public class GameView extends SurfaceView implements Runnable {
     private float accelerationFactor = 2.0f; // Facteur d'accélération pour le gyroscope
     // Attributs pour la largeur et la hauteur de l'écran
     private int screenWidth, screenHeight;
+    private static final int GRID_SIZE = 30; // Taille de la grille (10x10)
+    private static final int CELL_SIZE = 90; // Taille de chaque cellule en pixels
+    private boolean[][] grid; // Représentation de la grille
+    private float goalX; // Position X du point d'arrivée
+    private float goalY; // Position Y du point d'arrivée
+    private float goalRadius = 30; // Rayon du point d'arrivée
+    private int[][] map = {
+            {0, 0, 1, 0, 0, 0, 0, 0, 1, 0},
+            {0, 0, 1, 0, 1, 1, 1, 0, 1, 0},
+            {0, 0, 0, 0, 0, 0, 1, 0, 0, 0},
+            {0, 1, 1, 1, 1, 0, 0, 0, 1, 0},
+            {0, 0, 0, 0, 1, 1, 1, 0, 0, 0},
+            {0, 1, 1, 1, 0, 0, 0, 1, 1, 1},
+            {0, 0, 0, 0, 0, 1, 0, 0, 0, 0},
+            {0, 1, 1, 1, 1, 1, 1, 1, 1, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 1, 1, 1, 1, 1, 0, 1, 0},
+    };
+
+
 
     public GameView(Context context) {
         super(context);
@@ -49,14 +70,28 @@ public class GameView extends SurfaceView implements Runnable {
         ballY = screenHeight / 2;
 
         // Initialiser l'objet Paint
-        paint = new Paint();
-        paint.setColor(Color.RED); // Définir la couleur de la boule
+        ball_color = new Paint();
+        obstacle_color = new Paint();
+        obstacle_color.setColor(Color.BLUE); // Définir la couleur des obstacles
+        ball_color.setColor(Color.RED); // Définir la couleur de la boule
+        grid = new boolean[GRID_SIZE][GRID_SIZE];
+        generateRandomObstacles();
+        goalX = GRID_SIZE * CELL_SIZE - goalRadius; // Coin droit
+        goalY = goalRadius; // Haut de l'écran
     }
 
     // Méthode pour charger un nouveau spritesheet
     public void changeSpriteSheet(int newSpriteResource) {
         loadSpriteSheet(newSpriteResource);
         frameIndex = 0;  // Réinitialiser l'animation
+    }
+    private void generateRandomObstacles() {
+        for (int i = 0; i < GRID_SIZE; i++) {
+            for (int j = 0; j < GRID_SIZE; j++) {
+                // 20% de chances d'être un obstacle
+                grid[i][j] = Math.random() < 0.3;
+            }
+        }
     }
 
     // Méthode pour charger un spritesheet et découper les frames
@@ -97,14 +132,30 @@ public class GameView extends SurfaceView implements Runnable {
     private void draw() {
         if (getHolder().getSurface().isValid()) {
             Canvas canvas = getHolder().lockCanvas();
-            canvas.drawColor(Color.BLACK); // Effacer l'écran
+            canvas.drawColor(Color.BLACK); // Fond noir
 
-            // Dessiner la boule à sa nouvelle position
-            canvas.drawCircle(ballX, ballY, ballRadius, paint); // Utiliser l'objet Paint pour dessiner
+            // Dessiner les obstacles
+            for (int i = 0; i < GRID_SIZE; i++) {
+                for (int j = 0; j < GRID_SIZE; j++) {
+                    if (grid[i][j]) {
+                        canvas.drawRect(i * CELL_SIZE, j * CELL_SIZE,
+                                (i + 1) * CELL_SIZE, (j + 1) * CELL_SIZE,
+                                obstacle_color);
+                    }
+                }
+            }
+
+            // Dessiner la boule
+            canvas.drawCircle(ballX, ballY, ballRadius, ball_color); // Boule en bleu
+
+            // Dessiner le point d'arrivée
+            canvas.drawCircle(goalX, goalY, goalRadius, ball_color); // Point d'arrivée en vert
 
             getHolder().unlockCanvasAndPost(canvas);
         }
     }
+
+
 
     private void sleep() {
         try {
