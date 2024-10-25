@@ -5,8 +5,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;  // Importer Paint
 import android.util.DisplayMetrics;
-import android.view.MotionEvent;
 import android.view.SurfaceView;
 
 public class GameView extends SurfaceView implements Runnable {
@@ -21,9 +21,15 @@ public class GameView extends SurfaceView implements Runnable {
     private int frameHeight;
     private long lastFrameTime;
     private int frameDuration = 100; // Durée d'affichage de chaque frame en millisecondes
-    private float spriteX = 100, spriteY = 100;  // Position initiale du sprite
-
-    private Joystick joystick;  // Ajouter le joystick
+    private float speedFactor = 100; // Facteur de vitesse pour ajuster le mouvement
+    private Paint paint; // Objet Paint pour dessiner
+    private float ballX = 200;  // Position initiale de la boule
+    private float ballY = 200;
+    private float ballRadius = 50; // Rayon de la boule
+    private float speedX = 0; // Vitesse sur l'axe X
+    private float speedY = 0; // Vitesse sur l'axe Y
+    private float friction = 0.98f; // Coefficient de friction pour ralentir la boule
+    private float accelerationFactor = 2.0f; // Facteur d'accélération pour le gyroscope
     // Attributs pour la largeur et la hauteur de l'écran
     private int screenWidth, screenHeight;
 
@@ -35,21 +41,16 @@ public class GameView extends SurfaceView implements Runnable {
 
         // Obtenir les dimensions de l'écran
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-        int screenWidth = displayMetrics.widthPixels;
-        int screenHeight = displayMetrics.heightPixels;
-
-        // Dans le constructeur GameView
-
         screenWidth = displayMetrics.widthPixels; // Largeur de l'écran
         screenHeight = displayMetrics.heightPixels; // Hauteur de l'écran
 
-        // Initialiser le joystick (centré en bas de l'écran)
-        float joystickBaseCenterX = screenWidth / 2;  // Centré horizontalement
-        float joystickBaseCenterY = screenHeight - 500;  // 200 pixels du bas de l'écran (ajuste si nécessaire)
-        float joystickBaseRadius = 150;  // Taille du joystick
-        float joystickStickRadius = 80;  // Taille du stick
+        // Position initiale de la boule (centrée)
+        ballX = screenWidth / 2;
+        ballY = screenHeight / 2;
 
-        joystick = new Joystick(joystickBaseCenterX, joystickBaseCenterY, joystickBaseRadius, joystickStickRadius);
+        // Initialiser l'objet Paint
+        paint = new Paint();
+        paint.setColor(Color.RED); // Définir la couleur de la boule
     }
 
     // Méthode pour charger un nouveau spritesheet
@@ -91,22 +92,15 @@ public class GameView extends SurfaceView implements Runnable {
             frameIndex = (frameIndex + 1) % frameCount;
             lastFrameTime = System.currentTimeMillis();
         }
-
-        // Déplacer le sprite selon les mouvements du joystick
-        spriteX += joystick.getDeltaX() / 10;  // Ajuster pour la vitesse
-        spriteY += joystick.getDeltaY() / 10;
     }
 
     private void draw() {
         if (getHolder().getSurface().isValid()) {
             Canvas canvas = getHolder().lockCanvas();
-            canvas.drawColor(Color.BLACK);
+            canvas.drawColor(Color.BLACK); // Effacer l'écran
 
-            // Dessiner le sprite à sa nouvelle position
-            canvas.drawBitmap(frames[frameIndex], spriteX, spriteY, null);
-
-            // Dessiner le joystick
-            joystick.draw(canvas);
+            // Dessiner la boule à sa nouvelle position
+            canvas.drawCircle(ballX, ballY, ballRadius, paint); // Utiliser l'objet Paint pour dessiner
 
             getHolder().unlockCanvasAndPost(canvas);
         }
@@ -135,23 +129,38 @@ public class GameView extends SurfaceView implements Runnable {
         }
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-            case MotionEvent.ACTION_MOVE:
-                // Si le joystick est pressé, mettre à jour sa position
-                if (joystick.isPressed(event.getX(), event.getY())) {
-                    joystick.updatePosition(event.getX(), event.getY());
-                }
-                break;
+    public void moveBall(float x, float y) {
+        // Met à jour la vitesse en fonction des valeurs du gyroscope
+        speedX += x * accelerationFactor; // Ajoute l'accélération en X
+        speedY -= y * accelerationFactor; // Ajoute l'accélération en Y (inversé pour mouvement naturel)
 
-            case MotionEvent.ACTION_UP:
-                // Réinitialiser le joystick quand on relâche
-                joystick.resetPosition();
-                break;
+        // Appliquer la friction
+        speedX *= friction;
+        speedY *= friction;
+
+        // Mettre à jour la position de la boule en fonction de la vitesse
+        ballX += speedX;
+        ballY += speedY;
+
+        // Limiter la boule à l'intérieur de la vue
+        if (ballX < ballRadius) {
+            ballX = ballRadius;
+            speedX = 0; // Stoppe la boule si elle touche le bord
+        }
+        if (ballX > getWidth() - ballRadius) {
+            ballX = getWidth() - ballRadius;
+            speedX = 0; // Stoppe la boule si elle touche le bord
+        }
+        if (ballY < ballRadius) {
+            ballY = ballRadius;
+            speedY = 0; // Stoppe la boule si elle touche le bord
+        }
+        if (ballY > getHeight() - ballRadius) {
+            ballY = getHeight() - ballRadius;
+            speedY = 0; // Stoppe la boule si elle touche le bord
         }
 
-        return true;
+        invalidate(); // Redessiner la vue
     }
+
 }
