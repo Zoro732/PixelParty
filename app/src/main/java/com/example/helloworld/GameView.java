@@ -80,7 +80,7 @@ public class GameView extends SurfaceView implements Runnable {
     public void run() {
         while (isPlaying) {
             update();
-            draw();
+
             sleep();
         }
     }
@@ -97,20 +97,6 @@ public class GameView extends SurfaceView implements Runnable {
         spriteY += joystick.getDeltaY() / 10;
     }
 
-    private void draw() {
-        if (getHolder().getSurface().isValid()) {
-            Canvas canvas = getHolder().lockCanvas();
-            canvas.drawColor(Color.BLACK);
-
-            // Dessiner le sprite à sa nouvelle position
-            canvas.drawBitmap(frames[frameIndex], spriteX, spriteY, null);
-
-            // Dessiner le joystick
-            joystick.draw(canvas);
-
-            getHolder().unlockCanvasAndPost(canvas);
-        }
-    }
 
     private void sleep() {
         try {
