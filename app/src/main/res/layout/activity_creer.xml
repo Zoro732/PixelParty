@@ -8,48 +8,48 @@
 
 
     <Button
-        android:id="@+id/gameMode_PvP"
+        android:id="@+id/ID_Game"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginRight="450dp"
         android:background="@drawable/rounded_button"
-        android:text="PvP"
+        android:text="ID de la partie :"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/gameMode_Solo"
+        android:id="@+id/time"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:background="@drawable/rounded_button"
-        android:text="Solo"
+        android:text="Temps de jeux"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/mini_jeux"
+        android:id="@+id/nombre_joueur"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginLeft="450dp"
         android:background="@drawable/rounded_button"
-        android:text="Mini Jeux"
+        android:text="Nombre de joueur"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/option"
+        android:id="@+id/back"
         android:layout_width="150dp"
         android:layout_height="50dp"
         android:layout_alignParentBottom="true"
@@ -57,11 +57,26 @@
         android:layout_marginLeft="700dp"
         android:layout_marginBottom="300dp"
         android:background="@drawable/rounded_button"
-        android:text="Option"
+        android:text="Retour"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/creer"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="200dp"
+        android:background="@drawable/rounded_button"
+        android:text="Creer"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 
     <FrameLayout
         android:id="@+id/gameFrame"

@@ -4,15 +4,30 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SoloActivity">
+    tools:context=".PvpActivity">
 
     <Button
-        android:id="@+id/option"
+        android:id="@+id/creer"
         android:layout_width="150dp"
         android:layout_height="50dp"
-        android:text="Option"
+        android:text="Creer"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
+        android:background="@drawable/rounded_button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <Button
+        android:id="@+id/rejoindre"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:text="Rejoindre"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="500dp"
         android:background="@drawable/rounded_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -27,7 +42,7 @@
         android:text="Retour"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginLeft="400dp"
+        android:layout_marginLeft="500dp"
         android:background="@drawable/rounded_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -41,7 +56,7 @@
         android:layout_height="match_parent"
         android:background="#FF3DC2EC"
         app:layout_constraintBottom_toBottomOf="parent"
-        tools:layout_editor_absoluteX="-64dp">
+        tools:layout_editor_absoluteX="-90dp">
 
     </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

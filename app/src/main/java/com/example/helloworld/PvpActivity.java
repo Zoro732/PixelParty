@@ -2,24 +2,41 @@ package com.example.helloworld;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Vibrator;
 import android.view.View;
 import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class SoloActivity extends AppCompatActivity {
+public class PvpActivity extends AppCompatActivity {
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_solo);
+        setContentView(R.layout.activity_pvp);
 
         Button back = findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(SoloActivity.this, MainActivity.class);
+                Intent intent = new Intent(PvpActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        Button rejoindre = findViewById(R.id.rejoindre);
+        rejoindre.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(PvpActivity.this, RejoindreActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        Button creer = findViewById(R.id.creer);
+        creer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(PvpActivity.this, CreerActivity.class);
                 startActivity(intent);
             }
         });
