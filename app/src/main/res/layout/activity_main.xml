@@ -9,6 +9,7 @@
 
     <FrameLayout
         android:id="@+id/gameFrame"
+        android:background="@color/cyan"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintTop_toTopOf="parent"
@@ -31,17 +32,17 @@
             android:id="@+id/buttonSombre"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="SOMBRE"
+            android:layout_marginLeft="375dp"
             android:layout_marginTop="115dp"
-            android:layout_marginLeft="375dp" />
+            android:text="SOMBRE" />
 
         <Button
             android:id="@+id/buttonClair"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Clair"
+            android:layout_marginLeft="225dp"
             android:layout_marginTop="115dp"
-            android:layout_marginLeft="225dp" />
+            android:text="Clair" />
 
         <TextView
             android:id="@+id/languageLabel"
@@ -58,18 +59,26 @@
             android:layout_width="196dp"
             android:layout_height="wrap_content"
             android:layout_gravity="top|center"
-            android:layout_marginTop="250dp"/>
+            android:layout_marginTop="250dp" />
+
+        <!-- Remplacer l'ImageButton par un simple Button -->
+        <Button
+            android:id="@+id/back"
+            android:layout_width="wrap_content"
+            android:layout_height="52dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:text="Retour" />
+
+        <Button
+            android:id="@+id/aboutButton"
+            android:layout_width="wrap_content"
+            android:layout_height="52dp"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="right"
+            android:layout_marginRight="10dp"
+            android:text="À propos" />
+
     </FrameLayout>
 
-    <ImageButton
-        android:id="@+id/back"
-        android:layout_width="57dp"
-        android:layout_height="52dp"
-        android:background="@null"
-        android:contentDescription="TODO"
-        android:elevation="4dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/arrow_left"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
