@@ -1,57 +1,48 @@
 package com.example.helloworld;
 
 import androidx.appcompat.app.AppCompatActivity;
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.os.Build;
+import androidx.appcompat.app.AlertDialog;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.Vibrator;
-import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.app.AlertDialog;
+import java.util.Locale;
+import android.widget.Toast;
+
 
 public class MainActivity extends AppCompatActivity {
-    private Button backButton; // Changement ici
-    private Vibrator vibrator;
-    private boolean hasVibrated = false; // Booléen pour vérifier si la vibration a déjà eu lieu
-    long[] timings = {0, 100};  // Vibre pendant 100ms, puis s'arrête
-    private FrameLayout gameFrame;
 
-    @SuppressLint("ClickableViewAccessibility")
+    private FrameLayout gameFrame;
+    private TextView themeLabel;
+    private TextView languageLabel;
+    private Button buttonClair;
+    private Button buttonSombre;
+    private Button aboutButton;
+    private Button backButton; // Déclaration du bouton retour
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Charger la langue enregistrée
+        loadLocale();
+
         hideNavigationBar();
         setContentView(R.layout.activity_main);
 
-        // Obtenir l'instance de Vibrator à partir du contexte actuel
-        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-        // Associer le bouton de retour
-        backButton = findViewById(R.id.back);
-        gameFrame = findViewById(R.id.gameFrame);  // Initialiser le FrameLayout pour le changement de thème
-
-        // Définir l'écouteur d'événements pour le bouton retour
-        backButton.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    if (!hasVibrated) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            vibrator.vibrate(timings, -1);
-                        }
-                        hasVibrated = true;
-                    }
-                } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                    hasVibrated = false;
-                }
-                return true;
-            }
-        });
+        gameFrame = findViewById(R.id.gameFrame);
+        themeLabel = findViewById(R.id.theme);
+        languageLabel = findViewById(R.id.languageLabel);
+        buttonClair = findViewById(R.id.buttonClair);
+        buttonSombre = findViewById(R.id.buttonSombre);
+        aboutButton = findViewById(R.id.aboutButton);
+        backButton = findViewById(R.id.backButton); // Initialisation du bouton retour
 
         // Initialiser le Spinner
         Spinner languageSpinner = findViewById(R.id.language);
@@ -60,13 +51,37 @@ public class MainActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         languageSpinner.setAdapter(adapter);
 
-        // Configurer les boutons pour le changement de thème
-        Button buttonClair = findViewById(R.id.buttonClair);
-        Button buttonSombre = findViewById(R.id.buttonSombre);
-        Button aboutButton = findViewById(R.id.aboutButton); // Nouveau bouton
-        TextView themeLabel = findViewById(R.id.theme);
-        TextView languageLabel = findViewById(R.id.languageLabel);
+        // Sélectionner la langue actuelle dans le Spinner
+        languageSpinner.setSelection(getCurrentLanguagePosition());
 
+        languageSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String language = position == 0 ? "fr" : "en"; // "fr" pour Français, "en" pour Anglais
+                setLocale(language);
+                updateTexts(); // Mettre à jour les textes après le changement de langue
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+
+        // Configurer les boutons pour le changement de thème
+        setupThemeButtons();
+        setupAboutButton();
+
+        // Configurer le bouton retour
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(MainActivity.this, "Retour à l'écran précédent", Toast.LENGTH_SHORT).show();
+                // Vous pouvez également faire d'autres actions ici, sans fermer l'application
+            }
+        });
+
+    }
+
+    private void setupThemeButtons() {
         // Changer le thème en clair
         buttonClair.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,8 +89,6 @@ public class MainActivity extends AppCompatActivity {
                 gameFrame.setBackgroundColor(getResources().getColor(R.color.cyan));
                 themeLabel.setTextColor(getResources().getColor(R.color.textCyan));
                 languageLabel.setTextColor(getResources().getColor(R.color.textCyan));
-                languageSpinner.setBackgroundColor(getResources().getColor(R.color.white)); // Fond du spinner
-                ((TextView) languageSpinner.getChildAt(0)).setTextColor(getResources().getColor(R.color.textCyan)); // Couleur du texte du spinner
             }
         });
 
@@ -86,27 +99,58 @@ public class MainActivity extends AppCompatActivity {
                 gameFrame.setBackgroundColor(getResources().getColor(R.color.violet));
                 themeLabel.setTextColor(getResources().getColor(R.color.textViolet));
                 languageLabel.setTextColor(getResources().getColor(R.color.textViolet));
-                languageSpinner.setBackgroundColor(getResources().getColor(R.color.violet)); // Fond du spinner
-                ((TextView) languageSpinner.getChildAt(0)).setTextColor(getResources().getColor(R.color.textViolet)); // Couleur du texte du spinner
             }
         });
+    }
 
-        // Afficher un dialogue "À propos" lorsque le bouton est cliqué
+    private void setupAboutButton() {
         aboutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                 builder.setTitle("À propos")
-                        .setMessage("PIXEL PART\n\nApplication développée par AMAURY GIELEN, ILYES RABAOUY, et KACPER WOJTOWIC.\n\nVersion 1.0\n\nDescription de l'application : Jeu de plateforme familiale")
+                        .setMessage("PIXEL PARTY\n\nApplication développée par AMAURY GIELEN, ILYES RABAOUY, et KACPER WOJTOWICZ.\n\nVersion 1.0\n\nDescription de l'application : Jeu de plateforme familiale")
                         .setPositiveButton("OK", null)
                         .show();
             }
         });
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
+    // Enregistrer la langue et recharger l'activité
+    private void setLocale(String lang) {
+        Locale locale = new Locale(lang);
+        Locale.setDefault(locale);
+        Configuration config = new Configuration();
+        config.setLocale(locale);
+        getBaseContext().getResources().updateConfiguration(config, getBaseContext().getResources().getDisplayMetrics());
+
+        SharedPreferences.Editor editor = getSharedPreferences("Settings", MODE_PRIVATE).edit();
+        editor.putString("My_Lang", lang);
+        editor.apply();
+    }
+
+    // Charger la langue enregistrée
+    public void loadLocale() {
+        SharedPreferences prefs = getSharedPreferences("Settings", MODE_PRIVATE);
+        String language = prefs.getString("My_Lang", "fr");
+        setLocale(language);
+    }
+
+    // Positionner la langue actuelle dans le Spinner
+    private int getCurrentLanguagePosition() {
+        SharedPreferences prefs = getSharedPreferences("Settings", MODE_PRIVATE);
+        String language = prefs.getString("My_Lang", "fr");
+        return language.equals("fr") ? 0 : 1;
+    }
+
+    // Mettre à jour les textes en fonction de la langue
+    private void updateTexts() {
+        themeLabel.setText(getString(R.string.theme_label));
+        languageLabel.setText(getString(R.string.language_label));
+        buttonClair.setText(getString(R.string.button_clair));
+        buttonSombre.setText(getString(R.string.button_sombre));
+        aboutButton.setText(getString(R.string.button_about));
+        backButton.setText(getString(R.string.backButton));
     }
 
     private void hideNavigationBar() {
@@ -115,10 +159,5 @@ public class MainActivity extends AppCompatActivity {
                         | View.SYSTEM_UI_FLAG_FULLSCREEN
                         | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
         );
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
     }
 }

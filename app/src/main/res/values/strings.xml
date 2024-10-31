@@ -1,12 +1,15 @@
 <resources>
     <string name="app_name">Counter</string>
-    <string name="edit_message">Saisissez un message</string>
-    <string name="button_send">Envoyer</string>
-    <string name="maintext">Texte en français</string>
-
-    <!-- Ajout du tableau de langues -->
+    <string name="edit_message">Enter a message</string>
+    <string name="button_send">Send</string>
+    <string name="theme_label">Theme :</string> <!-- Ajouté ici -->
+    <string name="language_label">Language :</string> <!-- Ajouté ici -->
+    <string name="button_clair">Light</string> <!-- Ajouté ici -->
+    <string name="button_sombre">Dark</string> <!-- Ajouté ici -->
+    <string name="button_about">About</string> <!-- Ajouté ici -->
+    <string name="backButton">Back</string>
     <string-array name="language_options">
-        <item>Français</item>
-        <item>Anglais</item>
+        <item>French</item>
+        <item>English</item>
     </string-array>
 </resources>
