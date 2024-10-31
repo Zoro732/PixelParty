@@ -1,39 +1,28 @@
 package com.example.helloworld;
 
-import static android.app.PendingIntent.getActivity;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.Switch;
-import android.widget.TextView;
-import android.widget.Toast;
+
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
     private GameView gameView;
-    private Vibrator vibrator;
     private SensorManager sensorManager;
     private Sensor gyroscope;
 
-    long[] timings = {0, 100, 330, 100};  // Vibrer 200ms, pause 100ms, vibrer 300ms
-    int[] amplitudes = {0, 100, 0, 255};  // Intensité correspondante (0 pour pas de vibration, 100 et 255 pour vibrer)
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -41,9 +30,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         super.onCreate(savedInstanceState);
         hideNavigationBar();
         setContentView(R.layout.activity_main);
-
-        // Get instance of Vibrator from current Context
-        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
         // Créer une instance de GameView et l'ajouter au FrameLayout
         FrameLayout gameFrame = findViewById(R.id.gameFrame);
@@ -73,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         gameView.pause();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void hideNavigationBar() {
         getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_HIDE_NAVIGATION

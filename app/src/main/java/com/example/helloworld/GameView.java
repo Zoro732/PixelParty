@@ -2,32 +2,23 @@ package com.example.helloworld;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;  // Importer Paint
-import android.os.VibrationEffect;
+import android.graphics.Typeface;
+import android.os.CountDownTimer;
 import android.os.Vibrator;
 import android.util.DisplayMetrics;
 import android.view.SurfaceView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Random;
-
 
 public class GameView extends SurfaceView implements Runnable {
 
     private Thread gameThread;
     private boolean isPlaying;
-    private Bitmap spriteSheet;
-    private Bitmap[] frames;
-    private int frameIndex = 0;
-    private int frameCount = 4;  // Nombre de frames dans ton spritesheet
-    private int frameWidth;
-    private int frameHeight;
-    private long lastFrameTime;
-    private int frameDuration = 100; // Durée d'affichage de chaque frame en millisecondes
-    private float speedFactor = 100; // Facteur de vitesse pour ajuster le mouvement
     private Paint ball_color; // Objet Paint pour dessiner
     private Paint obstacle_color; // Objet Paint pour dessiner
     private Paint end_color;
@@ -37,6 +28,7 @@ public class GameView extends SurfaceView implements Runnable {
     private float speedY = 0; // Vitesse sur l'axe Y
     private float friction = 0.98f; // Coefficient de friction pour ralentir la boule
     private float accelerationFactor = 2.0f; // Facteur d'accélération pour le gyroscope
+
     // Attributs pour la largeur et la hauteur de l'écran
     private int screenWidth, screenHeight;
     private static final int GRID_ROWS = 10; // Nombre de lignes
@@ -56,25 +48,27 @@ public class GameView extends SurfaceView implements Runnable {
             {1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1},
             {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
     };
-    private int[][] arrivalPoints;
     private int tileSize_W, tileSize_H;
     private Vibrator vibrator;
     private boolean goalReached = false; // Drapeau pour suivre l'état de la collision avec le point d'arrivée
+    private CountDownTimer countDownTimer;
+    private int DefaultUserPosition[] = {10,10};
+    private int defaultTimerValue = 40; // Valeur par défaut du compteur
+    private int timerValue = defaultTimerValue; // Valeur du compteur
+    private Paint timerPaint; // Objet Paint pour le compteur
 
     public GameView(Context context) {
         super(context);
         vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
 
-        // Charger le spritesheet initial
-        loadSpriteSheet(R.drawable.attack);
-
         // Obtenir les dimensions de l'écran
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
         screenWidth = displayMetrics.widthPixels; // Largeur de l'écran
         screenHeight = displayMetrics.heightPixels; // Hauteur de l'écran
+
         // Position initiale de la boule (centrée)
-        ballX = 10 ;
-        ballY = 10 ;
+        ballX = DefaultUserPosition[0];
+        ballY = DefaultUserPosition[1];
         tileSize_W = screenWidth / GRID_COLS;
         tileSize_H = screenHeight / GRID_ROWS;
 
@@ -101,46 +95,56 @@ public class GameView extends SurfaceView implements Runnable {
         // Attribuer les coordonnées à goalX et goalY en utilisant le même index
         goalX = arrivalPoints[randomIndex][0];
         goalY = arrivalPoints[randomIndex][1];
+
+        // Initialiser le compteur
+        timerPaint = new Paint();
+        timerPaint.setColor(Color.WHITE); // Couleur du texte
+        timerPaint.setTextSize(50); // Taille de la police
+//        Typeface typeface = Typeface.createFromAsset(context.getAssets(), "font/press_start_2p.ttf");
+//        timerPaint.setTypeface(typeface); // Charger la police
+        startTimer(); // Démarrer le compteur
+
     }
+
+    private void startTimer() {
+        countDownTimer = new CountDownTimer(timerValue * 1000, 1000) { // Compte à rebours de timerValue secondes
+            @Override
+            public void onTick(long millisUntilFinished) {
+                timerValue--; // Décrémenter la valeur du compteur chaque seconde
+            }
+
+            @Override
+            public void onFinish() {
+                timerValue = 0; // La valeur finale
+                ballX = DefaultUserPosition[0];
+                ballY = DefaultUserPosition[1];
+                timerValue = defaultTimerValue;
+
+                long[] pattern = {0, 200, 100, 300}; // 0ms avant de commencer, 200ms de vibration, 100ms de pause, 200ms de vibration
+
+                // Appliquer le motif de vibration
+                if (vibrator != null) {
+                    vibrator.vibrate(pattern, -1); // -1 pour ne pas répéter le motif
+                }
+                startTimer();
+                // Vous pouvez ajouter ici un code pour gérer la fin du jeu si nécessaire
+                Toast.makeText(getContext(), "Temps écoulé !", Toast.LENGTH_SHORT).show();
+                try {
+                    Thread.sleep(100); // Délai de 100 millisecondes
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
+    }
+
 
     // Méthode pour charger un nouveau spritesheet
-    public void changeSpriteSheet(int newSpriteResource) {
-        loadSpriteSheet(newSpriteResource);
-        frameIndex = 0;  // Réinitialiser l'animation
-    }
-
-    // Méthode pour charger un spritesheet et découper les frames
-    private void loadSpriteSheet(int spriteResource) {
-        spriteSheet = BitmapFactory.decodeResource(getResources(), spriteResource);
-
-        // Déterminer la hauteur fixe d'une frame
-        frameHeight = spriteSheet.getHeight(); // Fixe ou change si nécessaire
-        frameWidth = spriteSheet.getWidth() / frameCount; // Largeur d'une frame
-
-        // Calculer le nombre de frames
-        frameCount = spriteSheet.getWidth() / frameWidth; // Nombre de frames dans le spritesheet
-
-        // Découper chaque frame dans un tableau
-        frames = new Bitmap[frameCount];
-        for (int i = 0; i < frameCount; i++) {
-            frames[i] = Bitmap.createBitmap(spriteSheet, i * frameWidth, 0, frameWidth, frameHeight);
-        }
-    }
-
     @Override
     public void run() {
         while (isPlaying) {
-            update();
             draw();
             sleep();
-        }
-    }
-
-    private void update() {
-        // Mettre à jour l'animation du sprite
-        if (System.currentTimeMillis() - lastFrameTime > frameDuration) {
-            frameIndex = (frameIndex + 1) % frameCount;
-            lastFrameTime = System.currentTimeMillis();
         }
     }
 
@@ -162,6 +166,8 @@ public class GameView extends SurfaceView implements Runnable {
 
             // Dessiner le point d'arrivée
             canvas.drawCircle(goalX, goalY, goalRadius, end_color); // Point d'arrivée en vert
+
+            canvas.drawText( "" + timerValue, screenWidth - 200, screenHeight/2, timerPaint); // Position du texte
 
             getHolder().unlockCanvasAndPost(canvas);
         }
@@ -248,8 +254,8 @@ public class GameView extends SurfaceView implements Runnable {
             if (vibrator != null) vibrator.vibrate(100);
 
             // Revenir à la position précédente pour éviter le passage
-            ballX = 10 ;
-            ballY = 10 ;
+            ballX = DefaultUserPosition[0];
+            ballY = DefaultUserPosition[1];
             speedX = 0;
             speedY = 0;
         } else {
@@ -271,18 +277,23 @@ public class GameView extends SurfaceView implements Runnable {
         // Vérifier si la distance est inférieure ou égale à la somme des rayons
         if (distance <= ballRadius + goalRadius && !goalReached) {
             // Collision détectée
-            ballX = 10 ;
-            ballY = 10 ;
+            ballX = DefaultUserPosition[0];
+            ballY = DefaultUserPosition[1] ;
+            timerValue = defaultTimerValue;
             Toast.makeText(getContext(), "Arrivée atteinte !", Toast.LENGTH_SHORT).show();
             try {
                 Thread.sleep(100); // Délai de 100 millisecondes
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+
+            long[] pattern = {0, 300, 100, 100}; // 0ms avant de commencer, 200ms de vibration, 100ms de pause, 200ms de vibration
+
+            // Appliquer le motif de vibration
+            if (vibrator != null) {
+                vibrator.vibrate(pattern, -1); // -1 pour ne pas répéter le motif
+            }
         }
     }
-
-
-
 
 }
