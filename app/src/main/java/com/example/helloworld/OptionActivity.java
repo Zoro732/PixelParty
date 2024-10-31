@@ -15,7 +15,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.app.AlertDialog;
 
-public class MainActivity extends AppCompatActivity {
+public class OptionActivity extends AppCompatActivity {
     private Button backButton; // Changement ici
     private Vibrator vibrator;
     private boolean hasVibrated = false; // Booléen pour vérifier si la vibration a déjà eu lieu
@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         hideNavigationBar();
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_option);
 
         // Obtenir l'instance de Vibrator à partir du contexte actuel
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
         aboutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(OptionActivity.this);
                 builder.setTitle("À propos")
                         .setMessage("PIXEL PART\n\nApplication développée par AMAURY GIELEN, ILYES RABAOUY, et KACPER WOJTOWIC.\n\nVersion 1.0\n\nDescription de l'application : Jeu de plateforme familiale")
                         .setPositiveButton("OK", null)

@@ -11,7 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.HelloWorld">
 
-        <activity android:name=".MainActivity"
+        <activity android:name=".OptionActivity"
             android:screenOrientation="sensorLandscape"> <!-- Gère les rotations seulement en paysage -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
