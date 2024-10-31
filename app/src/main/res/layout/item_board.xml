@@ -9,6 +9,7 @@
         android:id="@+id/boardCell"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginRight="8dp"
         android:textSize="18sp"
         android:padding="16dp"
         android:background="@android:color/holo_blue_light"
