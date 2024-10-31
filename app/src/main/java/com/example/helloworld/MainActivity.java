@@ -1,33 +1,15 @@
 package com.example.helloworld;
 
-import static android.app.PendingIntent.getActivity;
-
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.VibrationEffect;
-import android.os.Vibrator;
-import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.Switch;
-import android.widget.TextView;
-import android.widget.Toast;
 import android.view.WindowManager;
 
 public class MainActivity extends AppCompatActivity {
 
     private GameView gameView;
-    private Button changeSpriteButton;
-    private Vibrator vibrator;
-
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -36,7 +18,6 @@ public class MainActivity extends AppCompatActivity {
         hideNavigationBar();
         setContentView(R.layout.activity_main);
         // Get instance of Vibrator from current Context
-        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         // Initialiser GameView avec la largeur et hauteur de l'écran
