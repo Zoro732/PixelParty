@@ -11,6 +11,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.HelloWorld">
 
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity android:name=".OptionActivity"
             android:screenOrientation="sensorLandscape"> <!-- Gère les rotations seulement en paysage -->
             <intent-filter>
@@ -19,13 +26,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".PvpActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity android:name=".OptionActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

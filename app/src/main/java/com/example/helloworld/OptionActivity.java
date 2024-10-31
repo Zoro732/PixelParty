@@ -3,6 +3,7 @@ package com.example.helloworld;
 import androidx.appcompat.app.AppCompatActivity;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -32,10 +33,19 @@ public class OptionActivity extends AppCompatActivity {
         // Obtenir l'instance de Vibrator à partir du contexte actuel
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         // Associer le bouton de retour
-        backButton = findViewById(R.id.back);
+
         gameFrame = findViewById(R.id.gameFrame);  // Initialiser le FrameLayout pour le changement de thème
 
-        // Définir l'écouteur d'événements pour le bouton retour
+        Button back = findViewById(R.id.back);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(OptionActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        /*// Définir l'écouteur d'événements pour le bouton retour
         backButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -51,7 +61,7 @@ public class OptionActivity extends AppCompatActivity {
                 }
                 return true;
             }
-        });
+        });*/
 
         // Initialiser le Spinner
         Spinner languageSpinner = findViewById(R.id.language);
@@ -97,7 +107,7 @@ public class OptionActivity extends AppCompatActivity {
             public void onClick(View v) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(OptionActivity.this);
                 builder.setTitle("À propos")
-                        .setMessage("PIXEL PART\n\nApplication développée par AMAURY GIELEN, ILYES RABAOUY, et KACPER WOJTOWIC.\n\nVersion 1.0\n\nDescription de l'application : Jeu de plateforme familiale")
+                        .setMessage("PIXEL PARTY\n\nApplication développée par AMAURY GIELEN, ILYES RABAOUY, et KACPER WOJTOWICZ.\n\nVersion 1.0\n\nDescription de l'application : Jeu de plateforme familiale")
                         .setPositiveButton("OK", null)
                         .show();
             }
