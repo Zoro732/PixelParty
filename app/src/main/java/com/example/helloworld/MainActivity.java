@@ -12,7 +12,6 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Vibrator;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -28,7 +27,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        hideNavigationBar();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            hideNavigationBar();
+        }
         setContentView(R.layout.activity_main);
 
         // Créer une instance de GameView et l'ajouter au FrameLayout
