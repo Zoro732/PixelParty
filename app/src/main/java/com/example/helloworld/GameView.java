@@ -23,7 +23,6 @@ public class GameView extends SurfaceView implements Runnable {
     private int frameDuration = 100; // Durée d'affichage de chaque frame en millisecondes
     private float spriteX = 100, spriteY = 100;  // Position initiale du sprite
 
-    private Joystick joystick;  // Ajouter le joystick
     // Attributs pour la largeur et la hauteur de l'écran
     private int screenWidth, screenHeight;
 
@@ -42,14 +41,6 @@ public class GameView extends SurfaceView implements Runnable {
 
         screenWidth = displayMetrics.widthPixels; // Largeur de l'écran
         screenHeight = displayMetrics.heightPixels; // Hauteur de l'écran
-
-        // Initialiser le joystick (centré en bas de l'écran)
-        float joystickBaseCenterX = screenWidth / 2;  // Centré horizontalement
-        float joystickBaseCenterY = screenHeight - 500;  // 200 pixels du bas de l'écran (ajuste si nécessaire)
-        float joystickBaseRadius = 150;  // Taille du joystick
-        float joystickStickRadius = 80;  // Taille du stick
-
-        joystick = new Joystick(joystickBaseCenterX, joystickBaseCenterY, joystickBaseRadius, joystickStickRadius);
     }
 
     // Méthode pour charger un nouveau spritesheet
@@ -92,22 +83,12 @@ public class GameView extends SurfaceView implements Runnable {
             lastFrameTime = System.currentTimeMillis();
         }
 
-        // Déplacer le sprite selon les mouvements du joystick
-        spriteX += joystick.getDeltaX() / 10;  // Ajuster pour la vitesse
-        spriteY += joystick.getDeltaY() / 10;
     }
 
     private void draw() {
         if (getHolder().getSurface().isValid()) {
             Canvas canvas = getHolder().lockCanvas();
             canvas.drawColor(Color.BLACK);
-
-            // Dessiner le sprite à sa nouvelle position
-            canvas.drawBitmap(frames[frameIndex], spriteX, spriteY, null);
-
-            // Dessiner le joystick
-            joystick.draw(canvas);
-
             getHolder().unlockCanvasAndPost(canvas);
         }
     }
@@ -135,23 +116,6 @@ public class GameView extends SurfaceView implements Runnable {
         }
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-            case MotionEvent.ACTION_MOVE:
-                // Si le joystick est pressé, mettre à jour sa position
-                if (joystick.isPressed(event.getX(), event.getY())) {
-                    joystick.updatePosition(event.getX(), event.getY());
-                }
-                break;
 
-            case MotionEvent.ACTION_UP:
-                // Réinitialiser le joystick quand on relâche
-                joystick.resetPosition();
-                break;
-        }
 
-        return true;
-    }
 }
