@@ -1,5 +1,6 @@
 package com.example.helloworld;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AlertDialog;
 import android.content.SharedPreferences;
@@ -34,7 +35,9 @@ public class MainActivity extends AppCompatActivity {
         // Charger la langue enregistrée
         loadLocale();
 
-        hideNavigationBar();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            hideNavigationBar();
+        }
         setContentView(R.layout.activity_main);
 
         gameFrame = findViewById(R.id.gameFrame);
@@ -143,6 +146,7 @@ public class MainActivity extends AppCompatActivity {
     private int getCurrentLanguagePosition() {
         SharedPreferences prefs = getSharedPreferences("Settings", MODE_PRIVATE);
         String language = prefs.getString("My_Lang", "fr");
+        assert language != null;
         return language.equals("fr") ? 0 : 1;
     }
 
@@ -156,6 +160,7 @@ public class MainActivity extends AppCompatActivity {
         backButton.setText(getString(R.string.backButton));
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void hideNavigationBar() {
         getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
