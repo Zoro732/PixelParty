@@ -1,69 +1,49 @@
 package com.example.helloworld;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.util.DisplayMetrics;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.view.MotionEvent;
+import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GameView extends SurfaceView implements Runnable {
-
     private Thread gameThread;
     private boolean isPlaying;
-    private Bitmap spriteSheet;
-    private Bitmap[] frames;
-    private int frameIndex = 0;
-    private int frameCount = 4;  // Nombre de frames dans ton spritesheet
-    private int frameWidth;
-    private int frameHeight;
-    private long lastFrameTime;
-    private int frameDuration = 100; // Durée d'affichage de chaque frame en millisecondes
-    private float spriteX = 100, spriteY = 100;  // Position initiale du sprite
-
-    // Attributs pour la largeur et la hauteur de l'écran
     private int screenWidth, screenHeight;
+    private Paint paint;
+    private Player player;
+    private int obstacleX, obstacleY;
+    private float startX;
+    private int laneWidth;
+    private List<Obstacle> obstacles; // Liste des obstacles
 
-    public GameView(Context context) {
+    public GameView(Context context, int screenWidth, int screenHeight) {
         super(context);
+        this.screenWidth = screenWidth;
+        this.screenHeight = screenHeight;
+        laneWidth =  screenWidth / 3;
 
-        // Charger le spritesheet initial
-        loadSpriteSheet(R.drawable.attack);
+        // Initialisation du joueur et de l'obstacle
+        player = new Player(screenWidth, screenHeight - 200);
+        obstacleX = screenWidth / 3;
+        obstacleY = screenHeight - 200;
 
-        // Obtenir les dimensions de l'écran
-        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-        int screenWidth = displayMetrics.widthPixels;
-        int screenHeight = displayMetrics.heightPixels;
+        paint = new Paint();
 
-        // Dans le constructeur GameView
+        obstacles = new ArrayList<>(); // Initialise la liste d'obstacles
 
-        screenWidth = displayMetrics.widthPixels; // Largeur de l'écran
-        screenHeight = displayMetrics.heightPixels; // Hauteur de l'écran
-    }
-
-    // Méthode pour charger un nouveau spritesheet
-    public void changeSpriteSheet(int newSpriteResource) {
-        loadSpriteSheet(newSpriteResource);
-        frameIndex = 0;  // Réinitialiser l'animation
-    }
-
-    // Méthode pour charger un spritesheet et découper les frames
-    private void loadSpriteSheet(int spriteResource) {
-        spriteSheet = BitmapFactory.decodeResource(getResources(), spriteResource);
-
-        // Déterminer la hauteur fixe d'une frame
-        frameHeight = spriteSheet.getHeight(); // Fixe ou change si nécessaire
-        frameWidth = spriteSheet.getWidth() / frameCount; // Largeur d'une frame
-
-        // Calculer le nombre de frames
-        frameCount = spriteSheet.getWidth() / frameWidth; // Nombre de frames dans le spritesheet
-
-        // Découper chaque frame dans un tableau
-        frames = new Bitmap[frameCount];
-        for (int i = 0; i < frameCount; i++) {
-            frames[i] = Bitmap.createBitmap(spriteSheet, i * frameWidth, 0, frameWidth, frameHeight);
+        // Créer quelques obstacles aléatoires
+        for (int i = 0; i < 3; i++) { // Créer 3 obstacles
+            int laneIndex = (int)(Math.random() * 3); // Générer un index de voie aléatoire
+            int laneX = (laneIndex * laneWidth) + (laneWidth / 2) - (100 / 2); // Centrer l'obstacle de 100 pixels de large
+            obstacles.add(new Obstacle(laneX, (int)(Math.random() * -500))); // Commence au-dessus de l'écran avec une position Y aléatoire
         }
     }
 
@@ -77,25 +57,75 @@ public class GameView extends SurfaceView implements Runnable {
     }
 
     private void update() {
-        // Mettre à jour l'animation du sprite
-        if (System.currentTimeMillis() - lastFrameTime > frameDuration) {
-            frameIndex = (frameIndex + 1) % frameCount;
-            lastFrameTime = System.currentTimeMillis();
-        }
+        // Met à jour les obstacles
+        for (int i = 0; i < obstacles.size(); i++) {
+            Obstacle obstacle = obstacles.get(i);
+            obstacle.update(); // Met à jour la position de l'obstacle
 
+            // Vérifie si l'obstacle est en dehors de l'écran
+            if (obstacle.isOffScreen(screenHeight)) {
+                // Réinitialise la position de l'obstacle en haut de l'écran avec une nouvelle voie
+                int newLaneIndex = (int)(Math.random() * 3); // Générer un nouvel index de voie
+                int newLaneX = (newLaneIndex * laneWidth) + (laneWidth / 2) - (100 / 2); // Centrer le nouvel obstacle
+                obstacle.reset(newLaneX); // Positionne l'obstacle sur la nouvelle voie
+            }
+
+            // Collision avec l'obstacle
+            if (Rect.intersects(player.getRect(), obstacle.getRect())) {
+                isPlaying = false; // Arrêter le jeu si collision
+                //Toast.makeText(getContext(), "Perdu !", Toast.LENGTH_SHORT).show();
+                try {
+                    Thread.sleep(2000); // Délai de 100 millisecondes
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                isPlaying = true; // relance le jeux
+
+            }
+        }
     }
+
+
 
     private void draw() {
         if (getHolder().getSurface().isValid()) {
             Canvas canvas = getHolder().lockCanvas();
-            canvas.drawColor(Color.BLACK);
+            canvas.drawColor(Color.WHITE); // Fond de l'écran
+
+            // Couleurs des voies
+            Paint paint = new Paint();
+            paint.setStyle(Paint.Style.FILL);
+
+            // Couleur pour la voie gauche
+            paint.setColor(Color.LTGRAY);
+            canvas.drawRect(0, 0, laneWidth, getHeight(), paint);
+
+            // Couleur pour la voie centrale
+            paint.setColor(Color.DKGRAY);
+            canvas.drawRect(laneWidth, 0, laneWidth * 2, getHeight(), paint);
+
+            // Couleur pour la voie droite
+            paint.setColor(Color.GRAY);
+            canvas.drawRect(laneWidth * 2, 0, laneWidth * 3, getHeight(), paint);
+
+            // Dessiner le joueur
+            paint.setColor(Color.GREEN); // Couleur du joueur
+            canvas.drawRect(player.getRect(), paint);
+
+            // Dessiner les obstacles
+            for (Obstacle obstacle : obstacles) {
+                obstacle.draw(canvas, paint); // Dessine chaque obstacle
+            }
+
+            // Dessiner les obstacles (ajoute ton code pour les obstacles ici)
             getHolder().unlockCanvasAndPost(canvas);
         }
+
     }
 
     private void sleep() {
         try {
-            Thread.sleep(16); // 60 FPS
+            Thread.sleep(17); // Environ 60 FPS
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -115,7 +145,23 @@ public class GameView extends SurfaceView implements Runnable {
             e.printStackTrace();
         }
     }
-
-
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                startX = event.getX();
+                break;
+            case MotionEvent.ACTION_UP:
+                float endX = event.getX();
+                if (endX < startX) {
+                    player.moveLeft();  // Glissement vers la gauche
+                } else if (endX > startX) {
+                    player.moveRight(); // Glissement vers la droite
+                }
+                break;
+        }
+        return true;
+    }
 
 }
+
