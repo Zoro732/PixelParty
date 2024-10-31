@@ -2,10 +2,12 @@ package com.example.helloworld;
 
 import static android.app.PendingIntent.getActivity;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.view.View;
@@ -60,10 +62,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        hideNavigationBar();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            hideNavigationBar();
+        }
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void hideNavigationBar() {
         getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_HIDE_NAVIGATION

@@ -1,13 +1,13 @@
 package com.example.helloworld;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import android.annotation.SuppressLint;
-import android.content.Context;
+
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Vibrator;
-import android.view.MotionEvent;
+
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -17,21 +17,20 @@ import android.widget.TextView;
 import android.app.AlertDialog;
 
 public class OptionActivity extends AppCompatActivity {
-    private Button backButton; // Changement ici
-    private Vibrator vibrator;
-    private boolean hasVibrated = false; // Booléen pour vérifier si la vibration a déjà eu lieu
-    long[] timings = {0, 100};  // Vibre pendant 100ms, puis s'arrête
-    private FrameLayout gameFrame;
+
+
+    public FrameLayout gameFrame;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        hideNavigationBar();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            hideNavigationBar();
+        }
         setContentView(R.layout.activity_option);
 
-        // Obtenir l'instance de Vibrator à partir du contexte actuel
-        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
         // Associer le bouton de retour
 
         gameFrame = findViewById(R.id.gameFrame);  // Initialiser le FrameLayout pour le changement de thème
@@ -45,23 +44,7 @@ public class OptionActivity extends AppCompatActivity {
             }
         });
 
-        /*// Définir l'écouteur d'événements pour le bouton retour
-        backButton.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    if (!hasVibrated) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            vibrator.vibrate(timings, -1);
-                        }
-                        hasVibrated = true;
-                    }
-                } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                    hasVibrated = false;
-                }
-                return true;
-            }
-        });*/
+
 
         // Initialiser le Spinner
         Spinner languageSpinner = findViewById(R.id.language);
@@ -119,6 +102,7 @@ public class OptionActivity extends AppCompatActivity {
         super.onPause();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void hideNavigationBar() {
         getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_HIDE_NAVIGATION

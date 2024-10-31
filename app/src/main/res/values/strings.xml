@@ -3,6 +3,21 @@
     <string name="edit_message">Saisissez un message</string>
     <string name="button_send">Envoyer</string>
     <string name="maintext">Texte en français</string>
+    <string name="id_de_la_partie" >ID de la partie :</string>
+    <string name="temps_de_jeux">Temps de jeux</string>
+    <string name="nombre_de_joueur">Nombre de joueur</string>
+    <string name="retour">Retour</string>
+    <string name="creer">Creer</string>
+    <string name="pvp">PvP</string>
+    <string name="solo">Solo</string>
+    <string name="mini_jeux">Mini Jeux</string>
+    <string name="option">Option</string>
+    <string name="propos">À propos</string>
+    <string name="langue">Langue :</string>
+    <string name="clair">Clair</string>
+    <string name="sombre">SOMBRE</string>
+    <string name="theme">Thème :</string>
+    <string name="rejoindre">Rejoindre</string>
 
     <!-- Ajout du tableau de langues -->
     <string-array name="language_options">
