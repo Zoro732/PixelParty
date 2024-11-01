@@ -27,7 +27,7 @@ public class RejoindreActivity extends AppCompatActivity {
         start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(RejoindreActivity.this, MainActivity.class);
+                Intent intent = new Intent(RejoindreActivity.this, SpriteActivity.class);
                 startActivity(intent);
             }
         });

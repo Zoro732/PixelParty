@@ -11,6 +11,8 @@
         android:layout_width="150dp"
         android:layout_height="50dp"
         android:text="Retour"
+        android:fontFamily="@font/pressstart2p"
+        android:textSize="12sp"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
         android:layout_marginLeft="400dp"

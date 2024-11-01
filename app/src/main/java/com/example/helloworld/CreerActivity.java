@@ -27,7 +27,7 @@ public class CreerActivity extends AppCompatActivity {
         creer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(CreerActivity.this, MainActivity.class);
+                Intent intent = new Intent(CreerActivity.this, SpriteActivity.class);
                 startActivity(intent);
             }
         });

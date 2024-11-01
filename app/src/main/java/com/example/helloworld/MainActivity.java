@@ -24,14 +24,14 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-        /*Button gameMode_Solo = findViewById(R.id.gameMode_Solo);
+        Button gameMode_Solo = findViewById(R.id.gameMode_Solo);
         gameMode_Solo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, CreerActivity.class);
+                Intent intent = new Intent(MainActivity.this, SpriteActivity.class);
                 startActivity(intent);
             }
-        });*/
+        });
 
         Button gameMode_PvP = findViewById(R.id.gameMode_PvP);
         gameMode_PvP.setOnClickListener(new View.OnClickListener() {

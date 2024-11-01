@@ -1,0 +1,67 @@
+<!-- res/layout/activity_main.xml -->
+
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FF3DC2EC"
+    android:padding="16dp"
+    android:gravity="center">
+
+    <TextView
+        android:id="@+id/selected_character_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Selected Character: None"
+        android:textSize="18sp"
+        android:fontFamily="@font/pressstart2p"
+        android:layout_marginBottom="24dp"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal">
+
+        <!-- Sprite 1 -->
+        <ImageView
+            android:id="@+id/bleu"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/bleu"
+            android:layout_margin="20dp"
+            android:contentDescription="Bleu"/>
+
+        <!-- Sprite 2 -->
+        <ImageView
+            android:id="@+id/rouge"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/rouge"
+            android:layout_margin="20dp"
+            android:contentDescription="Rouge"/>
+
+        <!-- Sprite 3 -->
+        <ImageView
+            android:id="@+id/vert"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/vert"
+            android:layout_margin="20dp"
+            android:contentDescription="Vert"/>
+
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/back"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:text="Retour"
+        android:fontFamily="@font/pressstart2p"
+        android:textSize="12sp"
+        android:background="@drawable/rounded_button"
+        />
+
+</LinearLayout>
