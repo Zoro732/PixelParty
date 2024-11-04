@@ -6,10 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.view.MotionEvent;
-import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.widget.Toast;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,32 +16,35 @@ public class GameView extends SurfaceView implements Runnable {
     private int screenWidth, screenHeight;
     private Paint paint;
     private Player player;
-    private int obstacleX, obstacleY;
-    private float startX;
     private int laneWidth;
-    private List<Obstacle> obstacles; // Liste des obstacles
+    private List<Obstacle> obstacles;
+    private float obstacleSpeed = 10;
+    private float speedIncrement = 4;
+    private float startX = 0; // Initialisation de startX
 
     public GameView(Context context, int screenWidth, int screenHeight) {
         super(context);
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
-        laneWidth =  screenWidth / 3;
-
-        // Initialisation du joueur et de l'obstacle
+        laneWidth = screenWidth / 3;
         player = new Player(screenWidth, screenHeight - 200);
-        obstacleX = screenWidth / 3;
-        obstacleY = screenHeight - 200;
-
         paint = new Paint();
+        generateObstacles();
+    }
 
-        obstacles = new ArrayList<>(); // Initialise la liste d'obstacles
-
-        // Créer quelques obstacles aléatoires
-        for (int i = 0; i < 3; i++) { // Créer 3 obstacles
-            int laneIndex = (int)(Math.random() * 3); // Générer un index de voie aléatoire
-            int laneX = (laneIndex * laneWidth) + (laneWidth / 2) - (100 / 2); // Centrer l'obstacle de 100 pixels de large
-            obstacles.add(new Obstacle(laneX, (int)(Math.random() * -500))); // Commence au-dessus de l'écran avec une position Y aléatoire
+    private void generateObstacles() {
+        obstacles = new ArrayList<>();
+        boolean[] occupiedLanes = new boolean[3];
+        for (int i = 0; i < 3; i++) {
+            int laneIndex;
+            do {
+                laneIndex = (int) (Math.random() * 3);
+            } while (occupiedLanes[laneIndex]);
+            occupiedLanes[laneIndex] = true;
+            int laneX = (laneIndex * laneWidth) + (laneWidth / 2) - 50;
+            obstacles.add(new Obstacle(laneX, -100 - (i * 200), (int) obstacleSpeed));
         }
+        obstacleSpeed += speedIncrement;
     }
 
     @Override
@@ -57,70 +57,73 @@ public class GameView extends SurfaceView implements Runnable {
     }
 
     private void update() {
-        // Met à jour les obstacles
-        for (int i = 0; i < obstacles.size(); i++) {
-            Obstacle obstacle = obstacles.get(i);
-            obstacle.update(); // Met à jour la position de l'obstacle
-
-            // Vérifie si l'obstacle est en dehors de l'écran
+        for (Obstacle obstacle : obstacles) {
+            obstacle.update();
             if (obstacle.isOffScreen(screenHeight)) {
-                // Réinitialise la position de l'obstacle en haut de l'écran avec une nouvelle voie
-                int newLaneIndex = (int)(Math.random() * 3); // Générer un nouvel index de voie
-                int newLaneX = (newLaneIndex * laneWidth) + (laneWidth / 2) - (100 / 2); // Centrer le nouvel obstacle
-                obstacle.reset(newLaneX); // Positionne l'obstacle sur la nouvelle voie
+                int laneIndex = (int) (Math.random() * 3);
+                int laneX = (laneIndex * laneWidth) + (laneWidth / 2) - 50;
+                obstacle.reset(laneX, -100);
             }
-
-            // Collision avec l'obstacle
             if (Rect.intersects(player.getRect(), obstacle.getRect())) {
-                isPlaying = false; // Arrêter le jeu si collision
-                //Toast.makeText(getContext(), "Perdu !", Toast.LENGTH_SHORT).show();
-                try {
-                    Thread.sleep(2000); // Délai de 100 millisecondes
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                isPlaying = true; // relance le jeux
-
+                endGame();
+                return;
             }
         }
     }
 
-
-
     private void draw() {
         if (getHolder().getSurface().isValid()) {
             Canvas canvas = getHolder().lockCanvas();
-            canvas.drawColor(Color.WHITE); // Fond de l'écran
+            canvas.drawColor(Color.WHITE);
 
-            // Couleurs des voies
-            Paint paint = new Paint();
+            // Dessin des voies
             paint.setStyle(Paint.Style.FILL);
-
-            // Couleur pour la voie gauche
             paint.setColor(Color.LTGRAY);
             canvas.drawRect(0, 0, laneWidth, getHeight(), paint);
-
-            // Couleur pour la voie centrale
             paint.setColor(Color.DKGRAY);
             canvas.drawRect(laneWidth, 0, laneWidth * 2, getHeight(), paint);
-
-            // Couleur pour la voie droite
             paint.setColor(Color.GRAY);
             canvas.drawRect(laneWidth * 2, 0, laneWidth * 3, getHeight(), paint);
 
-            // Dessiner le joueur
-            paint.setColor(Color.GREEN); // Couleur du joueur
+            // Dessin du joueur et des obstacles
+            paint.setColor(Color.GREEN);
             canvas.drawRect(player.getRect(), paint);
-
-            // Dessiner les obstacles
-            for (Obstacle obstacle : obstacles) {
-                obstacle.draw(canvas, paint); // Dessine chaque obstacle
+            if (isPlaying) {
+                for (Obstacle obstacle : obstacles) {
+                    obstacle.draw(canvas, paint);
+                }
+            } else {
+                drawGameOver(canvas);
             }
-
-            // Dessiner les obstacles (ajoute ton code pour les obstacles ici)
             getHolder().unlockCanvasAndPost(canvas);
         }
+    }
 
+    private void drawGameOver(Canvas canvas) {
+        paint.setColor(Color.argb(150, 0, 0, 0));
+        canvas.drawRect(0, 0, screenWidth, screenHeight, paint);
+        paint.setColor(Color.RED);
+        paint.setTextSize(100);
+        paint.setTextAlign(Paint.Align.CENTER);
+        canvas.drawText("Game Over", screenWidth / 2, screenHeight / 3, paint);
+
+        // Bouton Rejouer
+        paint.setColor(Color.BLUE);
+        int buttonWidth = 400;
+        int buttonHeight = 150;
+        int buttonX = screenWidth / 2 - buttonWidth / 2;
+        int buttonY = screenHeight / 2;
+        canvas.drawRect(buttonX, buttonY, buttonX + buttonWidth, buttonY + buttonHeight, paint);
+
+        // Texte "Rejouer"
+        paint.setColor(Color.WHITE);
+        paint.setTextSize(50);
+        canvas.drawText("Rejouer", screenWidth / 2, buttonY + buttonHeight / 2 + 20, paint);
+    }
+
+    private void endGame() {
+        isPlaying = false;
+        draw(); // Dessine "Game Over" immédiatement
     }
 
     private void sleep() {
@@ -145,23 +148,38 @@ public class GameView extends SurfaceView implements Runnable {
             e.printStackTrace();
         }
     }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                startX = event.getX();
-                break;
-            case MotionEvent.ACTION_UP:
-                float endX = event.getX();
-                if (endX < startX) {
-                    player.moveLeft();  // Glissement vers la gauche
-                } else if (endX > startX) {
-                    player.moveRight(); // Glissement vers la droite
+        if (!isPlaying) { // Redémarrer si le jeu est terminé
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                int buttonX = screenWidth / 2 - 200;
+                int buttonY = screenHeight / 2;
+                if (event.getX() >= buttonX && event.getX() <= buttonX + 400 &&
+                        event.getY() >= buttonY && event.getY() <= buttonY + 150) {
+                    restartGame();
                 }
-                break;
+            }
+        } else { // Déplacement si le jeu est en cours
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    startX = event.getX();
+                    break;
+                case MotionEvent.ACTION_UP:
+                    float endX = event.getX();
+                    if (endX < startX) player.moveLeft();
+                    else if (endX > startX) player.moveRight();
+                    break;
+            }
         }
         return true;
     }
 
+    private void restartGame() {
+        isPlaying = true;
+        player.resetPosition();
+        obstacles.clear();
+        generateObstacles();
+        resume();
+    }
 }
-

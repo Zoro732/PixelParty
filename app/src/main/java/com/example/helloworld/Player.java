@@ -32,5 +32,10 @@ public class Player {
     public Rect getRect() {
         return new Rect(getX(), y, getX() + 100, y + 100);
     }
+
+    public void resetPosition() {
+        currentLane = 1;  // Réinitialise à la voie centrale
+    }
+
 }
 
