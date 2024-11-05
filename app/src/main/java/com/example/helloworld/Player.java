@@ -78,8 +78,5 @@ public class Player {
     public boolean isJumping() {
         return isJumping; // Retourne l'état de saut du joueur
     }
-    public void setJumping(boolean jumping) {
-        isJumping = jumping;
-    }
 
 }

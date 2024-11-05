@@ -7,7 +7,7 @@ import android.graphics.Rect;
 
 public class Coin {
     private int x, y;
-    private int size = 50; // Taille de la pièce
+    private final int size = 50; // Taille de la pièce
     private float speed; // Vitesse de la pièce
 
     public Coin(int x, int y, float speed) {
@@ -40,7 +40,7 @@ public class Coin {
 
     public void draw(Canvas canvas, Paint paint) {
         paint.setColor(Color.YELLOW); // Couleur de la pièce
-        canvas.drawCircle(x + size / 2, y + size / 2, size / 2, paint);
+        canvas.drawCircle(x + (float) size / 2, y + (float) size / 2, (float) size / 2, paint);
     }
 }
 
