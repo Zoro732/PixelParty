@@ -1,8 +1,12 @@
 <resources>
-    <string name="app_name">Hello World</string>
-    <string name="button">+1</string>
-    <string name="text">0</string>
-    <string name="button2">-1</string>
-    <string name="langue"></string>
+    <string name="app_name">Counter</string>
+    <string name="edit_message">Saisissez un message</string>
+    <string name="button_send">Envoyer</string>
     <string name="maintext">Texte en français</string>
+
+    <!-- Ajout du tableau de langues -->
+    <string-array name="language_options">
+        <item>Français</item>
+        <item>Anglais</item>
+    </string-array>
 </resources>
