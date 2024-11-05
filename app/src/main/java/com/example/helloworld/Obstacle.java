@@ -1,9 +1,12 @@
 package com.example.helloworld;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+
+import java.util.Arrays;
 
 public class Obstacle {
     private int x;
@@ -12,20 +15,28 @@ public class Obstacle {
     private int width = 100;
     private int height = 100;
     private boolean isJumpable;
-    private int color; // Nouvelle variable pour stocker la couleur
+    private Bitmap vehicleBitmap;
+    private Bitmap image;
+    private Bitmap[] vehicles; // Ajouter un tableau pour les véhicules
 
-    public Obstacle(int x, int y, int speed) {
+    // Constructeur
+    public Obstacle(int x, int y, int speed, Bitmap image, Bitmap[] vehicles) {
         this.x = x;
         this.y = y;
         this.speed = speed;
+        this.image = image; // Store the image
+        this.vehicles = vehicles; // Initialiser le tableau de véhicules
+        // Déterminer si l'obstacle est sautable en fonction du bitmap
+        this.isJumpable = Arrays.asList(vehicles).contains(image); // Check if image is in vehicles array
 
-        // Déterminer aléatoirement si l'obstacle est sautable
-        this.isJumpable = Math.random() < 0.5; // 50% de chance
-        this.color = isJumpable ? Color.BLUE : Color.RED; // Bleu si sautable, Rouge sinon
     }
 
     public void update() {
         y += speed;
+    }
+
+    public Bitmap getImage() {
+        return image;
     }
 
     public boolean isOffScreen(int screenHeight) {
@@ -35,24 +46,35 @@ public class Obstacle {
     public void reset(int newX) {
         x = newX;
         y = -height;
-        isJumpable = Math.random() < 0.5; // Re-définir aléatoirement si l'obstacle est sautable
-        color = isJumpable ? Color.BLUE : Color.RED; // Mise à jour de la couleur
+        isJumpable = isJumpable(); // Re-définir si l'obstacle est sautable
     }
 
     public boolean isJumpable() {
-        return this.color == Color.BLUE;
+        return isJumpable;
     }
+
 
     public Rect getRect() {
         return new Rect(x, y, x + width, y + height);
     }
 
     public void draw(Canvas canvas, Paint paint) {
-        paint.setColor(color); // Utiliser la couleur de l'obstacle
-        canvas.drawRect(getRect(), paint);
+        canvas.drawBitmap(vehicleBitmap, x, y, paint); // Utilisez le bitmap
     }
 
     public void setY(int currentY) {
         y = currentY;
+    }
+
+    // Méthode pour définir l'image de l'obstacle
+    public void setImage(Bitmap image) {
+        this.image = image;
+    }
+
+    public float getX() {
+        return x;
+    }
+    public float getY() {
+        return y;
     }
 }
