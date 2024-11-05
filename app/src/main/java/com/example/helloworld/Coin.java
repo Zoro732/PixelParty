@@ -8,14 +8,20 @@ import android.graphics.Rect;
 public class Coin {
     private int x, y;
     private int size = 50; // Taille de la pièce
+    private float speed; // Vitesse de la pièce
 
-    public Coin(int x, int y) {
+    public Coin(int x, int y, float speed) {
         this.x = x;
         this.y = y;
+        this.speed = speed; // Initialiser avec la vitesse donnée
+    }
+
+    public void setSpeed(float speed) {
+        this.speed = speed; // Permet de mettre à jour la vitesse des pièces
     }
 
     public void update() {
-        y += 10; // Vitesse de déplacement des pièces
+        y += (int) GameView.obstacleSpeed; // Utilisez la vitesse actuelle des pièces
     }
 
     public boolean isOffScreen(int screenHeight) {
@@ -25,6 +31,7 @@ public class Coin {
     public void reset(int newX) {
         x = newX;
         y = -size;
+        speed += 2; // Augmente la vitesse à chaque réinitialisation pour rendre le jeu plus difficile
     }
 
     public Rect getRect() {
@@ -36,3 +43,4 @@ public class Coin {
         canvas.drawCircle(x + size / 2, y + size / 2, size / 2, paint);
     }
 }
+

@@ -1,13 +1,22 @@
 package com.example.helloworld;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.RectF;
+import android.hardware.Sensor;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
+import android.widget.Toast;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class GameView extends SurfaceView implements Runnable {
@@ -18,11 +27,21 @@ public class GameView extends SurfaceView implements Runnable {
     private Player player;
     private int laneWidth;
     private List<Obstacle> obstacles;
-    private float obstacleSpeed = 10;
-    private float speedIncrement = 4;
-    private float startX = 0; // Initialisation de startX
     private List<Coin> coins;
     private int score = 0; // Score de pièces collectées
+    static float obstacleSpeed = 15;
+    private float startX = 0; // Initialisation de startX
+    private float startY = 0; // Initialisation de startY
+    private Sensor accelerometer;
+    private float jumpThreshold = 1.0f; // Seuil pour détecter le saut
+    private boolean isJumping = false;
+    private Vibrator vibrator; // Déclaration de l'objet Vibrator
+    private static final String TAG = "AccelerometerValues";
+    private String jumpMessage = "";
+    private int obstacleSpacing = 400; // Initial spacing
+    private long lastObstacleTime = 0; // Time of last obstacle creation
+    private List<Obstacle> obstaclePool = new ArrayList<>();
+    private Bitmap backgroundBitmap; // For background and lanes
 
     public GameView(Context context, int screenWidth, int screenHeight) {
         super(context);
@@ -33,33 +52,60 @@ public class GameView extends SurfaceView implements Runnable {
         paint = new Paint();
         generateObstacles();
         generateCoins();
-    }
+
+        vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+
+        }
 
     private void generateCoins() {
         coins = new ArrayList<>();
         for (int i = 0; i < 3; i++) { // Crée 3 pièces
-            int laneIndex = (int)(Math.random() * 3);
+            int laneIndex = (int) (Math.random() * 3);
             int laneX = (laneIndex * laneWidth) + (laneWidth / 2) - 25; // Centrer la pièce
-            coins.add(new Coin(laneX, -200 - (i * 300))); // Espacement vertical
+            coins.add(new Coin(laneX, -200 - (i * 300), obstacleSpeed)); // Espacement vertical
         }
+    }
+
+    private Obstacle createObstacle() {
+        List<Integer> availableLanes = new ArrayList<>(Arrays.asList(0, 1, 2));
+        int laneIndex = availableLanes.remove((int) (Math.random() * availableLanes.size()));
+        int laneX = (laneIndex * laneWidth) + (laneWidth / 2) - 50;
+        boolean isJumpable = Math.random() < 0.5;
+        return new Obstacle(laneX, -100, (int) obstacleSpeed); // Initial Y position is -100
     }
 
     private void generateObstacles() {
         obstacles = new ArrayList<>();
-        boolean[] occupiedLanes = new boolean[3];
-        for (int i = 0; i < 3; i++) {
-            int laneIndex;
-            do {
-                laneIndex = (int) (Math.random() * 3);
-            } while (occupiedLanes[laneIndex]);
-            occupiedLanes[laneIndex] = true;
 
-            // Position verticale avec un espacement accru et un décalage aléatoire
-            int yOffset = -100 - (i * 300) - (int)(Math.random() * 100); // Augmente l'espacement
-            int laneX = (laneIndex * laneWidth) + (laneWidth / 2) - 50;
-            obstacles.add(new Obstacle(laneX, yOffset, (int) obstacleSpeed));
+        // Generate a random number of obstacles between 3 and 6
+        int numObstacles = 3 + (int) (Math.random() * 4);
+
+        int currentY = -100; // Starting Y position for the first obstacle
+
+        for (int i = 0; i < numObstacles; i++) {
+            Obstacle obstacle = createObstacle(); // Use the createObstacle() method
+            obstacle.setY(currentY); // Set the Y position based on spacing
+
+            obstacles.add(obstacle);
+
+            // Generate random spacing between 100 and 300
+            int spacing = 100 + (int) (Math.random() * 201);
+            currentY -= spacing; // Update Y position for the next obstacle
         }
-        obstacleSpeed += speedIncrement;
+    }
+
+    private Obstacle getObstacle() {
+        if (obstaclePool.isEmpty()) {
+            // Create a new obstacle using the createObstacle() method
+            return createObstacle();
+        } else {
+            // Reuse an obstacle from the pool
+            return obstaclePool.remove(0);
+        }
+    }
+
+    private void releaseObstacle(Obstacle obstacle) {
+        obstaclePool.add(obstacle);
     }
 
 
@@ -73,33 +119,58 @@ public class GameView extends SurfaceView implements Runnable {
     }
 
     private void update() {
-        for (Obstacle obstacle : obstacles) {
+        player.update();
+        long currentTime = System.currentTimeMillis();
+
+        RectF playerRect = new RectF(player.getRect()); // Create player RectF once
+
+        for (int i = obstacles.size() - 1; i >= 0; i--) { // Iterate backwards for efficient removal
+            Obstacle obstacle = obstacles.get(i);
             obstacle.update();
-            if (obstacle.isOffScreen(screenHeight)) {
+
+            if (obstacle.isOffScreen(screenHeight) && currentTime - lastObstacleTime > obstacleSpacing) {
                 int laneIndex = (int) (Math.random() * 3);
                 int laneX = (laneIndex * laneWidth) + (laneWidth / 2) - 50;
-                obstacle.reset(laneX, -100);
+
+                releaseObstacle(obstacle);
+                obstacles.set(i, getObstacle()); // Replace obstacle in the list
+                obstacles.get(i).reset(laneX);
+
+                lastObstacleTime = currentTime;
+                obstacleSpacing -= 10;
+                if (obstacleSpacing < 100) {
+                    obstacleSpacing = 100;
+                }
             }
-            if (Rect.intersects(player.getRect(), obstacle.getRect())) {
-                endGame();
-                return;
+
+            RectF obstacleRect = new RectF(obstacle.getRect()); // Create obstacle RectF
+            if (RectF.intersects(playerRect, obstacleRect)) {
+                if (obstacle.isJumpable() && player.isJumping()) {
+                    // Ignore collision
+                } else {
+                    endGame();
+                    return;
+                }
             }
         }
 
-        for (Coin coin : coins) {
+        for (int i = coins.size() - 1; i >= 0; i--) { // Iterate backwards for efficient removal
+            Coin coin = coins.get(i);
+            coin.setSpeed(obstacleSpeed);
             coin.update();
 
             if (coin.isOffScreen(screenHeight)) {
-                int newLaneIndex = (int)(Math.random() * 3);
+                int newLaneIndex = (int) (Math.random() * 3);
                 int newLaneX = (newLaneIndex * laneWidth) + (laneWidth / 2) - 25;
                 coin.reset(newLaneX);
             }
 
-            if (Rect.intersects(player.getRect(), coin.getRect())) {
-                score++; // Incrémente le score
-                int newLaneIndex = (int)(Math.random() * 3);
+            RectF coinRect = new RectF(coin.getRect()); // Create coin RectF
+            if (RectF.intersects(playerRect, coinRect)) {
+                score++;
+                int newLaneIndex = (int) (Math.random() * 3);
                 int newLaneX = (newLaneIndex * laneWidth) + (laneWidth / 2) - 25;
-                coin.reset(newLaneX); // Réinitialise la pièce
+                coin.reset(newLaneX);
             }
         }
     }
@@ -108,17 +179,17 @@ public class GameView extends SurfaceView implements Runnable {
         if (getHolder().getSurface().isValid()) {
             Canvas canvas = getHolder().lockCanvas();
             canvas.drawColor(Color.WHITE);
-
-            paint.setStyle(Paint.Style.FILL);
-            paint.setColor(Color.LTGRAY);
-            canvas.drawRect(0, 0, laneWidth, getHeight(), paint);
-            paint.setColor(Color.DKGRAY);
-            canvas.drawRect(laneWidth, 0, laneWidth * 2, getHeight(), paint);
-            paint.setColor(Color.GRAY);
-            canvas.drawRect(laneWidth * 2, 0, laneWidth * 3, getHeight(), paint);
-
-            paint.setColor(Color.GREEN);
-            canvas.drawRect(player.getRect(), paint);
+            if (getHolder().getSurface().isValid()) {
+                canvas.drawColor(Color.WHITE);
+                paint.setStyle(Paint.Style.FILL);
+                paint.setColor(Color.LTGRAY);
+                canvas.drawRect(0, 0, laneWidth, getHeight(), paint);
+                paint.setColor(Color.DKGRAY);
+                canvas.drawRect(laneWidth, 0, laneWidth * 2, getHeight(), paint);
+                paint.setColor(Color.GRAY);
+                canvas.drawRect(laneWidth * 2, 0, laneWidth * 3, getHeight(), paint);
+            }
+            // Obstacle draw
             if (isPlaying) {
                 for (Obstacle obstacle : obstacles) {
                     obstacle.draw(canvas, paint);
@@ -127,10 +198,15 @@ public class GameView extends SurfaceView implements Runnable {
                 drawGameOver(canvas);
             }
 
+            // Player
+            paint.setColor(Color.GREEN);
+            canvas.drawRect(player.getRect(), paint);
+
+            // Coins draw
             for (Coin coin : coins) {
                 coin.draw(canvas, paint);
             }
-
+            // Score draw
             paint.setColor(Color.BLACK);
             paint.setTextSize(50);
             canvas.drawText("Score: " + score, screenWidth - 200, 100, paint);
@@ -165,7 +241,6 @@ public class GameView extends SurfaceView implements Runnable {
         paint.setTextSize(50);
         canvas.drawText("Rejouer", screenWidth / 2, buttonY + buttonHeight / 2 + 20, paint);
     }
-
 
     private void endGame() {
         isPlaying = false;
@@ -216,27 +291,39 @@ public class GameView extends SurfaceView implements Runnable {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     startX = event.getX();
+                    startY = event.getY(); // Enregistrer la position Y au début
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    // Vérifier si l'utilisateur effectue un mouvement vers le haut
+                    float deltaY = startY - event.getY(); // Calculer le mouvement vertical
+                    if (deltaY > 100) { // Si le mouvement vers le haut est suffisant
+                        player.jump(); // Effectue le saut
+                        startY = event.getY(); // Réinitialiser la position de départ Y pour éviter de sauter plusieurs fois
+                        if (vibrator != null) {
+                            vibrator.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE));
+                        }
+                    }
                     break;
                 case MotionEvent.ACTION_UP:
                     float endX = event.getX();
-                    if (endX < startX) player.moveLeft();
-                    else if (endX > startX) player.moveRight();
+                    if (endX < startX && player.isJumping() == false) {
+                        player.moveLeft();
+                    } else if (endX > startX && player.isJumping() == false) {
+                        player.moveRight();
+                    }
                     break;
             }
         }
         return true;
     }
 
-
     private void restartGame() {
+        score = 0;
+        player.resetPosition(); // Reset player position
+        generateObstacles(); // Generate new obstacles
+        generateCoins(); // Generate new coins
         isPlaying = true;
-        player.resetPosition();
-        obstacles.clear();
-        coins.clear(); // Supprime les pièces existantes
-        generateObstacles();
-        generateCoins(); // Génère de nouvelles pièces
-        obstacleSpeed = 10;
-        score = 0; // Réinitialiser le score
-        resume();
+        gameThread = new Thread(this);
+        gameThread.start();
     }
 }
