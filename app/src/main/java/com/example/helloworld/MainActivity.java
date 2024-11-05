@@ -1,18 +1,11 @@
 package com.example.helloworld;
 
-import static android.app.PendingIntent.getActivity;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.os.Bundle;
-import android.os.Vibrator;
 import android.view.View;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.content.Intent;
-
 
 public class MainActivity extends AppCompatActivity {
 
