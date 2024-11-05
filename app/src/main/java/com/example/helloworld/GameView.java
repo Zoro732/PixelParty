@@ -19,7 +19,9 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GameView extends SurfaceView implements Runnable {
     private Thread gameThread;
@@ -46,14 +48,20 @@ public class GameView extends SurfaceView implements Runnable {
     private Bitmap backgroundBitmap; // For background and lanes
     private Bitmap[] vehicles;
     private Bitmap[] trucks;
+    private Map<String, int[]> spriteConfigurations = new HashMap<>();
+
 
     public GameView(Context context, int screenWidth, int screenHeight) {
         super(context);
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
         laneWidth = screenWidth / 3;
-        player = new Player(screenWidth, screenHeight - 200);
         paint = new Paint();
+
+        Bitmap runSpriteSheet = BitmapFactory.decodeResource(getResources(), R.drawable.run);
+        Bitmap jumpSpriteSheet = BitmapFactory.decodeResource(getResources(), R.drawable.jump);
+
+        player = new Player(context, screenWidth, screenHeight, runSpriteSheet, jumpSpriteSheet);
 
         // Charger les images des voitures
         vehicles = new Bitmap[3];
@@ -71,7 +79,28 @@ public class GameView extends SurfaceView implements Runnable {
         generateCoins();
         vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
 
+    }
+
+
+    public Bitmap[] extractSprites(Bitmap source, int spriteWidth, int spriteHeight) {
+        // Calculez le nombre de sprites dans l'image
+        int cols = source.getWidth() / spriteWidth; // Nombre de colonnes
+        int rows = source.getHeight() / spriteHeight; // Nombre de lignes
+
+        // Créez un tableau pour stocker les sprites extraits
+        Bitmap[] sprites = new Bitmap[cols * rows];
+
+        // Découpez chaque sprite
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < cols; col++) {
+                int x = col * spriteWidth; // Position X du sprite
+                int y = row * spriteHeight; // Position Y du sprite
+                sprites[row * cols + col] = Bitmap.createBitmap(source, x, y, spriteWidth, spriteHeight);
+            }
         }
+
+        return sprites; // Retourne le tableau de sprites
+    }
 
     private Bitmap resizeBitmap(Bitmap originalBitmap, int newWidth) {
         int originalWidth = originalBitmap.getWidth();
@@ -86,7 +115,6 @@ public class GameView extends SurfaceView implements Runnable {
         matrix.postRotate(degrees, originalBitmap.getWidth() / 2f, originalBitmap.getHeight() / 2f); // Pivoter autour du centre
         return Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.getWidth(), originalBitmap.getHeight(), matrix, true);
     }
-
 
     private void generateCoins() {
         coins = new ArrayList<>();
@@ -109,8 +137,6 @@ public class GameView extends SurfaceView implements Runnable {
         return new Obstacle(laneX, -100, (int) obstacleSpeed, randomImage, vehicles);
     }
 
-
-
     private void generateObstacles() {
         obstacles = new ArrayList<>();
 
@@ -126,7 +152,7 @@ public class GameView extends SurfaceView implements Runnable {
             obstacles.add(obstacle);
 
             // Generate random spacing between 100 and 300
-            int spacing = 100 + (int) (Math.random() * 201);
+            int spacing = 180 + (int) (Math.random() * 201);
             currentY -= spacing; // Update Y position for the next obstacle
         }
     }
@@ -250,8 +276,7 @@ public class GameView extends SurfaceView implements Runnable {
             }
 
             // Player
-            paint.setColor(Color.GREEN);
-            canvas.drawRect(player.getRect(), paint);
+            player.draw(canvas,paint);
 
             // Coins draw
             for (Coin coin : coins) {
