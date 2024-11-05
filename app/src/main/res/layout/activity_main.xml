@@ -16,7 +16,7 @@
         android:layout_marginRight="450dp"
         android:background="@drawable/rounded_button"
         android:text="PvP"
-        android:fontFamily="@font/pressstart2p"
+
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -31,7 +31,7 @@
         android:layout_centerHorizontal="true"
         android:background="@drawable/rounded_button"
         android:text="Solo"
-        android:fontFamily="@font/pressstart2p"
+
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -47,7 +47,7 @@
         android:layout_marginLeft="450dp"
         android:background="@drawable/rounded_button"
         android:text="Mini Jeux"
-        android:fontFamily="@font/pressstart2p"
+
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -64,7 +64,7 @@
         android:layout_marginBottom="300dp"
         android:background="@drawable/rounded_button"
         android:text="Option"
-        android:fontFamily="@font/pressstart2p"
+
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"

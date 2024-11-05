@@ -23,6 +23,15 @@ public class MinijeuxActivity extends AppCompatActivity {
             }
         });
 
+        Button laby = findViewById(R.id.laby);
+        laby.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MinijeuxActivity.this, GameView.class);
+                startActivity(intent);
+            }
+        });
+
         hideNavigationBar();
     }
 

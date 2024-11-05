@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:text="Selected Character: None"
         android:textSize="18sp"
-        android:fontFamily="@font/pressstart2p"
+
         android:layout_marginBottom="24dp"/>
 
     <LinearLayout
@@ -59,7 +59,7 @@
         android:layout_width="150dp"
         android:layout_height="50dp"
         android:text="Retour"
-        android:fontFamily="@font/pressstart2p"
+
         android:textSize="12sp"
         android:background="@drawable/rounded_button"
         />

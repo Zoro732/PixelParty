@@ -16,7 +16,6 @@
         android:layout_marginRight="450dp"
         android:background="@drawable/rounded_button"
         android:text="ID de la partie :"
-        android:fontFamily="@font/pressstart2p"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -31,7 +30,7 @@
         android:layout_centerHorizontal="true"
         android:background="@drawable/rounded_button"
         android:text="Temps de jeux"
-        android:fontFamily="@font/pressstart2p"
+
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -47,7 +46,7 @@
         android:layout_marginLeft="450dp"
         android:background="@drawable/rounded_button"
         android:text="Nombre de joueur"
-        android:fontFamily="@font/pressstart2p"
+
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -64,7 +63,7 @@
         android:layout_marginBottom="300dp"
         android:background="@drawable/rounded_button"
         android:text="Retour"
-        android:fontFamily="@font/pressstart2p"
+
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -80,7 +79,7 @@
         android:layout_marginTop="200dp"
         android:background="@drawable/rounded_button"
         android:text="Creer"
-        android:fontFamily="@font/pressstart2p"
+
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
