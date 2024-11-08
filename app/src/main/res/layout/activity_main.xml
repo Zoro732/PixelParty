@@ -1,3 +1,4 @@
+<!-- res/layout/activity_main.xml -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,14 +8,14 @@
 
     <GridLayout
         android:id="@+id/gridLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:rowCount="4"
         android:columnCount="4"
         android:background="#000000"
         android:padding="4dp">
 
-        <!-- 16 TextViews for each tile including the empty space -->
+        <!-- 16 TextViews pour chaque tuile, y compris l'espace vide -->
         <TextView android:id="@+id/tile_1" style="@style/TileStyle"/>
         <TextView android:id="@+id/tile_2" style="@style/TileStyle"/>
         <TextView android:id="@+id/tile_3" style="@style/TileStyle"/>

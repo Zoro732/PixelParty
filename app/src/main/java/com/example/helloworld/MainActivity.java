@@ -1,7 +1,6 @@
 package com.example.helloworld;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.GridLayout;
 import android.widget.TextView;
@@ -33,7 +32,6 @@ public class MainActivity extends AppCompatActivity {
 
         if (gridLayout == null) {
             // Log si le GridLayout n'est pas trouvé
-            Log.e("MainActivity", "GridLayout not found!");
             return; // Sortir si la vue n'est pas trouvée
         }
 
@@ -56,12 +54,6 @@ public class MainActivity extends AppCompatActivity {
             TextView tile15 = findViewById(R.id.tile_15);
             TextView tileEmpty = findViewById(R.id.tile_empty);
 
-            // Vérifiez si les TextViews sont bien trouvés
-            if (tile1 == null || tile2 == null || tileEmpty == null) {
-                Log.e("MainActivity", "One or more TextViews not found!");
-                return; // Sortir si une tuile est manquante
-            }
-
             // Mettre les TextViews dans le tableau tiles
             tiles[0][0] = tile1;
             tiles[0][1] = tile2;
@@ -80,9 +72,8 @@ public class MainActivity extends AppCompatActivity {
             tiles[3][2] = tile15;
             tiles[3][3] = tileEmpty;
 
+            // Initialiser les tuiles avec les numéros
             int number = 1;
-
-            // Initialiser les tuiles avec les numéros, sauf pour l'espace vide
             for (int i = 0; i < 4; i++) {
                 for (int j = 0; j < 4; j++) {
                     if (tiles[i][j] != tileEmpty) {
@@ -93,6 +84,10 @@ public class MainActivity extends AppCompatActivity {
                     final int row = i;
                     final int col = j;
 
+                    // Augmenter la taille des tuiles ici aussi
+                    tiles[i][j].getLayoutParams().width = 120;  // Ajuster la largeur
+                    tiles[i][j].getLayoutParams().height = 120; // Ajuster la hauteur
+
                     tiles[i][j].setOnClickListener(v -> onTileClick(row, col));
                 }
             }
@@ -100,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
             shuffleTiles(); // Mélanger les tuiles au démarrage
 
         } catch (Exception e) {
-            Log.e("MainActivity", "Error during initialization", e);
+            // Gérer les erreurs d'initialisation
         }
     }
 
@@ -131,7 +126,10 @@ public class MainActivity extends AppCompatActivity {
             }
 
             if (newRow >= 0 && newRow < 4 && newCol >= 0 && newCol < 4) {
-                onTileClick(newRow, newCol);
+                tiles[emptyRow][emptyCol].setText(tiles[newRow][newCol].getText());
+                tiles[newRow][newCol].setText("");
+                emptyRow = newRow;
+                emptyCol = newCol;
             }
         }
     }
@@ -140,12 +138,10 @@ public class MainActivity extends AppCompatActivity {
         int number = 1;
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
-                String text = tiles[i][j].getText().toString();
-                if (i == 3 && j == 3) {
-                    return text.isEmpty(); // La dernière case doit être vide
-                } else if (!text.equals(String.valueOf(number++))) {
-                    return false; // La tuile n'est pas dans le bon ordre
+                if (tiles[i][j] != null && !tiles[i][j].getText().toString().equals(String.valueOf(number))) {
+                    return false;
                 }
+                number++;
             }
         }
         return true;
