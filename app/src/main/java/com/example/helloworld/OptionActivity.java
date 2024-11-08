@@ -3,6 +3,7 @@ package com.example.helloworld;
 import androidx.appcompat.app.AppCompatActivity;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -36,8 +37,9 @@ public class OptionActivity extends AppCompatActivity {
         gameFrame = findViewById(R.id.gameFrame);  // Initialiser le FrameLayout pour le changement de thème
 
         // Définir l'écouteur d'événements pour le bouton retour
-        backButton.setOnTouchListener(new View.OnTouchListener() {
-            @Override
+        backButton.setOnClickListener(new View.OnClickListener() {
+
+            /*@Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     if (!hasVibrated) {
@@ -50,6 +52,11 @@ public class OptionActivity extends AppCompatActivity {
                     hasVibrated = false;
                 }
                 return true;
+            }*/
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(OptionActivity.this, MainActivity.class);
+                startActivity(intent);
             }
         });
 

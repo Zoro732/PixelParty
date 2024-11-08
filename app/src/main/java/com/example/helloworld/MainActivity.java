@@ -26,15 +26,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Button gameMode_PvP = findViewById(R.id.gameMode_PvP);
-        gameMode_PvP.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, PvpActivity.class);
-                startActivity(intent);
-            }
-        });
-
         Button mini_jeux = findViewById(R.id.mini_jeux);
         mini_jeux.setOnClickListener(new View.OnClickListener() {
             @Override
