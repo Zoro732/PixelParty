@@ -10,9 +10,9 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView[][] tiles = new TextView[4][4];
-    private TextView[][] solutionTiles = new TextView[4][4];
-    private int emptyRow = 3, emptyCol = 3; // Position initiale de l'espace vide
+    private TextView[][] tiles = new TextView[3][3]; // Nouvelle grille 3x3
+    private TextView[][] solutionTiles = new TextView[3][3]; // Nouvelle grille solution 3x3
+    private int emptyRow = 2, emptyCol = 2; // Position initiale de l'espace vide
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,17 +56,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initializeTiles(GridLayout gridLayout, TextView[][] tileArray) {
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-                int resID = getResources().getIdentifier("tile_" + (i * 4 + j + 1), "id", getPackageName());
+        for (int i = 0; i < 3; i++) { // Changer la taille de 4 à 3
+            for (int j = 0; j < 3; j++) {
+                int resID = getResources().getIdentifier("tile_" + (i * 3 + j + 1), "id", getPackageName());
                 if (resID == 0) {
                     resID = getResources().getIdentifier("tile_empty", "id", getPackageName());
                 }
                 TextView tile = findViewById(resID);
                 tileArray[i][j] = tile;
 
-                tile.setText(String.valueOf(i * 4 + j + 1)); // Remplir les tuiles avec les valeurs
-                if (i == 3 && j == 3) {
+                tile.setText(String.valueOf(i * 3 + j + 1)); // Remplir les tuiles avec les valeurs
+                if (i == 2 && j == 2) {
                     tile.setText(""); // La dernière tuile est vide
                 }
 
@@ -78,9 +78,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initializeSolutionTiles(GridLayout solutionGrid) {
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-                int resID = getResources().getIdentifier("tile_" + (i * 4 + j + 1) + "_solution", "id", getPackageName());
+        for (int i = 0; i < 3; i++) { // Adapter à la grille 3x3
+            for (int j = 0; j < 3; j++) {
+                int resID = getResources().getIdentifier("tile_" + (i * 3 + j + 1) + "_solution", "id", getPackageName());
                 if (resID == 0) {
                     resID = getResources().getIdentifier("tile_empty_solution", "id", getPackageName());
                 }
@@ -88,8 +88,8 @@ public class MainActivity extends AppCompatActivity {
                 solutionTiles[i][j] = tile;
 
                 // Remplir les tuiles avec les valeurs de la solution
-                tile.setText(String.valueOf(i * 4 + j + 1)); // Remplir les tuiles avec les valeurs
-                if (i == 3 && j == 3) {
+                tile.setText(String.valueOf(i * 3 + j + 1)); // Remplir les tuiles avec les valeurs
+                if (i == 2 && j == 2) {
                     tile.setText(""); // La dernière tuile est vide dans la solution
                 }
             }
@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
                 case 3: newCol++; break; // Droite
             }
 
-            if (newRow >= 0 && newRow < 4 && newCol >= 0 && newCol < 4) {
+            if (newRow >= 0 && newRow < 3 && newCol >= 0 && newCol < 3) { // Vérifier les limites de la grille 3x3
                 tiles[emptyRow][emptyCol].setText(tiles[newRow][newCol].getText());
                 tiles[newRow][newCol].setText("");
                 emptyRow = newRow;
@@ -132,9 +132,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean isGameWon() {
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-                if (!tiles[i][j].getText().toString().equals(String.valueOf(i * 4 + j + 1))) {
+        for (int i = 0; i < 3; i++) { // Vérifier la grille 3x3
+            for (int j = 0; j < 3; j++) {
+                if (!tiles[i][j].getText().toString().equals(String.valueOf(i * 3 + j + 1))) {
                     return false;
                 }
             }

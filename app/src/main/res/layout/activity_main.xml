@@ -29,31 +29,23 @@
             android:id="@+id/gridLayout"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:columnCount="4"
-            android:rowCount="4"
+            android:columnCount="3"
+            android:rowCount="3"
             android:padding="0dp"
             android:gravity="center"
             android:layout_gravity="center"
             android:layout_marginTop="33dp"> <!-- Marge ajoutée pour descendre les taquins -->
 
-            <!-- Tuiles du jeu avec taille encore augmentée -->
-            <TextView android:id="@+id/tile_1" style="@style/TileStyle" android:gravity="center" android:layout_width="70dp" android:layout_height="70dp"/>
-            <TextView android:id="@+id/tile_2" style="@style/TileStyle" android:gravity="center" android:layout_width="70dp" android:layout_height="70dp"/>
-            <TextView android:id="@+id/tile_3" style="@style/TileStyle" android:gravity="center" android:layout_width="70dp" android:layout_height="70dp"/>
-            <TextView android:id="@+id/tile_4" style="@style/TileStyle" android:gravity="center" android:layout_width="70dp" android:layout_height="70dp"/>
-            <TextView android:id="@+id/tile_5" style="@style/TileStyle" android:gravity="center" android:layout_width="70dp" android:layout_height="70dp"/>
-            <TextView android:id="@+id/tile_6" style="@style/TileStyle" android:gravity="center" android:layout_width="70dp" android:layout_height="70dp"/>
-            <TextView android:id="@+id/tile_7" style="@style/TileStyle" android:gravity="center" android:layout_width="70dp" android:layout_height="70dp"/>
-            <TextView android:id="@+id/tile_8" style="@style/TileStyle" android:gravity="center" android:layout_width="70dp" android:layout_height="70dp"/>
-            <TextView android:id="@+id/tile_9" style="@style/TileStyle" android:gravity="center" android:layout_width="70dp" android:layout_height="70dp"/>
-            <TextView android:id="@+id/tile_10" style="@style/TileStyle" android:gravity="center" android:layout_width="70dp" android:layout_height="70dp"/>
-            <TextView android:id="@+id/tile_11" style="@style/TileStyle" android:gravity="center" android:layout_width="70dp" android:layout_height="70dp"/>
-            <TextView android:id="@+id/tile_12" style="@style/TileStyle" android:gravity="center" android:layout_width="70dp" android:layout_height="70dp"/>
-            <TextView android:id="@+id/tile_13" style="@style/TileStyle" android:gravity="center" android:layout_width="70dp" android:layout_height="70dp"/>
-            <TextView android:id="@+id/tile_14" style="@style/TileStyle" android:gravity="center" android:layout_width="70dp" android:layout_height="70dp"/>
-            <TextView android:id="@+id/tile_15" style="@style/TileStyle" android:gravity="center" android:layout_width="70dp" android:layout_height="70dp"/>
-            <TextView android:id="@+id/tile_empty" style="@style/TileStyle" android:gravity="center" android:layout_width="70dp" android:layout_height="70dp"/>
-
+            <!-- Tuiles du jeu avec taille ajustée pour une grille 3x3 -->
+            <TextView android:id="@+id/tile_1" style="@style/TileStyle" android:gravity="center" android:layout_width="90dp" android:layout_height="90dp"/>
+            <TextView android:id="@+id/tile_2" style="@style/TileStyle" android:gravity="center" android:layout_width="90dp" android:layout_height="90dp"/>
+            <TextView android:id="@+id/tile_3" style="@style/TileStyle" android:gravity="center" android:layout_width="90dp" android:layout_height="90dp"/>
+            <TextView android:id="@+id/tile_4" style="@style/TileStyle" android:gravity="center" android:layout_width="90dp" android:layout_height="90dp"/>
+            <TextView android:id="@+id/tile_5" style="@style/TileStyle" android:gravity="center" android:layout_width="90dp" android:layout_height="90dp"/>
+            <TextView android:id="@+id/tile_6" style="@style/TileStyle" android:gravity="center" android:layout_width="90dp" android:layout_height="90dp"/>
+            <TextView android:id="@+id/tile_7" style="@style/TileStyle" android:gravity="center" android:layout_width="90dp" android:layout_height="90dp"/>
+            <TextView android:id="@+id/tile_8" style="@style/TileStyle" android:gravity="center" android:layout_width="90dp" android:layout_height="90dp"/>
+            <TextView android:id="@+id/tile_9" style="@style/TileStyle" android:gravity="center" android:layout_width="90dp" android:layout_height="90dp"/>
         </GridLayout>
 
     </FrameLayout>
@@ -81,31 +73,23 @@
             android:id="@+id/solutionGrid"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:columnCount="4"
-            android:rowCount="4"
+            android:columnCount="3"
+            android:rowCount="3"
             android:padding="0dp"
             android:gravity="center"
             android:layout_gravity="center"
             android:layout_marginTop="33dp"> <!-- Marge ajoutée pour descendre les taquins -->
 
-            <!-- Tuiles de la solution avec taille encore augmentée -->
-            <TextView android:id="@+id/tile_1_solution" style="@style/TileStyle" android:gravity="center" android:layout_width="70dp" android:layout_height="70dp"/>
-            <TextView android:id="@+id/tile_2_solution" style="@style/TileStyle" android:gravity="center" android:layout_width="70dp" android:layout_height="70dp"/>
-            <TextView android:id="@+id/tile_3_solution" style="@style/TileStyle" android:gravity="center" android:layout_width="70dp" android:layout_height="70dp"/>
-            <TextView android:id="@+id/tile_4_solution" style="@style/TileStyle" android:gravity="center" android:layout_width="70dp" android:layout_height="70dp"/>
-            <TextView android:id="@+id/tile_5_solution" style="@style/TileStyle" android:gravity="center" android:layout_width="70dp" android:layout_height="70dp"/>
-            <TextView android:id="@+id/tile_6_solution" style="@style/TileStyle" android:gravity="center" android:layout_width="70dp" android:layout_height="70dp"/>
-            <TextView android:id="@+id/tile_7_solution" style="@style/TileStyle" android:gravity="center" android:layout_width="70dp" android:layout_height="70dp"/>
-            <TextView android:id="@+id/tile_8_solution" style="@style/TileStyle" android:gravity="center" android:layout_width="70dp" android:layout_height="70dp"/>
-            <TextView android:id="@+id/tile_9_solution" style="@style/TileStyle" android:gravity="center" android:layout_width="70dp" android:layout_height="70dp"/>
-            <TextView android:id="@+id/tile_10_solution" style="@style/TileStyle" android:gravity="center" android:layout_width="70dp" android:layout_height="70dp"/>
-            <TextView android:id="@+id/tile_11_solution" style="@style/TileStyle" android:gravity="center" android:layout_width="70dp" android:layout_height="70dp"/>
-            <TextView android:id="@+id/tile_12_solution" style="@style/TileStyle" android:gravity="center" android:layout_width="70dp" android:layout_height="70dp"/>
-            <TextView android:id="@+id/tile_13_solution" style="@style/TileStyle" android:gravity="center" android:layout_width="70dp" android:layout_height="70dp"/>
-            <TextView android:id="@+id/tile_14_solution" style="@style/TileStyle" android:gravity="center" android:layout_width="70dp" android:layout_height="70dp"/>
-            <TextView android:id="@+id/tile_15_solution" style="@style/TileStyle" android:gravity="center" android:layout_width="70dp" android:layout_height="70dp"/>
-            <TextView android:id="@+id/tile_empty_solution" style="@style/TileStyle" android:gravity="center" android:layout_width="70dp" android:layout_height="70dp"/>
-
+            <!-- Tuiles de la solution avec taille ajustée pour une grille 3x3 -->
+            <TextView android:id="@+id/tile_1_solution" style="@style/TileStyle" android:gravity="center" android:layout_width="90dp" android:layout_height="90dp"/>
+            <TextView android:id="@+id/tile_2_solution" style="@style/TileStyle" android:gravity="center" android:layout_width="90dp" android:layout_height="90dp"/>
+            <TextView android:id="@+id/tile_3_solution" style="@style/TileStyle" android:gravity="center" android:layout_width="90dp" android:layout_height="90dp"/>
+            <TextView android:id="@+id/tile_4_solution" style="@style/TileStyle" android:gravity="center" android:layout_width="90dp" android:layout_height="90dp"/>
+            <TextView android:id="@+id/tile_5_solution" style="@style/TileStyle" android:gravity="center" android:layout_width="90dp" android:layout_height="90dp"/>
+            <TextView android:id="@+id/tile_6_solution" style="@style/TileStyle" android:gravity="center" android:layout_width="90dp" android:layout_height="90dp"/>
+            <TextView android:id="@+id/tile_7_solution" style="@style/TileStyle" android:gravity="center" android:layout_width="90dp" android:layout_height="90dp"/>
+            <TextView android:id="@+id/tile_8_solution" style="@style/TileStyle" android:gravity="center" android:layout_width="90dp" android:layout_height="90dp"/>
+            <TextView android:id="@+id/tile_9_solution" style="@style/TileStyle" android:gravity="center" android:layout_width="90dp" android:layout_height="90dp"/>
         </GridLayout>
 
     </FrameLayout>
