@@ -33,6 +33,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="375dp"
+            android:background="@drawable/rounded_button"
             android:layout_marginTop="115dp"
             android:text="SOMBRE" />
 
@@ -40,6 +41,7 @@
             android:id="@+id/buttonClair"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@drawable/rounded_button"
             android:layout_marginLeft="225dp"
             android:layout_marginTop="115dp"
             android:text="Clair" />
@@ -65,6 +67,7 @@
         <Button
             android:id="@+id/back"
             android:layout_width="wrap_content"
+            android:background="@drawable/rounded_button"
             android:layout_height="52dp"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="10dp"
@@ -77,6 +80,7 @@
             android:layout_marginTop="10dp"
             android:layout_gravity="right"
             android:layout_marginRight="10dp"
+            android:background="@drawable/rounded_button"
             android:text="À propos" />
 
     </FrameLayout>

@@ -4,10 +4,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -17,42 +15,18 @@ import android.widget.TextView;
 import android.app.AlertDialog;
 
 public class OptionActivity extends AppCompatActivity {
-    private Button backButton; // Changement ici
-    private Vibrator vibrator;
-    private boolean hasVibrated = false; // Booléen pour vérifier si la vibration a déjà eu lieu
-    long[] timings = {0, 100};  // Vibre pendant 100ms, puis s'arrête
     private FrameLayout gameFrame;
 
-    @SuppressLint("ClickableViewAccessibility")
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         hideNavigationBar();
         setContentView(R.layout.activity_option);
 
-        // Obtenir l'instance de Vibrator à partir du contexte actuel
-        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-        // Associer le bouton de retour
-        backButton = findViewById(R.id.back);
+        Button backButton = findViewById(R.id.back);
         gameFrame = findViewById(R.id.gameFrame);  // Initialiser le FrameLayout pour le changement de thème
 
         // Définir l'écouteur d'événements pour le bouton retour
         backButton.setOnClickListener(new View.OnClickListener() {
-
-            /*@Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    if (!hasVibrated) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            vibrator.vibrate(timings, -1);
-                        }
-                        hasVibrated = true;
-                    }
-                } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                    hasVibrated = false;
-                }
-                return true;
-            }*/
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(OptionActivity.this, MainActivity.class);
@@ -104,7 +78,7 @@ public class OptionActivity extends AppCompatActivity {
             public void onClick(View v) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(OptionActivity.this);
                 builder.setTitle("À propos")
-                        .setMessage("PIXEL PART\n\nApplication développée par AMAURY GIELEN, ILYES RABAOUY, et KACPER WOJTOWIC.\n\nVersion 1.0\n\nDescription de l'application : Jeu de plateforme familiale")
+                        .setMessage("PIXEL PARTY\n\nApplication développée par AMAURY GIELEN, ILYES RABAOUY, et KACPER WOJTOWICZ.\n\nVersion 1.0\n\nDescription de l'application : Jeu de plateforme familiale")
                         .setPositiveButton("OK", null)
                         .show();
             }
