@@ -36,6 +36,9 @@
         <activity android:name=".SpriteActivity"
             android:screenOrientation="sensorLandscape">
         </activity>
+        <activity android:name=".LabyActivity"
+            android:screenOrientation="sensorLandscape">
+        </activity>
     </application>
 
 </manifest>

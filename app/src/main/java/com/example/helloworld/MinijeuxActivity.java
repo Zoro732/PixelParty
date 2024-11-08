@@ -27,10 +27,19 @@ public class MinijeuxActivity extends AppCompatActivity {
         laby.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MinijeuxActivity.this, GameView.class);
+                Intent intent = new Intent(MinijeuxActivity.this, LabyActivity.class);
                 startActivity(intent);
             }
         });
+
+        /*Button run = findViewById(R.id.run);
+        run.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MinijeuxActivity.this, RunActivity.class);
+                startActivity(intent);
+            }
+        });*/
 
         hideNavigationBar();
     }
