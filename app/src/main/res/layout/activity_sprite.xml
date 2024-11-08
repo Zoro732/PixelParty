@@ -26,7 +26,7 @@
 
         <!-- Sprite 1 -->
         <ImageView
-            android:id="@+id/sprite_1"
+            android:id="@+id/bleu"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:src="@drawable/bleu"
@@ -35,7 +35,7 @@
 
         <!-- Sprite 2 -->
         <ImageView
-            android:id="@+id/sprite_2"
+            android:id="@+id/rouge"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:src="@drawable/rouge"
@@ -44,7 +44,7 @@
 
         <!-- Sprite 3 -->
         <ImageView
-            android:id="@+id/sprite_3"
+            android:id="@+id/vert"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:src="@drawable/vert"

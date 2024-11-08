@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -21,20 +22,22 @@ public class LabyActivity extends AppCompatActivity implements SensorEventListen
     private GameView gameView;
     private SensorManager sensorManager;
     private Sensor gyroscope;
-
+    private String selection;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             hideNavigationBar();
         }
         setContentView(R.layout.activity_laby);
-
+        Intent intent = getIntent();
+        selection = intent.getStringExtra("selection_key");
         // Créer une instance de GameView et l'ajouter au FrameLayout
         FrameLayout gameFrame = findViewById(R.id.gameFrame);
-        gameView = new GameView(this);
+        gameView = new GameView(this, selection);
         gameFrame.addView(gameView);
 
         // Initialiser le gestionnaire de capteurs
@@ -77,7 +80,7 @@ public class LabyActivity extends AppCompatActivity implements SensorEventListen
             float y = event.values[1]; // Rotation autour de l'axe Y
 
             // Déplacer la boule en fonction des valeurs du gyroscope
-            gameView.moveBall(x, y); // Méthode à implémenter dans GameView
+            gameView.moveSprite(x, y); // Méthode à implémenter dans GameView
         }
     }
 
