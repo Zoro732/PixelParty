@@ -34,4 +34,8 @@ public class SpriteSheet {
         return rows;
     }
 
+    public int getWidth() {
+        return spriteWidth;
+    }
+
 }

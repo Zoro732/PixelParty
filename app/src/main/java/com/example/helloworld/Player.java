@@ -1,45 +1,38 @@
 package com.example.helloworld;
 
-import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
 public class Player {
     private int y;
-    private final int laneWidth;
     private int currentLane;
     private final int screenHeight;
-    private final int screenWidth;
-    private final int originalSize = 100;
-    private int currentSize;
     private boolean isJumping = false;
     private int jumpStartY;
     private float jumpSpeed = 0;
+    private final int laneWidth;
 
     // Sprite animation fields
-    private SpriteSheet runSpriteSheet;
-    private SpriteSheet jumpSpriteSheet;
+    private final SpriteSheet runSpriteSheet;
+    private final SpriteSheet jumpSpriteSheet;
     private int currentSpriteIndex = 0;
     private int frameCounter = 0;
-    private int framesPerSprite = 5; // Number of frames to display each sprite
     private Bitmap currentSprite;
+    private float sizeMultiplier = 3;
 
-    public Player(Context context, int screenWidth, int screenHeight, Bitmap runSpriteSheet, Bitmap jumpSpriteSheet) {
+    public Player(int screenWidth, int screenHeight, Bitmap runSpriteSheet, Bitmap jumpSpriteSheet) {
         this.screenHeight = screenHeight;
         this.laneWidth = screenWidth / 3;
         this.y = screenHeight - 200;
-        this.screenWidth = screenWidth;
         this.currentLane = 1;
-        this.currentSize = originalSize;
 
         // Initialize SpriteSheets
         this.runSpriteSheet = new SpriteSheet(runSpriteSheet, 4, 8);
         this.jumpSpriteSheet = new SpriteSheet(jumpSpriteSheet, 4, 6);
-        this.currentSprite = runSpriteSheet.getSprite(3, 0);
+
+        this.currentSprite = runSpriteSheet;
     }
 
     public void moveLeft() {
@@ -59,25 +52,29 @@ public class Player {
             isJumping = true;
             jumpStartY = y;
             jumpSpeed = -20;
-            currentSize = (int) (originalSize * 1.5); // Adjust size during jump if needed
         }
     }
 
     public void update() {
         if (isJumping) {
             y += (int) jumpSpeed;
-            float gravity = 0.9f;
+            float gravity = 2;
             jumpSpeed += gravity;
-
+            sizeMultiplier =4;
+            currentSprite = jumpSpriteSheet.getSprite(3, currentSpriteIndex);
             if (y >= jumpStartY) {
                 y = jumpStartY;
                 isJumping = false;
-                currentSize = originalSize;
             }
+        } else {
+            sizeMultiplier = 3;
+            currentSprite = runSpriteSheet.getSprite(3, currentSpriteIndex);
         }
 
         // Update sprite animation
         frameCounter++;
+        // Number of frames to display each sprite
+        int framesPerSprite = 2;
         if (frameCounter >= framesPerSprite) {
             frameCounter = 0;
             if (isJumping) {
@@ -92,25 +89,19 @@ public class Player {
     public void draw(Canvas canvas, Paint paint) {
         if (isJumping) {
             currentSprite = jumpSpriteSheet.getSprite(3, currentSpriteIndex); // 4th row (index 3)
+
         } else {
             currentSprite = runSpriteSheet.getSprite(3, currentSpriteIndex); // 4th row (index 3)
         }
         if (currentSprite != null) {
-
-            // Draw hitbox border (for debugging)
-            paint.setColor(Color.GREEN); // Choose a color for the border
-            paint.setStyle(Paint.Style.STROKE);
-            paint.setStrokeWidth(2); // Adjust border thickness as needed
-            canvas.drawRect(getRect(), paint); // Draw the rectangle using the hitbox Rect
-
-            int newWidth = currentSprite.getWidth() * 2; // Double the original width
-            int newHeight = currentSprite.getHeight() * 2; // Double the original height
+            int newWidth = (int) (currentSprite.getWidth() * sizeMultiplier); // Double the original width
+            int newHeight = (int) (currentSprite.getHeight() * sizeMultiplier); // Double the original height
 
             // Resize the sprite
-            Bitmap resizedSprite = Bitmap.createScaledBitmap(currentSprite, newWidth, newHeight, true);
+            Bitmap resizedSprite = Bitmap.createScaledBitmap(currentSprite, newWidth, newHeight, false);
 
             // Draw the resized sprite
-            canvas.drawBitmap(resizedSprite, getX(), y, paint);
+            canvas.drawBitmap(resizedSprite, getX(), getY(), paint);
 
             // Reset paint style for other drawing
             paint.setStyle(Paint.Style.FILL);
@@ -118,17 +109,28 @@ public class Player {
     }
 
     public int getX() {
-        return screenWidth / 2 - currentSprite.getWidth() / 2;
+        return (int) (currentLane * laneWidth + (laneWidth - currentSprite.getWidth() * sizeMultiplier) / 2);
+    }
+    public int getY() {
+        if (isJumping) return y - 400;
+        return y - 300;
     }
 
     public Rect getRect() {
-        return new Rect(getX(), y, getX() + currentSize, y + currentSize);
+        if (currentSprite != null) {
+            int hitboxSize = 100; // Set the desired hitbox size
+            int hitboxX = (int) (getX() + (currentSprite.getWidth() * sizeMultiplier - hitboxSize) / 2); // Center horizontally
+            int hitboxY = (int) (getY() + (currentSprite.getHeight() * sizeMultiplier - hitboxSize) / 2); // Center vertically
+            return new Rect(hitboxX, hitboxY, hitboxX + hitboxSize, hitboxY + hitboxSize);
+        } else {
+            // Handle the case where currentSprite is null (e.g., return a default rectangle)
+            return new Rect(0, 0, 0, 0);
+        }
     }
 
     public void resetPosition() {
         currentLane = 1;
         y = screenHeight - 200;
-        currentSize = originalSize;
     }
 
     public boolean isJumping() {
