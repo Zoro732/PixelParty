@@ -30,7 +30,7 @@ public class LabyActivity extends AppCompatActivity implements SensorEventListen
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             hideNavigationBar();
         }
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_laby);
 
         // Créer une instance de GameView et l'ajouter au FrameLayout
         FrameLayout gameFrame = findViewById(R.id.gameFrame);
