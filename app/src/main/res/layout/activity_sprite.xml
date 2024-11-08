@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:text="Selected Character: None"
         android:textSize="18sp"
-
+        android:fontFamily="@font/press2start"
         android:layout_marginBottom="24dp"/>
 
     <LinearLayout
@@ -26,7 +26,7 @@
 
         <!-- Sprite 1 -->
         <ImageView
-            android:id="@+id/bleu"
+            android:id="@+id/sprite_1"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:src="@drawable/bleu"
@@ -35,7 +35,7 @@
 
         <!-- Sprite 2 -->
         <ImageView
-            android:id="@+id/rouge"
+            android:id="@+id/sprite_2"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:src="@drawable/rouge"
@@ -44,24 +44,40 @@
 
         <!-- Sprite 3 -->
         <ImageView
-            android:id="@+id/vert"
+            android:id="@+id/sprite_3"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:src="@drawable/vert"
             android:layout_margin="20dp"
-            android:contentDescription="Vert"/>
+            android:contentDescription="Vert" />
 
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/back"
-        android:layout_width="150dp"
-        android:layout_height="50dp"
-        android:text="Retour"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
 
-        android:textSize="12sp"
-        android:background="@drawable/rounded_button"
-        />
+        <Button
+            android:id="@+id/start"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:layout_marginRight="16dp"
+            android:background="@drawable/rounded_button"
+            android:text="Start"
+            android:fontFamily="@font/press2start"
+            android:layout_marginEnd="16dp" />
+
+        <Button
+            android:id="@+id/back"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:background="@drawable/rounded_button"
+            android:text="Retour"
+            android:fontFamily="@font/press2start"/>
+
+    </LinearLayout>
 
 </LinearLayout>

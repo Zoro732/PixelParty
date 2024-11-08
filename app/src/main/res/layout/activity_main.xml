@@ -14,8 +14,9 @@
         android:layout_centerHorizontal="true"
         android:background="@drawable/rounded_button"
         android:text="Solo"
-
+        android:fontFamily="@font/press2start"
         android:textSize="12sp"
+        android:layout_marginRight="300dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -27,10 +28,10 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginLeft="450dp"
+        android:layout_marginLeft="300dp"
         android:background="@drawable/rounded_button"
         android:text="Mini Jeux"
-
+        android:fontFamily="@font/press2start"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -47,7 +48,7 @@
         android:layout_marginBottom="300dp"
         android:background="@drawable/rounded_button"
         android:text="Option"
-
+        android:fontFamily="@font/press2start"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"

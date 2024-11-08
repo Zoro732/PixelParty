@@ -11,6 +11,7 @@
         android:layout_width="150dp"
         android:layout_height="50dp"
         android:text="Retour"
+        android:fontFamily="@font/press2start"
         android:layout_marginBottom="300dp"
         android:textSize="12sp"
         android:layout_centerHorizontal="true"
@@ -31,7 +32,7 @@
         android:layout_marginRight="450dp"
         android:background="@drawable/rounded_button"
         android:text="Labyrinth"
-
+        android:fontFamily="@font/press2start"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -47,7 +48,7 @@
         android:layout_marginRight="50dp"
         android:background="@drawable/rounded_button"
         android:text="Run"
-
+        android:fontFamily="@font/press2start"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
