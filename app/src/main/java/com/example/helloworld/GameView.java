@@ -2,16 +2,20 @@ package com.example.helloworld;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;  // Importer Paint
 import android.graphics.Typeface;
 import android.os.CountDownTimer;
 import android.os.Vibrator;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.SurfaceView;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.core.content.res.ResourcesCompat;
 
 import java.util.Random;
 
@@ -27,12 +31,12 @@ public class GameView extends SurfaceView implements Runnable {
     private float speedX = 0; // Vitesse sur l'axe X
     private float speedY = 0; // Vitesse sur l'axe Y
     private float friction = 0.98f; // Coefficient de friction pour ralentir la boule
-    private float accelerationFactor = 2.0f; // Facteur d'accélération pour le gyroscope
+    private float accelerationFactor = 2f; // Facteur d'accélération pour le gyroscope
 
     // Attributs pour la largeur et la hauteur de l'écran
     private int screenWidth, screenHeight;
-    private static final int GRID_ROWS = 10; // Nombre de lignes
     private static final int GRID_COLS = 15;// Nombre de colonnes
+    private static final int GRID_ROWS = 9; // Nombre de lignes
     private float goalX; // Position X du point d'arrivée
     private float goalY; // Position Y du point d'arrivée
     private float goalRadius = 30; // Rayon du point d'arrivée
@@ -48,19 +52,23 @@ public class GameView extends SurfaceView implements Runnable {
             {1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1},
             {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
     };
-    private int tileSize_W, tileSize_H;
+
+
+    private float tileSize_W, tileSize_H;
     private Vibrator vibrator;
     private boolean goalReached = false; // Drapeau pour suivre l'état de la collision avec le point d'arrivée
     private CountDownTimer countDownTimer;
     private int DefaultUserPosition[] = {10,10};
-    private int defaultTimerValue = 40; // Valeur par défaut du compteur
+    private int defaultTimerValue = 80; // Valeur par défaut du compteur
     private int timerValue = defaultTimerValue; // Valeur du compteur
-    private Paint timerPaint; // Objet Paint pour le compteur
+    private Paint timerPaint = new Paint(); // Objet Paint pour le compteur
+
+    private Bitmap tileImagePath;
+    private Bitmap tileImageWall;
 
     public GameView(Context context) {
         super(context);
         vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-
         // Obtenir les dimensions de l'écran
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
         screenWidth = displayMetrics.widthPixels; // Largeur de l'écran
@@ -69,8 +77,13 @@ public class GameView extends SurfaceView implements Runnable {
         // Position initiale de la boule (centrée)
         ballX = DefaultUserPosition[0];
         ballY = DefaultUserPosition[1];
-        tileSize_W = screenWidth / GRID_COLS;
-        tileSize_H = screenHeight / GRID_ROWS;
+        tileSize_W = (float) screenWidth / GRID_COLS;
+        tileSize_H = (float)  screenHeight / GRID_ROWS;
+        Log.d("DEBUG", "screen height " + (float) screenHeight + "tile heigh by row number = ");
+
+        tileImagePath = resizeBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.blank_tile), tileSize_W);
+        tileImageWall = resizeBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.simple_wall), tileSize_W);
+
 
         // Initialiser l'objet Paint
         ball_color = new Paint();
@@ -96,12 +109,6 @@ public class GameView extends SurfaceView implements Runnable {
         goalX = arrivalPoints[randomIndex][0];
         goalY = arrivalPoints[randomIndex][1];
 
-        // Initialiser le compteur
-        timerPaint = new Paint();
-        timerPaint.setColor(Color.WHITE); // Couleur du texte
-        timerPaint.setTextSize(50); // Taille de la police
-//        Typeface typeface = Typeface.createFromAsset(context.getAssets(), "font/press_start_2p.ttf");
-//        timerPaint.setTypeface(typeface); // Charger la police
         startTimer(); // Démarrer le compteur
 
     }
@@ -138,7 +145,6 @@ public class GameView extends SurfaceView implements Runnable {
         }.start();
     }
 
-
     // Méthode pour charger un nouveau spritesheet
     @Override
     public void run() {
@@ -147,27 +153,64 @@ public class GameView extends SurfaceView implements Runnable {
             sleep();
         }
     }
+    private Bitmap resizeBitmap(Bitmap originalBitmap, float newWidth) {
+        int originalWidth = originalBitmap.getWidth();
+        int originalHeight = originalBitmap.getHeight();
+        float aspectRatio = (float) originalHeight / (float) originalWidth;
+        int newHeight = Math.round(newWidth * aspectRatio); // Calculer la nouvelle hauteur pour garder le ratio
+        return Bitmap.createScaledBitmap(originalBitmap, (int) tileSize_W, (int) tileSize_H, false);
+    }
+
+    private Bitmap rotateBitmap(Bitmap originalBitmap, float degrees) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(degrees, originalBitmap.getWidth() / 2f, originalBitmap.getHeight() / 2f); // Pivoter autour du centre
+        return Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.getWidth(), originalBitmap.getHeight(), matrix, true);
+    }
 
     private void draw() {
         if (getHolder().getSurface().isValid()) {
             Canvas canvas = getHolder().lockCanvas();
             canvas.drawColor(Color.BLACK); // Fond noir
-            // Dessiner les obstacles
+
+            // Dessiner les tuiles en fonction de mapSprite
             for (int y = 0; y < map.length; y++) {
                 for (int x = 0; x < map[y].length; x++) {
-                    if (map[y][x] == 1) {
-                        // Dessiner un obstacle
-                        canvas.drawRect(x * tileSize_W, y * tileSize_H, (x + 1) * tileSize_W, (y + 1) * tileSize_H, obstacle_color);
+                    int tileValue = map[y][x]; // Récupérer la valeur de la tuile
+
+                    // Gestion des différents cas pour chaque valeur de la tuile
+                    switch (tileValue) {
+                        case 0:
+                            // Dessiner l'image PNG redimensionnée pour les tuiles '0'
+                            canvas.drawBitmap(tileImagePath, x * tileSize_W, y * tileSize_H, null);
+                            break;
+
+                        case 1:
+                            // Dessiner un obstacle
+                            canvas.drawBitmap(tileImageWall, x * tileSize_W, y * tileSize_H, null);
+                            break;
+
+                        default:
+                            // Si la valeur n'est pas définie, on peut choisir de dessiner un carré par défaut
+                            break;
                     }
                 }
             }
+
+
             // Dessiner la boule
             canvas.drawCircle(ballX, ballY, ballRadius, ball_color); // Boule en bleu
 
             // Dessiner le point d'arrivée
             canvas.drawCircle(goalX, goalY, goalRadius, end_color); // Point d'arrivée en vert
 
-            canvas.drawText( "" + timerValue, screenWidth - 200, screenHeight/2, timerPaint); // Position du texte
+            // Charger une police personnalisée
+            Typeface customFont = ResourcesCompat.getFont(getContext(), R.font.press_start);
+            timerPaint.setTypeface(customFont);
+            timerPaint.setTextSize(50); // Ajustez la taille du texte
+            timerPaint.setColor(Color.WHITE); // Ajustez la couleur du texte
+
+            // Dessiner le texte avec la nouvelle police
+            canvas.drawText("" + timerValue, screenWidth - 200, screenHeight / 2, timerPaint); // Position du texte
 
             getHolder().unlockCanvasAndPost(canvas);
         }
