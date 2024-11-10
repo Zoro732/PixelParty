@@ -41,6 +41,15 @@ public class MinijeuxActivity extends AppCompatActivity {
             }
         });*/
 
+        Button taquin = findViewById(R.id.taquin);
+        taquin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MinijeuxActivity.this, TaquinActivity.class);
+                startActivity(intent);
+            }
+        });
+
         hideNavigationBar();
     }
 

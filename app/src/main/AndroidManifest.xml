@@ -18,25 +18,22 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".PvpActivity"
-            android:screenOrientation="sensorLandscape">
-        </activity>
+
         <activity android:name=".OptionActivity"
             android:screenOrientation="sensorLandscape">
         </activity>
         <activity android:name=".MinijeuxActivity"
             android:screenOrientation="sensorLandscape">
         </activity>
-        <activity android:name=".RejoindreActivity"
-            android:screenOrientation="sensorLandscape">
-        </activity>
-        <activity android:name=".CreerActivity"
-            android:screenOrientation="sensorLandscape">
-        </activity>
+
         <activity android:name=".SpriteActivity"
             android:screenOrientation="sensorLandscape">
         </activity>
         <activity android:name=".LabyActivity"
+            android:screenOrientation="sensorLandscape">
+        </activity>
+
+        <activity android:name=".TaquinActivity"
             android:screenOrientation="sensorLandscape">
         </activity>
     </application>

@@ -12,4 +12,14 @@
         <!-- Status bar color. -->
         <!-- Customize your theme here. -->
     </style>
+    <!-- Tile style definition for tiles or similar elements -->
+    <style name="TileStyle">
+        <item name="android:layout_width">80dp</item> <!-- Largeur des tuiles -->
+        <item name="android:layout_height">80dp</item> <!-- Hauteur des tuiles -->
+        <item name="android:background">?attr/colorPrimary</item> <!-- Couleur de fond de la tuile, ajustée à la couleur primaire -->
+        <item name="android:padding">8dp</item> <!-- Espacement intérieur -->
+        <item name="android:textColor">?attr/colorOnPrimary</item> <!-- Couleur du texte sur le fond primaire -->
+        <item name="android:textSize">24sp</item> <!-- Taille du texte -->
+        <item name="android:gravity">center</item> <!-- Centrer le texte -->
+    </style>
 </resources>
