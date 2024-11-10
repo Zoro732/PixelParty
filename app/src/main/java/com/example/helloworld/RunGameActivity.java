@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
 
-public class MaainActivity extends AppCompatActivity {
+public class RunGameActivity extends AppCompatActivity {
 
     private GameRunView gameView;
 
@@ -16,7 +16,7 @@ public class MaainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         hideNavigationBar();
-        setContentView(R.layout.activity_maain);
+        setContentView(R.layout.activity_rungame);
         // Get instance of Vibrator from current Context
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 

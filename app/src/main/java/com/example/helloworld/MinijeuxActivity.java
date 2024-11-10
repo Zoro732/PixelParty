@@ -32,14 +32,14 @@ public class MinijeuxActivity extends AppCompatActivity {
             }
         });
 
-        /*Button run = findViewById(R.id.run);
+        Button run = findViewById(R.id.run);
         run.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MinijeuxActivity.this, RunActivity.class);
+                Intent intent = new Intent(MinijeuxActivity.this, RunGameActivity.class);
                 startActivity(intent);
             }
-        });*/
+        });
 
         Button taquin = findViewById(R.id.taquin);
         taquin.setOnClickListener(new View.OnClickListener() {
