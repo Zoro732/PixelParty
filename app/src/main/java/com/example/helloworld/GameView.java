@@ -3,12 +3,11 @@ package com.example.helloworld;
 import static android.content.Context.MODE_PRIVATE;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.os.CountDownTimer;
 import android.os.Vibrator;
@@ -41,7 +40,15 @@ public class GameView extends SurfaceView implements Runnable {
     private float goalRadius = 30; // Rayon du point d'arrivée
     private int[][] map = {
             {0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-            // ... (ton tableau de carte continue ici)
+            {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0},
+            {1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1},
+            {1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1},
+            {1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1},
+            {1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1},
+            {1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0, 1, 1},
+            {1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0},
+            {1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1},
+            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
     };
     private int tileSize_W, tileSize_H;
     private Vibrator vibrator;
@@ -51,6 +58,10 @@ public class GameView extends SurfaceView implements Runnable {
     private int defaultTimerValue = 40; // Valeur par défaut du compteur
     private int timerValue = defaultTimerValue;
     private String spriteSelection;
+    private Paint timerPaint = new Paint(); // Objet Paint pour le compteur
+
+    private Bitmap tileImagePath;
+    private Bitmap tileImageWall;
     // Constructeur de la vue du jeu
     public GameView(Context context, String selection) {
         super(context);
@@ -67,6 +78,9 @@ public class GameView extends SurfaceView implements Runnable {
         spriteY = DefaultUserPosition[1];
         tileSize_W = screenWidth / GRID_COLS;
         tileSize_H = screenHeight / GRID_ROWS;
+
+        tileImagePath = resizeBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.blank_tile), tileSize_W);
+        tileImageWall = resizeBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.simple_wall), tileSize_W);
 
         // Charger l'image du sprite à partir du nom "selection" (sans l'extension)
         loadSpriteImage(context, spriteSelection);
@@ -103,6 +117,20 @@ public class GameView extends SurfaceView implements Runnable {
         }
     }
 
+    private Bitmap resizeBitmap(Bitmap originalBitmap, float newWidth) {
+        int originalWidth = originalBitmap.getWidth();
+        int originalHeight = originalBitmap.getHeight();
+        float aspectRatio = (float) originalHeight / (float) originalWidth;
+        int newHeight = Math.round(newWidth * aspectRatio); // Calculer la nouvelle hauteur pour garder le ratio
+        return Bitmap.createScaledBitmap(originalBitmap, (int) tileSize_W, (int) tileSize_H, false);
+    }
+
+    private Bitmap rotateBitmap(Bitmap originalBitmap, float degrees) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(degrees, originalBitmap.getWidth() / 2f, originalBitmap.getHeight() / 2f); // Pivoter autour du centre
+        return Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.getWidth(), originalBitmap.getHeight(), matrix, true);
+    }
+
     private void draw() {
         if (getHolder().getSurface().isValid()) {
             Canvas canvas = getHolder().lockCanvas();
@@ -110,9 +138,23 @@ public class GameView extends SurfaceView implements Runnable {
             // Dessiner les obstacles
             for (int y = 0; y < map.length; y++) {
                 for (int x = 0; x < map[y].length; x++) {
-                    if (map[y][x] == 1) {
-                        // Dessiner un obstacle
-                        canvas.drawRect(x * tileSize_W, y * tileSize_H, (x + 1) * tileSize_W, (y + 1) * tileSize_H, obstacle_color);
+                    int tileValue = map[y][x]; // Récupérer la valeur de la tuile
+
+                    // Gestion des différents cas pour chaque valeur de la tuile
+                    switch (tileValue) {
+                        case 0:
+                            // Dessiner l'image PNG redimensionnée pour les tuiles '0'
+                            canvas.drawBitmap(tileImagePath, x * tileSize_W, y * tileSize_H, null);
+                            break;
+
+                        case 1:
+                            // Dessiner un obstacle
+                            canvas.drawBitmap(tileImageWall, x * tileSize_W, y * tileSize_H, null);
+                            break;
+
+                        default:
+                            // Si la valeur n'est pas définie, on peut choisir de dessiner un carré par défaut
+                            break;
                     }
                 }
             }
