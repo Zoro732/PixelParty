@@ -22,7 +22,7 @@ public class Obstacle {
     }
 
     public void update() {
-        y += (int) GameView.obstacleSpeed;
+        y += (int) GameRunView.obstacleSpeed;
     }
 
     public Bitmap getImage() {

@@ -29,7 +29,7 @@ public class Coin {
         }
 
         // Déplace la pièce vers le bas (utiliser obstacleSpeed pour la vitesse)
-        y += (int) GameView.obstacleSpeed; // On déplace la pièce selon la vitesse
+        y += (int) GameRunView.obstacleSpeed; // On déplace la pièce selon la vitesse
         // Si la pièce dépasse l'écran, elle doit être réinitialisée
     }
 

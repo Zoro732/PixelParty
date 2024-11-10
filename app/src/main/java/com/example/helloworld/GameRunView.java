@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class GameView extends SurfaceView implements Runnable {
+public class GameRunView extends SurfaceView implements Runnable {
     private Thread gameThread;
     private boolean isPlaying;
     private int screenWidth;
@@ -51,7 +51,7 @@ public class GameView extends SurfaceView implements Runnable {
     private boolean hasVibratedForJump = false;
 
 
-    public GameView(Context context, int screenWidth, int screenHeight) {
+    public GameRunView(Context context, int screenWidth, int screenHeight) {
         super(context);
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;

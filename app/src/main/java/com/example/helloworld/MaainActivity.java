@@ -7,21 +7,21 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
 
-public class MainActivity extends AppCompatActivity {
+public class MaainActivity extends AppCompatActivity {
 
-    private GameView gameView;
+    private GameRunView gameView;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         hideNavigationBar();
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_maain);
         // Get instance of Vibrator from current Context
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         // Initialiser GameView avec la largeur et hauteur de l'écran
-        gameView = new GameView(this, getWindowManager().getDefaultDisplay().getWidth(),
+        gameView = new GameRunView(this, getWindowManager().getDefaultDisplay().getWidth(),
                 getWindowManager().getDefaultDisplay().getHeight());
         setContentView(gameView);
 
