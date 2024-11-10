@@ -15,7 +15,7 @@
 
         <!-- Activité principale configurée en orientation paysage uniquement -->
         <activity
-            android:name=".MainActivity"
+            android:name=".TaquinActivity"
             android:screenOrientation="sensorLandscape"> <!-- Rotation activée uniquement pour paysage -->
 
             <intent-filter>
