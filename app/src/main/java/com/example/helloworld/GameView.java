@@ -1,18 +1,24 @@
 package com.example.helloworld;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
-import android.graphics.Paint;  // Importer Paint
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.os.CountDownTimer;
 import android.os.Vibrator;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.MotionEvent;
+import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.core.content.res.ResourcesCompat;
@@ -23,52 +29,60 @@ public class GameView extends SurfaceView implements Runnable {
 
     private Thread gameThread;
     private boolean isPlaying;
-    private Paint ball_color; // Objet Paint pour dessiner
-    private Paint obstacle_color; // Objet Paint pour dessiner
-    private Paint end_color;
-    private float ballX,ballY;  // Position initiale de la boule
-    private float ballRadius = 20; // Rayon de la boule
+    private float ballX, ballY;  // Position initiale de la boule
+    private float ballRadius = 60; // Rayon de la boule
     private float speedX = 0; // Vitesse sur l'axe X
     private float speedY = 0; // Vitesse sur l'axe Y
     private float friction = 0.98f; // Coefficient de friction pour ralentir la boule
-    private float accelerationFactor = 2f; // Facteur d'accélération pour le gyroscope
+    private float accelerationFactor = 0.3f; // Facteur d'accélération pour le gyroscope
 
+    private Paint paint;
     // Attributs pour la largeur et la hauteur de l'écran
-    private int screenWidth, screenHeight;
+    private int screenWidth, screenHeight, goalX, goalY;
     private static final int GRID_COLS = 15;// Nombre de colonnes
     private static final int GRID_ROWS = 9; // Nombre de lignes
-    private float goalX; // Position X du point d'arrivée
-    private float goalY; // Position Y du point d'arrivée
-    private float goalRadius = 30; // Rayon du point d'arrivée
+    private float goalRadius = 45; // Rayon du point d'arrivée
     private int[][] map = {
-            {0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-            {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0},
-            {1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1},
+            {0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+            {0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0},
+            {1, 0, 0, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1},
             {1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1},
-            {1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1},
-            {1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1},
+            {1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1},
+            {1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1},
             {1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0, 1, 1},
             {1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0},
             {1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1},
             {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
     };
 
-
     private float tileSize_W, tileSize_H;
     private Vibrator vibrator;
     private boolean goalReached = false; // Drapeau pour suivre l'état de la collision avec le point d'arrivée
     private CountDownTimer countDownTimer;
-    private int DefaultUserPosition[] = {10,10};
+    private int DefaultUserPosition[] = {10, 10};
     private int defaultTimerValue = 80; // Valeur par défaut du compteur
-    private int timerValue = defaultTimerValue; // Valeur du compteur
+    private long timerValue = defaultTimerValue; // Valeur du compteur
     private Paint timerPaint = new Paint(); // Objet Paint pour le compteur
 
     private Bitmap tileImagePath;
     private Bitmap tileImageWall;
 
+    private Bitmap keyImage;
+    private Goal goal;
+
+    private Player player;
+
+    private Canvas canvas = new Canvas();
+
+    private boolean isPaused = false; // État du jeu
+
+    private Paint timerTextPaint = new Paint();
+    private boolean isTimerRunning = false; // Flag to track timer state
+
     public GameView(Context context) {
         super(context);
         vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+
         // Obtenir les dimensions de l'écran
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
         screenWidth = displayMetrics.widthPixels; // Largeur de l'écran
@@ -78,27 +92,35 @@ public class GameView extends SurfaceView implements Runnable {
         ballX = DefaultUserPosition[0];
         ballY = DefaultUserPosition[1];
         tileSize_W = (float) screenWidth / GRID_COLS;
-        tileSize_H = (float)  screenHeight / GRID_ROWS;
-        Log.d("DEBUG", "screen height " + (float) screenHeight + "tile heigh by row number = ");
+        tileSize_H = (float) screenHeight / GRID_ROWS;
 
         tileImagePath = resizeBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.blank_tile), tileSize_W);
         tileImageWall = resizeBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.simple_wall), tileSize_W);
+        keyImage = BitmapFactory.decodeResource(getResources(), R.drawable.key);
+
+        randomGoalPositionning();
 
 
-        // Initialiser l'objet Paint
-        ball_color = new Paint();
-        obstacle_color = new Paint();
-        end_color = new Paint();
+        // Charger l'image du joueur et initialiser l'objet Player
+        Bitmap playerSpriteSheet = BitmapFactory.decodeResource(getResources(), R.drawable.player_move);
+        player = new Player(DefaultUserPosition[0], DefaultUserPosition[1], ballRadius, playerSpriteSheet);
 
-        end_color.setColor(Color.GREEN); // Définir la couleur du point d'arrivée
-        obstacle_color.setColor(Color.BLUE); // Définir la couleur des obstacles
-        ball_color.setColor(Color.RED); // Définir la couleur de la boule
+        paint = new Paint();
 
+        // Charger une police personnalisée
+        Typeface customFont = ResourcesCompat.getFont(getContext(), R.font.press_start);
+        paint.setTypeface(customFont);
+
+        startTimer(timerValue); // Démarrer le compteur
+
+    }
+
+    private Goal randomGoalPositionning() {
         // Tableau des coordonnées de points d'arrivée
         int[][] arrivalPoints = {
-                {screenWidth / 2, screenHeight - 200},  // Point d'arrivée à la position (2, 3)
-                {screenWidth - 100, screenHeight - 260},  // Point d'arrivée à la position (5, 6)
-                {screenWidth - 100, (int) (screenHeight*0.15)},  // Point d'arrivée à la position (7, 2)
+                calculateArrivalPoint(7, 8, (int) goalRadius),  // Point d'arrivée à la position (8, 9)
+                calculateArrivalPoint(14, 1, (int) goalRadius), // Point d'arrivée à la position (15, 11)
+                calculateArrivalPoint(14, 7, (int) goalRadius)  // Point d'arrivée à la position (15, 8)
         };
 
         // Sélectionner un index aléatoire pour le point d'arrivée
@@ -108,111 +130,125 @@ public class GameView extends SurfaceView implements Runnable {
         // Attribuer les coordonnées à goalX et goalY en utilisant le même index
         goalX = arrivalPoints[randomIndex][0];
         goalY = arrivalPoints[randomIndex][1];
-
-        startTimer(); // Démarrer le compteur
-
+        goal = new Goal(goalX, goalY, goalRadius, keyImage);
+        // Creating animation with key
+        return goal;
     }
 
-    private void startTimer() {
-        countDownTimer = new CountDownTimer(timerValue * 1000, 1000) { // Compte à rebours de timerValue secondes
-            @Override
-            public void onTick(long millisUntilFinished) {
-                timerValue--; // Décrémenter la valeur du compteur chaque seconde
-            }
+    private int[] calculateArrivalPoint(int xMultiplier, int yMultiplier, int goalRadius) {
+        int x = (int) (tileSize_W * xMultiplier) + goalRadius;
+        int y = (int) (tileSize_H * yMultiplier) + goalRadius;
+        return new int[]{x, y};
+    }
 
-            @Override
-            public void onFinish() {
-                timerValue = 0; // La valeur finale
-                ballX = DefaultUserPosition[0];
-                ballY = DefaultUserPosition[1];
-                timerValue = defaultTimerValue;
-
-                long[] pattern = {0, 200, 100, 300}; // 0ms avant de commencer, 200ms de vibration, 100ms de pause, 200ms de vibration
-
-                // Appliquer le motif de vibration
-                if (vibrator != null) {
-                    vibrator.vibrate(pattern, -1); // -1 pour ne pas répéter le motif
+    private void startTimer(long initalTime) {
+        if (!isTimerRunning) {
+            isTimerRunning = true;
+            countDownTimer = new CountDownTimer(initalTime * 1000, 1000) { // Compte à rebours de timerValue secondes
+                public void onTick(long millisUntilFinished) {
+                    timerValue = millisUntilFinished / 1000;
+                    invalidate(); // Force redraw//
                 }
-                startTimer();
-                // Vous pouvez ajouter ici un code pour gérer la fin du jeu si nécessaire
-                Toast.makeText(getContext(), "Temps écoulé !", Toast.LENGTH_SHORT).show();
-                try {
-                    Thread.sleep(100); // Délai de 100 millisecondes
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+
+                public void onFinish() {
+                    ballX = DefaultUserPosition[0];
+                    ballY = DefaultUserPosition[1];
+                    timerValue = defaultTimerValue;
+
+                    isTimerRunning = false;
+
+                    long[] pattern = {0, 200, 100, 300}; // 0ms avant de commencer, 200ms de vibration, 100ms de pause, 200ms de vibration
+
+                    // Appliquer le motif de vibration
+                    if (vibrator != null) {
+                        vibrator.vibrate(pattern, -1); // -1 pour ne pas répéter le motif
+                    }
+                    startTimer(timerValue);
+                    // Vous pouvez ajouter ici un code pour gérer la fin du jeu si nécessaire
+                    Toast.makeText(getContext(), "Temps écoulé !", Toast.LENGTH_SHORT).show();
+                    try {
+                        Thread.sleep(100); // Délai de 100 millisecondes
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
-            }
-        }.start();
+            }.start();
+        }
+
     }
 
     // Méthode pour charger un nouveau spritesheet
     @Override
     public void run() {
-        while (isPlaying) {
-            draw();
-            sleep();
+        while (isPlaying || isPaused) { // Continue running only if playing or just paused
+            if (!isPaused) {
+
+                update(); // Update game state only when not paused
+                draw();
+
+            }
+            sleep();  // Control frame rate
         }
     }
+
+
     private Bitmap resizeBitmap(Bitmap originalBitmap, float newWidth) {
-        int originalWidth = originalBitmap.getWidth();
-        int originalHeight = originalBitmap.getHeight();
-        float aspectRatio = (float) originalHeight / (float) originalWidth;
-        int newHeight = Math.round(newWidth * aspectRatio); // Calculer la nouvelle hauteur pour garder le ratio
         return Bitmap.createScaledBitmap(originalBitmap, (int) tileSize_W, (int) tileSize_H, false);
     }
 
-    private Bitmap rotateBitmap(Bitmap originalBitmap, float degrees) {
-        Matrix matrix = new Matrix();
-        matrix.postRotate(degrees, originalBitmap.getWidth() / 2f, originalBitmap.getHeight() / 2f); // Pivoter autour du centre
-        return Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.getWidth(), originalBitmap.getHeight(), matrix, true);
+    private void update() {
+        if (!isPaused) { // Update animations only if not paused
+            goal.update();
+            player.update();
+        }
     }
 
     private void draw() {
         if (getHolder().getSurface().isValid()) {
-            Canvas canvas = getHolder().lockCanvas();
-            canvas.drawColor(Color.BLACK); // Fond noir
+            canvas = getHolder().lockCanvas();
+            if (isPaused) {
 
-            // Dessiner les tuiles en fonction de mapSprite
-            for (int y = 0; y < map.length; y++) {
-                for (int x = 0; x < map[y].length; x++) {
-                    int tileValue = map[y][x]; // Récupérer la valeur de la tuile
-
-                    // Gestion des différents cas pour chaque valeur de la tuile
-                    switch (tileValue) {
-                        case 0:
-                            // Dessiner l'image PNG redimensionnée pour les tuiles '0'
-                            canvas.drawBitmap(tileImagePath, x * tileSize_W, y * tileSize_H, null);
-                            break;
-
-                        case 1:
-                            // Dessiner un obstacle
-                            canvas.drawBitmap(tileImageWall, x * tileSize_W, y * tileSize_H, null);
-                            break;
-
-                        default:
-                            // Si la valeur n'est pas définie, on peut choisir de dessiner un carré par défaut
-                            break;
+            } else {
+                // Dessiner les tuiles en fonction de mapSprite
+                for (int y = 0; y < map.length; y++) {
+                    for (int x = 0; x < map[y].length; x++) {
+                        int tileValue = map[y][x]; // Récupérer la valeur de la tuile
+                        // Gestion des différents cas pour chaque valeur de la tuile
+                        switch (tileValue) {
+                            case 0:
+                                // Dessiner l'image PNG redimensionnée pour les tuiles '0'
+                                canvas.drawBitmap(tileImagePath, x * tileSize_W, y * tileSize_H, null);
+                                break;
+                            case 1:
+                                // Dessiner un obstacle
+                                canvas.drawBitmap(tileImageWall, x * tileSize_W, y * tileSize_H, null);
+                                break;
+                            default:
+                                // Si la valeur n'est pas définie, on peut choisir de dessiner un carré par défaut
+                                break;
+                        }
                     }
                 }
+
+                // Dessiner le joueur
+                player.draw(canvas, null);
+
+                // Dessiner le point d'arrivée
+                goal.draw(canvas, null);
+
+                // Position de l'icône des settings
+                float imageX = 20; // Position X de l'image
+                float imageY = tileSize_H * 8; // Position Y de l'image
             }
-
-
-            // Dessiner la boule
-            canvas.drawCircle(ballX, ballY, ballRadius, ball_color); // Boule en bleu
-
-            // Dessiner le point d'arrivée
-            canvas.drawCircle(goalX, goalY, goalRadius, end_color); // Point d'arrivée en vert
-
             // Charger une police personnalisée
             Typeface customFont = ResourcesCompat.getFont(getContext(), R.font.press_start);
-            timerPaint.setTypeface(customFont);
-            timerPaint.setTextSize(50); // Ajustez la taille du texte
-            timerPaint.setColor(Color.WHITE); // Ajustez la couleur du texte
-
-            // Dessiner le texte avec la nouvelle police
-            canvas.drawText("" + timerValue, screenWidth - 200, screenHeight / 2, timerPaint); // Position du texte
-
+            // Draw timer text
+            timerTextPaint.setTypeface(customFont); // Assuming customFont is defined elsewhere
+            timerTextPaint.setTextSize(70);
+            timerTextPaint.setColor(Color.WHITE);
+            canvas.drawText("" + timerValue, screenWidth - 200, (float) screenHeight / 1.8f, timerTextPaint);
             getHolder().unlockCanvasAndPost(canvas);
+
         }
     }
 
@@ -228,6 +264,7 @@ public class GameView extends SurfaceView implements Runnable {
         isPlaying = true;
         gameThread = new Thread(this);
         gameThread.start();
+        resumeGame();
     }
 
     public void pause() {
@@ -240,88 +277,92 @@ public class GameView extends SurfaceView implements Runnable {
     }
 
     public void moveBall(float x, float y) {
-        // Mise à jour de la vitesse en fonction du gyroscope
-        speedX += x * accelerationFactor;
-        speedY -= y * accelerationFactor;
+        if (!isPaused) {
 
-        // Appliquer la friction
-        speedX *= friction;
-        speedY *= friction;
+            // Mise à jour de la vitesse en fonction du gyroscope
+            speedX += x * accelerationFactor;
+            speedY -= y * accelerationFactor;
 
-        // Calculer la position potentielle de la boule
-        float newBallX = ballX + speedX;
-        float newBallY = ballY + speedY;
+            // Appliquer la friction
+            speedX *= friction;
+            speedY *= friction;
 
-        // Vérifier les collisions avec les bords de la vue
-        // Limites gauche et droite
-        if (newBallX < ballRadius) {
-            newBallX = ballRadius; // Rester à l'intérieur de la limite gauche
-            speedX = 0; // Réinitialiser la vitesse en X
-        } else if (newBallX > getWidth() - ballRadius) {
-            newBallX = getWidth() - ballRadius; // Rester à l'intérieur de la limite droite
-            speedX = 0; // Réinitialiser la vitesse en X
+            // Calculer la position potentielle du centre de la hitbox
+            float newBallX = ballX + speedX;
+            float newBallY = ballY + speedY;
+
+            // Définir la taille de la hitbox carrée (exemple : 2 * ballRadius pour avoir un carré de côté égal au diamètre de la boule)
+            float hitboxSize = ballRadius;
+
+            // Calculer les coordonnées des bords de la hitbox carrée
+            float leftEdge = newBallX - hitboxSize / 2;
+            float rightEdge = newBallX + hitboxSize / 2;
+            float topEdge = newBallY - hitboxSize / 2;
+            float bottomEdge = newBallY + hitboxSize / 2;
+
+            // Limiter les mouvements pour rester dans les bords de l'écran
+            if (leftEdge < 0) {
+                newBallX = hitboxSize / 2;
+                speedX = 0;
+            } else if (rightEdge > getWidth()) {
+                newBallX = getWidth() - hitboxSize / 2;
+                speedX = 0;
+            }
+
+            if (topEdge < 0) {
+                newBallY = hitboxSize / 2;
+                speedY = 0;
+            } else if (bottomEdge > getHeight()) {
+                newBallY = getHeight() - hitboxSize / 2;
+                speedY = 0;
+            }
+
+            // Convertir les coordonnées des bords de la hitbox en indices de la grille
+            int leftCell = (int) (leftEdge / tileSize_W);
+            int rightCell = (int) (rightEdge / tileSize_W);
+            int topCell = (int) (topEdge / tileSize_H);
+            int bottomCell = (int) (bottomEdge / tileSize_H);
+
+            // Vérifier les collisions pour les coins de la hitbox carrée
+            if ((leftCell >= 0 && leftCell < map[0].length && topCell >= 0 && topCell < map.length && map[topCell][leftCell] == 1) ||
+                    (leftCell >= 0 && leftCell < map[0].length && bottomCell >= 0 && bottomCell < map.length && map[bottomCell][leftCell] == 1) ||
+                    (rightCell >= 0 && rightCell < map[0].length && topCell >= 0 && topCell < map.length && map[topCell][rightCell] == 1) ||
+                    (rightCell >= 0 && rightCell < map[0].length && bottomCell >= 0 && bottomCell < map.length && map[bottomCell][rightCell] == 1)) {
+
+                // Collision détectée, activer la vibration
+                if (vibrator != null) vibrator.vibrate(100);
+
+                // Revenir à la position précédente pour éviter le passage
+                ballX = DefaultUserPosition[0];
+                ballY = DefaultUserPosition[1];
+                speedX = 0;
+                speedY = 0;
+            } else {
+                // Mettre à jour la position si pas de collision
+                ballX = newBallX;
+                ballY = newBallY;
+            }
+
+            // Mettre à jour la position de l'image du joueur
+            player.setPosition(ballX, ballY);
+
+            invalidate(); // Redessiner la vue
+            checkCollisionWithGoal();
         }
 
-        // Limites haut et bas
-        if (newBallY < ballRadius) {
-            newBallY = ballRadius; // Rester à l'intérieur de la limite supérieure
-            speedY = 0; // Réinitialiser la vitesse en Y
-        } else if (newBallY > getHeight() - ballRadius) {
-            newBallY = getHeight() - ballRadius; // Rester à l'intérieur de la limite inférieure
-            speedY = 0; // Réinitialiser la vitesse en Y
-        }
-
-        // Mise à jour de la position de la boule
-        ballX = newBallX;
-        ballY = newBallY;
-
-        // Calculer les coordonnées des bords de la boule
-        float leftEdge = newBallX - ballRadius;
-        float rightEdge = newBallX + ballRadius;
-        float topEdge = newBallY - ballRadius;
-        float bottomEdge = newBallY + ballRadius;
-
-        // Convertir les coordonnées des bords en indices de grille
-        int leftCell = (int) (leftEdge / tileSize_W);
-        int rightCell = (int) (rightEdge / tileSize_W);
-        int topCell = (int) (topEdge / tileSize_H);
-        int bottomCell = (int) (bottomEdge / tileSize_H);
-
-        // Vérifier les collisions avec les cellules de la grille sur chaque bord de la boule
-        if ((leftCell >= 0 && leftCell < map[0].length && topCell >= 0 && topCell < map.length && map[topCell][leftCell] == 1) ||
-                (leftCell >= 0 && leftCell < map[0].length && bottomCell >= 0 && bottomCell < map.length && map[bottomCell][leftCell] == 1) ||
-                (rightCell >= 0 && rightCell < map[0].length && topCell >= 0 && topCell < map.length && map[topCell][rightCell] == 1) ||
-                (rightCell >= 0 && rightCell < map[0].length && bottomCell >= 0 && bottomCell < map.length && map[bottomCell][rightCell] == 1)) {
-
-            // Collision détectée, activer la vibration
-            if (vibrator != null) vibrator.vibrate(100);
-
-            // Revenir à la position précédente pour éviter le passage
-            ballX = DefaultUserPosition[0];
-            ballY = DefaultUserPosition[1];
-            speedX = 0;
-            speedY = 0;
-        } else {
-            // Mettre à jour la position si pas de collision
-            ballX = newBallX;
-            ballY = newBallY;
-        }
-
-        invalidate(); // Redessiner la vue
-        checkCollisionWithGoal();
     }
 
     private void checkCollisionWithGoal() {
         // Calculer la distance entre la boule et le point d'arrivée
-        float dx = ballX - goalX;
-        float dy = ballY - goalY;
+        float dx = player.getX() - goalX;
+        float dy = player.getY() - goalY;
         float distance = (float) Math.sqrt(dx * dx + dy * dy);
 
         // Vérifier si la distance est inférieure ou égale à la somme des rayons
         if (distance <= ballRadius + goalRadius && !goalReached) {
             // Collision détectée
             ballX = DefaultUserPosition[0];
-            ballY = DefaultUserPosition[1] ;
+            ballY = DefaultUserPosition[1];
             timerValue = defaultTimerValue;
             Toast.makeText(getContext(), "Arrivée atteinte !", Toast.LENGTH_SHORT).show();
             try {
@@ -337,6 +378,37 @@ public class GameView extends SurfaceView implements Runnable {
                 vibrator.vibrate(pattern, -1); // -1 pour ne pas répéter le motif
             }
         }
+    }
+
+    void restartGame() {
+        // Réinitialiser les positions et autres paramètres du jeu
+        ballX = DefaultUserPosition[0];
+        ballY = DefaultUserPosition[1];
+        timerValue = defaultTimerValue;
+        invalidate();  // Redessine l'écran pour redémarrer le jeu
+        // Redémarrer d'autres éléments nécessaires comme le joueur, les objectifs, etc.
+        startTimer(timerValue); // Redémarrer le timer
+        randomGoalPositionning();
+        resume(); // Reprendre le jeu
+    }
+
+    void resumeGame() {
+        isPaused = false;  // Reprend le jeu en mettant l'état de pause à false
+        startTimer(timerValue); // Redémarrer le timer
+        invalidate();  // Redessine l'écran pour revenir au jeu normal
+
+    }
+
+    public void pauseGame() {
+        isPaused = true;  // Met le jeu en pause
+        countDownTimer.cancel();
+        isTimerRunning = false; // Reset timer running flag
+        invalidate();  // Redessine l'écran pour afficher le menu de pause
+    }
+
+    void quitGame() {
+        // Cette méthode peut être utilisée pour fermer l'application ou revenir à l'écran principal
+        System.exit(0);  // Arrête l'application
     }
 
 }
