@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.helloworld">
     <uses-permission android:name="android.permission.VIBRATE" />
 
@@ -22,18 +23,26 @@
         <activity android:name=".OptionActivity"
             android:screenOrientation="sensorLandscape">
         </activity>
-        <activity android:name=".MinijeuxActivity"
+        <activity android:name=".MiniGames_MA"
             android:screenOrientation="sensorLandscape">
         </activity>
 
         <activity android:name=".SpriteActivity"
             android:screenOrientation="sensorLandscape">
         </activity>
-        <activity android:name=".LabyActivity"
+        <activity android:name=".Labyrinthe_MA"
             android:screenOrientation="sensorLandscape">
         </activity>
 
-        <activity android:name=".TaquinActivity"
+        <activity android:name=".Labyrinthe_GameView"
+            tools:ignore="Instantiatable">
+        </activity>
+
+        <activity android:name=".RunGame_MA">
+            
+        </activity>
+
+        <activity android:name=".Taquin_MA"
             android:screenOrientation="sensorLandscape">
         </activity>
     </application>

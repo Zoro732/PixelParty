@@ -4,15 +4,16 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.RectF;
 
-public class Coin {
+public class RunGame_Coin {
     private int x, y;
     private int frameCounter = 0;
     private int currentCoinIndex = 0;
     private final SpriteSheet coinSpriteSheet;
     private Bitmap currentCoinImage;
 
-    public Coin(int x, int y, Bitmap coinSpriteSheet) {
+    public RunGame_Coin(int x, int y, Bitmap coinSpriteSheet) {
         this.x = x;
         this.y = y;
         this.coinSpriteSheet = new SpriteSheet(coinSpriteSheet, 1, 5);
@@ -29,7 +30,7 @@ public class Coin {
         }
 
         // Déplace la pièce vers le bas (utiliser obstacleSpeed pour la vitesse)
-        y += (int) GameRunView.obstacleSpeed; // On déplace la pièce selon la vitesse
+        y += (int) RunGame_GameView.obstacleSpeed; // On déplace la pièce selon la vitesse
         // Si la pièce dépasse l'écran, elle doit être réinitialisée
     }
 
@@ -45,12 +46,12 @@ public class Coin {
         y = -size;
     }
 
-    public Rect getRect() {
+    public RectF getRect() {
         // Assurez-vous que l'image actuelle n'est pas nulle avant d'obtenir sa taille
         if (currentCoinImage == null) {
             currentCoinImage = coinSpriteSheet.getSprite(0, currentCoinIndex);
         }
-        return new Rect(x, y, x + currentCoinImage.getWidth(), y + currentCoinImage.getHeight());
+        return new RectF(x, y, x + currentCoinImage.getWidth(), y + currentCoinImage.getHeight());
     }
 
     public void draw(Canvas canvas, Paint paint) {

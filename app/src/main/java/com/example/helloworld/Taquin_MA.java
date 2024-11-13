@@ -1,17 +1,20 @@
 package com.example.helloworld;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.GridLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.Random;
 
-public class TaquinActivity extends AppCompatActivity {
+public class Taquin_MA extends AppCompatActivity {
 
-    private TextView[][] tiles = new TextView[3][3]; // Nouvelle grille 3x3
-    private TextView[][] solutionTiles = new TextView[3][3]; // Nouvelle grille solution 3x3
+    private final TextView[][] tiles = new TextView[3][3]; // Nouvelle grille 3x3
+    private final TextView[][] solutionTiles = new TextView[3][3]; // Nouvelle grille solution 3x3
     private int emptyRow = 2, emptyCol = 2; // Position initiale de l'espace vide
 
     @Override
@@ -20,7 +23,9 @@ public class TaquinActivity extends AppCompatActivity {
         setContentView(R.layout.activity_taquin);
 
         // Masquer complètement la barre de statut et la barre de navigation
-        hideSystemUI();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            hideSystemUI();
+        }
 
         // Récupérer les GridLayouts pour les tuiles du jeu et de la solution
         GridLayout gridLayout = findViewById(R.id.gridLayout);
@@ -39,9 +44,12 @@ public class TaquinActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        hideSystemUI(); // Assurer que le mode plein écran est réactivé lors de la reprise
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            hideSystemUI(); // Assurer que le mode plein écran est réactivé lors de la reprise
+        }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void hideSystemUI() {
         // Masquer la barre de statut et la barre de navigation en utilisant les options modernes
         View decorView = getWindow().getDecorView();

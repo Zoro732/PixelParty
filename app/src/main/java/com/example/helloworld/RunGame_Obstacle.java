@@ -2,17 +2,19 @@ package com.example.helloworld;
 
 import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.graphics.RectF;
 
 import java.util.Arrays;
 
-public class Obstacle {
-    private final int x;
+public class RunGame_Obstacle {
+    private int x;
     private int y;
     private final boolean isJumpable;
     private final Bitmap image;
+    private int speed;
 
     // Constructeur
-    public Obstacle(int x, int y, Bitmap image, Bitmap[] vehicles) {
+    public RunGame_Obstacle(int x, int y, Bitmap image, Bitmap[] vehicles) {
         this.x = x;
         this.y = y;
         this.image = image; // Store the image
@@ -22,7 +24,7 @@ public class Obstacle {
     }
 
     public void update() {
-        y += (int) GameRunView.obstacleSpeed;
+        y += (int) RunGame_GameView.obstacleSpeed;
     }
 
     public Bitmap getImage() {
@@ -37,8 +39,8 @@ public class Obstacle {
         return isJumpable;
     }
 
-    public Rect getRect() {
-        return new Rect(x, y, x + getImageWidth(), y + getImageHeight());
+    public RectF getRect() {
+        return new RectF(x, y, x + getImageWidth(), y + getImageHeight());
     }
 
     public int getImageHeight() {
@@ -58,5 +60,15 @@ public class Obstacle {
     }
     public float getY() {
         return y;
+    }
+
+
+    public void reset(int screenWidth, int laneX) {
+        // Positionner l'obstacle juste au-dessus de l'écran
+        this.y = -100; // Assure que l'obstacle redémarre juste au-dessus de l'écran
+        this.x = laneX; // Positionner dans une voie aléatoire
+
+        // Réinitialiser la vitesse ou tout autre attribut, si nécessaire
+        this.speed = (int) RunGame_GameView.obstacleSpeed/* vitesse de base, si applicable */;
     }
 }

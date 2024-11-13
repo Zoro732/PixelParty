@@ -1,36 +1,37 @@
 package com.example.helloworld;
 
+import android.annotation.SuppressLint;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.content.Intent;
 import android.widget.Button;
 import android.content.SharedPreferences;
 import android.widget.Toast;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 
-public class SpriteActivity extends AppCompatActivity{
+
+public class SpriteActivity extends AppCompatActivity {
     private ImageView character1, character2, character3;
     private TextView selectedCharacterText;
     private static final String PREFS_NAME = "GamePrefs";
     public String selection;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sprite);
 
         Button back = findViewById(R.id.back);
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(SpriteActivity.this, MainActivity.class);
-                startActivity(intent);
-            }
+        back.setOnClickListener(v -> {
+            Intent intent = new Intent(SpriteActivity.this, MainActivity.class);
+            startActivity(intent);
         });
         // Références aux vues
         character1 = findViewById(R.id.bleu);
@@ -47,22 +48,18 @@ public class SpriteActivity extends AppCompatActivity{
         //Log.i("Sprite", selection);
 
         Button start = findViewById(R.id.start);
-        start.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
+        start.setOnClickListener(v -> {
             saveSelectedSprite(); // Enregistrer le sprite sélectionné
 
-                Intent intent = new Intent(SpriteActivity.this, LabyActivity.class);
-                startActivity(intent);
-                Intent envoi = new Intent(SpriteActivity.this, LabyActivity.class);
-                envoi.putExtra("selection_key", selection); // Envoi de la variable à ActivityB
-                startActivity(envoi);
-            }
+            Intent intent = new Intent(SpriteActivity.this, Labyrinthe_MA.class);
+            startActivity(intent);
+            Intent envoi = new Intent(SpriteActivity.this, Labyrinthe_MA.class);
+            envoi.putExtra("selection_key", selection); // Envoi de la variable à ActivityB
+            startActivity(envoi);
         });
     }
 
-   // Méthode pour enregistrer le sprite sélectionné dans SharedPreferences
+    // Méthode pour enregistrer le sprite sélectionné dans SharedPreferences
     private void saveSelectedSprite() {
         if (selection != null) {
             SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
@@ -76,6 +73,7 @@ public class SpriteActivity extends AppCompatActivity{
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private void selectCharacter(String characterName, ImageView selectedCharacter) {
         // Réinitialiser l'arrière-plan pour tous les personnages
         character1.setBackgroundColor(Color.TRANSPARENT);
@@ -91,7 +89,7 @@ public class SpriteActivity extends AppCompatActivity{
     }
 
 
-
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void hideNavigationBar() {
         getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_HIDE_NAVIGATION

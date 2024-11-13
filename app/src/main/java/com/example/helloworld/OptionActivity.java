@@ -1,11 +1,8 @@
 package com.example.helloworld;
 
 import androidx.appcompat.app.AppCompatActivity;
-import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Vibrator;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -26,12 +23,9 @@ public class OptionActivity extends AppCompatActivity {
         gameFrame = findViewById(R.id.gameFrame);  // Initialiser le FrameLayout pour le changement de thème
 
         // Définir l'écouteur d'événements pour le bouton retour
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(OptionActivity.this, MainActivity.class);
-                startActivity(intent);
-            }
+        backButton.setOnClickListener(v -> {
+            Intent intent = new Intent(OptionActivity.this, MainActivity.class);
+            startActivity(intent);
         });
 
         // Initialiser le Spinner
@@ -49,39 +43,30 @@ public class OptionActivity extends AppCompatActivity {
         TextView languageLabel = findViewById(R.id.languageLabel);
 
         // Changer le thème en clair
-        buttonClair.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                gameFrame.setBackgroundColor(getResources().getColor(R.color.cyan));
-                themeLabel.setTextColor(getResources().getColor(R.color.textCyan));
-                languageLabel.setTextColor(getResources().getColor(R.color.textCyan));
-                languageSpinner.setBackgroundColor(getResources().getColor(R.color.white)); // Fond du spinner
-                ((TextView) languageSpinner.getChildAt(0)).setTextColor(getResources().getColor(R.color.textCyan)); // Couleur du texte du spinner
-            }
+        buttonClair.setOnClickListener(v -> {
+            gameFrame.setBackgroundColor(getResources().getColor(R.color.cyan));
+            themeLabel.setTextColor(getResources().getColor(R.color.textCyan));
+            languageLabel.setTextColor(getResources().getColor(R.color.textCyan));
+            languageSpinner.setBackgroundColor(getResources().getColor(R.color.white)); // Fond du spinner
+            ((TextView) languageSpinner.getChildAt(0)).setTextColor(getResources().getColor(R.color.textCyan)); // Couleur du texte du spinner
         });
 
         // Changer le thème en sombre
-        buttonSombre.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                gameFrame.setBackgroundColor(getResources().getColor(R.color.violet));
-                themeLabel.setTextColor(getResources().getColor(R.color.textViolet));
-                languageLabel.setTextColor(getResources().getColor(R.color.textViolet));
-                languageSpinner.setBackgroundColor(getResources().getColor(R.color.violet)); // Fond du spinner
-                ((TextView) languageSpinner.getChildAt(0)).setTextColor(getResources().getColor(R.color.textViolet)); // Couleur du texte du spinner
-            }
+        buttonSombre.setOnClickListener(v -> {
+            gameFrame.setBackgroundColor(getResources().getColor(R.color.violet));
+            themeLabel.setTextColor(getResources().getColor(R.color.textViolet));
+            languageLabel.setTextColor(getResources().getColor(R.color.textViolet));
+            languageSpinner.setBackgroundColor(getResources().getColor(R.color.violet)); // Fond du spinner
+            ((TextView) languageSpinner.getChildAt(0)).setTextColor(getResources().getColor(R.color.textViolet)); // Couleur du texte du spinner
         });
 
         // Afficher un dialogue "À propos" lorsque le bouton est cliqué
-        aboutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(OptionActivity.this);
-                builder.setTitle("À propos")
-                        .setMessage("PIXEL PARTY\n\nApplication développée par AMAURY GIELEN, ILYES RABAOUY, et KACPER WOJTOWICZ.\n\nVersion 1.0\n\nDescription de l'application : Jeu de plateforme familiale")
-                        .setPositiveButton("OK", null)
-                        .show();
-            }
+        aboutButton.setOnClickListener(v -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(OptionActivity.this);
+            builder.setTitle("À propos")
+                    .setMessage("PIXEL PARTY\n\nApplication développée par AMAURY GIELEN, ILYES RABAOUY, et KACPER WOJTOWICZ.\n\nVersion 1.0\n\nDescription de l'application : Jeu de plateforme familiale")
+                    .setPositiveButton("OK", null)
+                    .show();
         });
     }
 

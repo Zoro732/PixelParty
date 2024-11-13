@@ -7,18 +7,16 @@
     tools:context=".MainActivity">
 
 
-
-
     <Button
         android:id="@+id/gameMode_Solo"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:background="@drawable/rounded_button"
         android:layout_marginRight="250dp"
-        android:text="Solo"
+        android:background="@drawable/rounded_button"
         android:fontFamily="@font/press2start"
+        android:text="Solo"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -33,27 +31,9 @@
         android:layout_centerHorizontal="true"
         android:layout_marginLeft="200dp"
         android:background="@drawable/rounded_button"
+        android:fontFamily="@font/press2start"
         android:text="Mini jeux"
         android:textSize="12sp"
-        android:fontFamily="@font/press2start"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/option"
-        android:layout_width="150dp"
-        android:layout_height="50dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginLeft="700dp"
-        android:layout_marginBottom="300dp"
-        android:layout_marginStart="700dp"
-        android:background="@drawable/rounded_button"
-        android:text="Option"
-        android:textSize="12sp"
-        android:fontFamily="@font/press2start"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -65,7 +45,29 @@
         android:layout_height="match_parent"
         android:background="#FF3DC2EC"
         app:layout_constraintBottom_toBottomOf="parent"
-        tools:layout_editor_absoluteX="-64dp">
+        tools:layout_editor_absoluteX="-90dp">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="80dp"
+            android:fontFamily="@font/press2start"
+            android:text="@string/pixel_party"
+            android:textColor="@color/white"
+            android:textSize="48sp" />
+
+        <Button
+            android:id="@+id/option"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:layout_gravity="end"
+            android:layout_marginBottom="300dp"
+            android:background="@drawable/rounded_button"
+            android:fontFamily="@font/press2start"
+            android:text="@string/option"
+            android:textSize="12sp" />
     </FrameLayout>
 
 

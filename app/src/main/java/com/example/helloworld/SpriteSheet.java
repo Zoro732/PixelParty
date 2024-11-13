@@ -3,11 +3,8 @@ package com.example.helloworld;
 import android.graphics.Bitmap;
 
 public class SpriteSheet {
-    private Bitmap spriteSheet;
-    private int rows;
-    private int cols;
-    private int spriteWidth;
-    private int spriteHeight;
+    private final Bitmap spriteSheet;
+    private final int rows, cols, spriteWidth, spriteHeight;
 
     public SpriteSheet(Bitmap spriteSheet, int rows, int cols) {
         this.spriteSheet = spriteSheet;
@@ -29,13 +26,6 @@ public class SpriteSheet {
 
     public int getCols() {
         return cols;
-    }
-    public int getRows() {
-        return rows;
-    }
-
-    public int getWidth() {
-        return spriteWidth;
     }
 
 }

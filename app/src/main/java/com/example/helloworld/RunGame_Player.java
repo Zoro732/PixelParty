@@ -4,8 +4,9 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.RectF;
 
-public class Player {
+public class RunGame_Player {
     private int y;
     private int currentLane;
     private final int screenHeight;
@@ -22,7 +23,7 @@ public class Player {
     private Bitmap currentSprite;
     private float sizeMultiplier = 3;
 
-    public Player(int screenWidth, int screenHeight, Bitmap runSpriteSheet, Bitmap jumpSpriteSheet) {
+    public RunGame_Player(int screenWidth, int screenHeight, Bitmap runSpriteSheet, Bitmap jumpSpriteSheet) {
         this.screenHeight = screenHeight;
         this.laneWidth = screenWidth / 3;
         this.y = screenHeight - 200;
@@ -116,15 +117,15 @@ public class Player {
         return y - 300;
     }
 
-    public Rect getRect() {
+    public RectF getRectF() {
         if (currentSprite != null) {
             int hitboxSize = 100; // Set the desired hitbox size
             int hitboxX = (int) (getX() + (currentSprite.getWidth() * sizeMultiplier - hitboxSize) / 2); // Center horizontally
             int hitboxY = (int) (getY() + (currentSprite.getHeight() * sizeMultiplier - hitboxSize) / 2); // Center vertically
-            return new Rect(hitboxX, hitboxY, hitboxX + hitboxSize, hitboxY + hitboxSize);
+            return new RectF(hitboxX, hitboxY, hitboxX + hitboxSize, hitboxY + hitboxSize);
         } else {
             // Handle the case where currentSprite is null (e.g., return a default rectangle)
-            return new Rect(0, 0, 0, 0);
+            return new RectF(0, 0, 0, 0);
         }
     }
 

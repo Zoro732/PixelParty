@@ -18,30 +18,21 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Button gameMode_Solo = findViewById(R.id.gameMode_Solo);
-        gameMode_Solo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, SpriteActivity.class);
-                startActivity(intent);
-            }
+        gameMode_Solo.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, SpriteActivity.class);
+            startActivity(intent);
         });
 
         Button mini_jeux = findViewById(R.id.mini_jeux);
-        mini_jeux.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, MinijeuxActivity.class);
-                startActivity(intent);
-            }
+        mini_jeux.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, MiniGames_MA.class);
+            startActivity(intent);
         });
 
         Button option = findViewById(R.id.option);
-        option.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, OptionActivity.class);
-                startActivity(intent);
-            }
+        option.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, OptionActivity.class);
+            startActivity(intent);
         });
 
         hideNavigationBar();
