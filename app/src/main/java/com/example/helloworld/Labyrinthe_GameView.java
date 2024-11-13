@@ -1,31 +1,23 @@
 package com.example.helloworld;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.os.CountDownTimer;
 import android.os.Vibrator;
 import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.MotionEvent;
-import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.core.content.res.ResourcesCompat;
 
 import java.util.Random;
 
-public class GameView extends SurfaceView implements Runnable {
+public class Labyrinthe_GameView extends SurfaceView implements Runnable {
 
     private Thread gameThread;
     private boolean isPlaying;
@@ -34,7 +26,7 @@ public class GameView extends SurfaceView implements Runnable {
     private float speedX = 0; // Vitesse sur l'axe X
     private float speedY = 0; // Vitesse sur l'axe Y
     private float friction = 0.98f; // Coefficient de friction pour ralentir la boule
-    private float accelerationFactor = 0.3f; // Facteur d'accélération pour le gyroscope
+    private float accelerationFactor = 2f; // Facteur d'accélération pour le gyroscope
 
     private Paint paint;
     // Attributs pour la largeur et la hauteur de l'écran
@@ -68,9 +60,9 @@ public class GameView extends SurfaceView implements Runnable {
     private Bitmap tileImageWall;
 
     private Bitmap keyImage;
-    private Goal goal;
+    private Labyrinthe_Goal labyrintheGoal;
 
-    private Player player;
+    private Labyrinthe_Player labyrinthePlayer;
 
     private Canvas canvas = new Canvas();
 
@@ -79,7 +71,7 @@ public class GameView extends SurfaceView implements Runnable {
     private Paint timerTextPaint = new Paint();
     private boolean isTimerRunning = false; // Flag to track timer state
 
-    public GameView(Context context) {
+    public Labyrinthe_GameView(Context context) {
         super(context);
         vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
 
@@ -103,7 +95,7 @@ public class GameView extends SurfaceView implements Runnable {
 
         // Charger l'image du joueur et initialiser l'objet Player
         Bitmap playerSpriteSheet = BitmapFactory.decodeResource(getResources(), R.drawable.player_move);
-        player = new Player(DefaultUserPosition[0], DefaultUserPosition[1], ballRadius, playerSpriteSheet);
+        labyrinthePlayer = new Labyrinthe_Player(DefaultUserPosition[0], DefaultUserPosition[1], ballRadius, playerSpriteSheet);
 
         paint = new Paint();
 
@@ -115,7 +107,7 @@ public class GameView extends SurfaceView implements Runnable {
 
     }
 
-    private Goal randomGoalPositionning() {
+    private Labyrinthe_Goal randomGoalPositionning() {
         // Tableau des coordonnées de points d'arrivée
         int[][] arrivalPoints = {
                 calculateArrivalPoint(7, 8, (int) goalRadius),  // Point d'arrivée à la position (8, 9)
@@ -130,9 +122,9 @@ public class GameView extends SurfaceView implements Runnable {
         // Attribuer les coordonnées à goalX et goalY en utilisant le même index
         goalX = arrivalPoints[randomIndex][0];
         goalY = arrivalPoints[randomIndex][1];
-        goal = new Goal(goalX, goalY, goalRadius, keyImage);
+        labyrintheGoal = new Labyrinthe_Goal(goalX, goalY, goalRadius, keyImage);
         // Creating animation with key
-        return goal;
+        return labyrintheGoal;
     }
 
     private int[] calculateArrivalPoint(int xMultiplier, int yMultiplier, int goalRadius) {
@@ -198,8 +190,8 @@ public class GameView extends SurfaceView implements Runnable {
 
     private void update() {
         if (!isPaused) { // Update animations only if not paused
-            goal.update();
-            player.update();
+            labyrintheGoal.update();
+            labyrinthePlayer.update();
         }
     }
 
@@ -231,10 +223,10 @@ public class GameView extends SurfaceView implements Runnable {
                 }
 
                 // Dessiner le joueur
-                player.draw(canvas, null);
+                labyrinthePlayer.draw(canvas, null);
 
                 // Dessiner le point d'arrivée
-                goal.draw(canvas, null);
+                labyrintheGoal.draw(canvas, null);
 
                 // Position de l'icône des settings
                 float imageX = 20; // Position X de l'image
@@ -344,7 +336,7 @@ public class GameView extends SurfaceView implements Runnable {
             }
 
             // Mettre à jour la position de l'image du joueur
-            player.setPosition(ballX, ballY);
+            labyrinthePlayer.setPosition(ballX, ballY);
 
             invalidate(); // Redessiner la vue
             checkCollisionWithGoal();
@@ -354,8 +346,8 @@ public class GameView extends SurfaceView implements Runnable {
 
     private void checkCollisionWithGoal() {
         // Calculer la distance entre la boule et le point d'arrivée
-        float dx = player.getX() - goalX;
-        float dy = player.getY() - goalY;
+        float dx = labyrinthePlayer.getX() - goalX;
+        float dy = labyrinthePlayer.getY() - goalY;
         float distance = (float) Math.sqrt(dx * dx + dy * dy);
 
         // Vérifier si la distance est inférieure ou égale à la somme des rayons

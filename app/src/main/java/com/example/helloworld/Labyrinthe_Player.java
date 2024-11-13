@@ -4,7 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
-public class Player {
+public class Labyrinthe_Player {
     private float x, y; // Position du joueur
     private float radius; // Rayon pour la détection de collisions
     private Bitmap currentSprite; // Sprite actuel du joueur
@@ -12,7 +12,7 @@ public class Player {
     private int frameCounter = 0; // Compteur de frames pour gérer l'animation
     private final SpriteSheet spriteSheet; // Feuille de sprites pour l'animation du joueur
 
-    public Player(float x, float y, float radius, Bitmap spriteSheetBitmap) {
+    public Labyrinthe_Player(float x, float y, float radius, Bitmap spriteSheetBitmap) {
         this.x = x;
         this.y = y;
         this.radius = radius;

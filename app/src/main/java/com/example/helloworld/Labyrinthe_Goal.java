@@ -5,7 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 
 
-public class Goal {
+public class Labyrinthe_Goal {
     private int x,y;
     private float radius;
     private Bitmap keyCurrentSprite;
@@ -14,7 +14,7 @@ public class Goal {
     private final SpriteSheet keySpriteSheet; // Cointains all the sprites of key
 
 
-    public Goal(int x, int y, float radius, Bitmap keySpriteSheet){
+    public Labyrinthe_Goal(int x, int y, float radius, Bitmap keySpriteSheet){
         this.x = x;
         this.y = y;
         this.radius = radius;

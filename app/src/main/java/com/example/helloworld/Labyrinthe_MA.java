@@ -19,9 +19,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 
-public class MainActivity extends AppCompatActivity implements SensorEventListener {
+public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListener {
 
-    private GameView gameView;
+    private Labyrinthe_GameView labyrintheGameView;
     private SensorManager sensorManager;
     private Sensor gyroscope;
 
@@ -33,12 +33,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             hideNavigationBar();
         }
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.labyrinthe);
 
         // Créer une instance de GameView et l'ajouter au FrameLayout
         FrameLayout gameFrame = findViewById(R.id.gameFrame);
-        gameView = new GameView(this);
-        gameFrame.addView(gameView);
+        labyrintheGameView = new Labyrinthe_GameView(this);
+        gameFrame.addView(labyrintheGameView);
 
         ImageView imageSettings = findViewById(R.id.settings);
         imageSettings.bringToFront();
@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         // Définir un OnClickListener
         imageSettings.setOnClickListener(v -> {
             // Action à réaliser lors du clic
-            gameView.pauseGame();
+            labyrintheGameView.pauseGame();
             buttonResume.setVisibility(View.VISIBLE);
             buttonRestart.setVisibility(View.VISIBLE);
             buttonQuit.setVisibility(View.VISIBLE);
@@ -64,21 +64,21 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         });
 
         buttonResume.setOnClickListener(v -> {
-            gameView.resumeGame();
+            labyrintheGameView.resumeGame();
             buttonResume.setVisibility(View.GONE);
             buttonRestart.setVisibility(View.GONE);
             buttonQuit.setVisibility(View.GONE);
             pauseText.setVisibility(View.GONE);
         });
         buttonRestart.setOnClickListener(v -> {
-            gameView.restartGame();
+            labyrintheGameView.restartGame();
             buttonResume.setVisibility(View.GONE);
             buttonRestart.setVisibility(View.GONE);
             buttonQuit.setVisibility(View.GONE);
             pauseText.setVisibility(View.GONE);
         });
         buttonQuit.setOnClickListener(v -> {
-            gameView.quitGame();
+            labyrintheGameView.quitGame();
         });
 
             // Initialiser le gestionnaire de capteurs
@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             if (gyroscope != null) {
                 sensorManager.registerListener(this, gyroscope, SensorManager.SENSOR_DELAY_GAME);
             }
-            gameView.resume();
+            labyrintheGameView.resume();
         }
 
         @Override
@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             super.onPause();
             // Arrêter le listener du gyroscope
             sensorManager.unregisterListener(this);
-            gameView.pause();
+            labyrintheGameView.pause();
         }
 
         @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 float y = event.values[1]; // Rotation autour de l'axe Y
 
                 // Déplacer la boule en fonction des valeurs du gyroscope
-                gameView.moveBall(x, y); // Méthode à implémenter dans GameView
+                labyrintheGameView.moveBall(x, y); // Méthode à implémenter dans GameView
             }
         }
 
