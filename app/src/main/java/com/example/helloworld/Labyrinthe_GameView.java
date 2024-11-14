@@ -168,7 +168,7 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
 
     private int[] calculateArrivalPoint(int xMultiplier, int yMultiplier) {
         int x = (int) ((int) (tileSize_W * xMultiplier) + goalRadius);
-        int y = (int) ((int) (tileSize_H * yMultiplier) + goalRadius);
+        int y = (int) ((int) (tileSize_H * yMultiplier) + goalRadius+10);
         return new int[]{x, y};
     }
 

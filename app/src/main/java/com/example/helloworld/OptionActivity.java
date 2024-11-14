@@ -26,6 +26,7 @@ public class OptionActivity extends AppCompatActivity {
         backButton.setOnClickListener(v -> {
             Intent intent = new Intent(OptionActivity.this, MainActivity.class);
             startActivity(intent);
+            overridePendingTransition(R.anim.slide_in_bottom, R.anim.slide_out_bottom);
         });
 
         // Initialiser le Spinner

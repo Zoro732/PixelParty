@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
         settings.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, OptionActivity.class);
             startActivity(intent);
+            overridePendingTransition(R.anim.slide_in_top, R.anim.slide_out_bottom);
         });
 
         hideNavigationBar();

@@ -79,6 +79,8 @@ public class SpriteActivity extends AppCompatActivity {
                 Intent envoi = new Intent(SpriteActivity.this, Labyrinthe_MA.class);
                 envoi.putExtra("selection_key", selection); // Envoi de la variable à ActivityB
                 startActivity(envoi);
+                overridePendingTransition(R.anim.zoom_in, R.anim.slide_out_bottom);
+
             }
             else {
                 Toast.makeText(this, "Aucun sprite selectionne", Toast.LENGTH_SHORT).show();
