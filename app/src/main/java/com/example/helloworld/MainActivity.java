@@ -2,42 +2,36 @@ package com.example.helloworld;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AlertDialog;
-import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.Spinner;
-import android.widget.TextView;
-import java.util.Locale;
-import android.widget.Toast;
-
 
 public class MainActivity extends AppCompatActivity {
 
-    private FrameLayout gameFrame;
-    private TextView themeLabel;
-    private TextView languageLabel;
-    private Button buttonClair;
-    private Button buttonSombre;
-    private Button aboutButton;
-    private Button backButton; // Déclaration du bouton retour
+    private BoardView boardView; // Déclaration de la vue BoardView
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            hideNavigationBar();
+            hideNavigationBar();  // Masquer la barre de navigation
         }
+
         setContentView(R.layout.activity_main);
 
-        gameFrame = findViewById(R.id.gameFrame);
+        boardView = findViewById(R.id.boardView);  // 'this' refers to the MainActivity context
+
+        Button moveButton = findViewById(R.id.moveButton);
+        moveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Exemple de déplacement du joueur
+                boardView.movePlayer(); // Méthode que vous définissez pour déplacer le joueur
+            }
+        });
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
