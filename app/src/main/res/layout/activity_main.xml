@@ -18,6 +18,8 @@
         android:fontFamily="@font/press2start"
         android:text="Solo"
         android:textSize="12sp"
+        android:textColor="@color/white"
+        android:layout_marginTop="90dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -30,8 +32,10 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginLeft="200dp"
+        android:layout_marginTop="90dp"
         android:background="@drawable/rounded_button"
         android:fontFamily="@font/press2start"
+        android:textColor="@color/white"
         android:text="Mini jeux"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -43,31 +47,28 @@
         android:id="@+id/gameFrame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#FF3DC2EC"
         app:layout_constraintBottom_toBottomOf="parent"
         tools:layout_editor_absoluteX="-90dp">
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/mainpage_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginBottom="80dp"
+            android:layout_marginBottom="50dp"
             android:fontFamily="@font/press2start"
             android:text="@string/pixel_party"
             android:textColor="@color/white"
             android:textSize="48sp" />
 
-        <Button
-            android:id="@+id/option"
-            android:layout_width="150dp"
+        <ImageView
+            android:id="@+id/settings"
+            android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_gravity="end"
-            android:layout_marginBottom="300dp"
-            android:background="@drawable/rounded_button"
-            android:fontFamily="@font/press2start"
-            android:text="@string/option"
-            android:textSize="12sp" />
+            android:background="@drawable/settings" />
+
+
     </FrameLayout>
 
 

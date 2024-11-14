@@ -9,6 +9,7 @@
     <string name="resume">Resume</string>
     <string name="pixel_party">Pixel Party</string>
     <string name="option">Option</string>
+    <string name="time" />
 
     <!-- Ajout du tableau de langues -->
     <string-array name="language_options">

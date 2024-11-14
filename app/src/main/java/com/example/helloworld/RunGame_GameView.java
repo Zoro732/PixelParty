@@ -166,7 +166,6 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
         runGameObstaclePool.clear();
         runGameCoinPool.clear();
         score = 0;
-
         isPlaying = false;
         // Fermer le jeu ou revenir à un autre écran
         // Par exemple, dans une application Android, vous pourriez vouloir fermer cette activité:

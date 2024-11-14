@@ -1,6 +1,5 @@
 package com.example.helloworld;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,7 +10,11 @@ import android.graphics.Typeface;
 import android.os.CountDownTimer;
 import android.os.Vibrator;
 import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.SurfaceView;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.core.content.res.ResourcesCompat;
@@ -51,6 +54,20 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
             {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
     };
 
+   /* private final int[][] map = { // FOR DEBUG
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    };*/
+
+
     private final float tileSize_W;
     private final float tileSize_H;
     private final Vibrator vibrator;
@@ -58,7 +75,7 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
     private CountDownTimer countDownTimer;
     private final int[] DefaultUserPosition = {10, 10};
     private final int defaultTimerValue = 80; // Valeur par défaut du compteur
-    private long timerValue = defaultTimerValue; // Valeur du compteur
+    private int timerValue = defaultTimerValue; // Valeur du compteur
 
     private final Bitmap tileImagePath;
     private final Bitmap tileImageWall;
@@ -75,7 +92,11 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
     private final Paint timerTextPaint = new Paint();
     private boolean isTimerRunning = false; // Flag to track timer state
 
-    public Labyrinthe_GameView(Context context) {
+    private Bitmap playerSpriteSheet;
+
+    public boolean win = false;
+
+    public Labyrinthe_GameView(Context context, String selection) {
         super(context);
         vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
 
@@ -96,9 +117,23 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
 
         randomGoalPositionning();
 
-
         // Charger l'image du joueur et initialiser l'objet Player
-        Bitmap playerSpriteSheet = BitmapFactory.decodeResource(getResources(), R.drawable.player_move);
+        if (selection != null) {
+            switch (selection) {
+                case "Bleu":
+                    playerSpriteSheet = BitmapFactory.decodeResource(getResources(), R.drawable.player_move_blue);
+                    break;
+                case "Rouge":
+                    playerSpriteSheet = BitmapFactory.decodeResource(getResources(), R.drawable.player_move_red);
+                    break;
+                case "Violet":
+                    playerSpriteSheet = BitmapFactory.decodeResource(getResources(), R.drawable.player_move_purple);
+                    break;
+                default:
+                    playerSpriteSheet = BitmapFactory.decodeResource(getResources(), R.drawable.player_move_blue);
+                    break;
+            }
+        }
         labyrinthePlayer = new Labyrinthe_Player(DefaultUserPosition[0], DefaultUserPosition[1], ballRadius, playerSpriteSheet);
 
         paint = new Paint();
@@ -142,7 +177,7 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
             isTimerRunning = true;
             countDownTimer = new CountDownTimer(initalTime * 1000, 1000) { // Compte à rebours de timerValue secondes
                 public void onTick(long millisUntilFinished) {
-                    timerValue = millisUntilFinished / 1000;
+                    timerValue = (int) (millisUntilFinished / 1000);
                     invalidate(); // Force redraw//
                 }
 
@@ -185,7 +220,6 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
             sleep();  // Control frame rate
         }
     }
-
 
     private Bitmap resizeBitmap(Bitmap originalBitmap) {
         return Bitmap.createScaledBitmap(originalBitmap, (int) tileSize_W, (int) tileSize_H, false);
@@ -242,6 +276,10 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
             getHolder().unlockCanvasAndPost(canvas);
 
         }
+    }
+
+    public boolean isWin() {
+        return win;
     }
 
     private void sleep() {
@@ -355,8 +393,8 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
             // Collision détectée
             ballX = DefaultUserPosition[0];
             ballY = DefaultUserPosition[1];
-            timerValue = defaultTimerValue;
-            Toast.makeText(getContext(), "Arrivée atteinte !", Toast.LENGTH_SHORT).show();
+
+            win = true;
             try {
                 Thread.sleep(100); // Délai de 100 millisecondes
             } catch (InterruptedException e) {
@@ -376,12 +414,14 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
         // Réinitialiser les positions et autres paramètres du jeu
         ballX = DefaultUserPosition[0];
         ballY = DefaultUserPosition[1];
-        timerValue = defaultTimerValue;
+        win = false;
         invalidate();  // Redessine l'écran pour redémarrer le jeu
         // Redémarrer d'autres éléments nécessaires comme le joueur, les objectifs, etc.
+        timerValue = defaultTimerValue;
         startTimer(timerValue); // Redémarrer le timer
         randomGoalPositionning();
         resume(); // Reprendre le jeu
+
     }
 
     void resumeGame() {
@@ -400,7 +440,10 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
 
     void quitGame() {
         // Cette méthode peut être utilisée pour fermer l'application ou revenir à l'écran principal
-        ((Activity) getContext()).finish();
+        System.exit(0);
     }
 
+    public int getRemainingTime() {
+        return defaultTimerValue - timerValue;
+    }
 }

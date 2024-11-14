@@ -29,27 +29,28 @@
             android:id="@+id/bleu"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:src="@drawable/bleu"
+            android:src="@drawable/player_blue"
             android:layout_margin="20dp"
-            android:contentDescription="Bleu"/>
+            android:contentDescription="blue"
+            android:layout_marginLeft="-20dp"  />
 
         <!-- Sprite 2 -->
         <ImageView
             android:id="@+id/rouge"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:src="@drawable/rouge"
+            android:src="@drawable/player_red"
             android:layout_margin="20dp"
-            android:contentDescription="Rouge"/>
+            android:contentDescription="red"/>
 
         <!-- Sprite 3 -->
         <ImageView
-            android:id="@+id/vert"
+            android:id="@+id/purple"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:src="@drawable/vert"
+            android:src="@drawable/player_purple"
             android:layout_margin="20dp"
-            android:contentDescription="Vert" />
+            android:contentDescription="purple" />
 
 
     </LinearLayout>
