@@ -14,7 +14,7 @@ import java.util.Random;
 
 
 
-public class MainActivity extends AppCompatActivity {
+public class TaquinActivity extends AppCompatActivity {
 
     private TextView[][] tiles = new TextView[3][3]; // Grille du jeu 3x3
     private TextView[][] solutionTiles = new TextView[3][3]; // Grille de la solution 3x3
@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_taquin);
 
         hideSystemUI();
 
