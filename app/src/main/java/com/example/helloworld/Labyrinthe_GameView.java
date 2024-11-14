@@ -67,14 +67,13 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
             {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     };*/
 
-
     private final float tileSize_W;
     private final float tileSize_H;
     private final Vibrator vibrator;
     private final boolean goalReached = false; // Drapeau pour suivre l'état de la collision avec le point d'arrivée
     private CountDownTimer countDownTimer;
     private final int[] DefaultUserPosition = {10, 10};
-    private final int defaultTimerValue = 80; // Valeur par défaut du compteur
+    private final int defaultTimerValue = 60; // Valeur par défaut du compteur
     private int timerValue = defaultTimerValue; // Valeur du compteur
 
     private final Bitmap tileImagePath;
@@ -95,6 +94,7 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
     private Bitmap playerSpriteSheet;
 
     public boolean win = false;
+    private boolean loose = false;
 
     public Labyrinthe_GameView(Context context, String selection) {
         super(context);
@@ -187,7 +187,7 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
                     timerValue = defaultTimerValue;
 
                     isTimerRunning = false;
-
+                    loose = true;
                     long[] pattern = {0, 200, 100, 300}; // 0ms avant de commencer, 200ms de vibration, 100ms de pause, 200ms de vibration
 
                     // Appliquer le motif de vibration
@@ -280,6 +280,9 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
 
     public boolean isWin() {
         return win;
+    }
+    public boolean isLoosed() {
+        return loose;
     }
 
     private void sleep() {
@@ -415,6 +418,7 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
         ballX = DefaultUserPosition[0];
         ballY = DefaultUserPosition[1];
         win = false;
+        loose = false;
         invalidate();  // Redessine l'écran pour redémarrer le jeu
         // Redémarrer d'autres éléments nécessaires comme le joueur, les objectifs, etc.
         timerValue = defaultTimerValue;

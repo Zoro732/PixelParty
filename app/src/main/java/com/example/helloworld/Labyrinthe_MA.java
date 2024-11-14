@@ -148,6 +148,13 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
             buttonQuit.setVisibility(View.VISIBLE);
             pauseText.setVisibility(View.VISIBLE);
             pauseText.setText("You WIN !");
+        } else if (labyrintheGameView.isLoosed()) {
+            labyrintheGameView.pauseGame();
+            buttonRestart.setVisibility(View.VISIBLE);
+            buttonQuit.setVisibility(View.VISIBLE);
+            pauseText.setVisibility(View.VISIBLE);
+            pauseText.setText("Game over !");
+
         }
 
     }
