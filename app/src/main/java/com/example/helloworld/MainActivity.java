@@ -1,49 +1,76 @@
 package com.example.helloworld;
 
+import android.app.Dialog;
 import android.os.Bundle;
 import android.view.View;
+
+import android.widget.Button;
 import android.widget.GridLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.Random;
 
+
+
 public class MainActivity extends AppCompatActivity {
 
-    private TextView[][] tiles = new TextView[3][3]; // Nouvelle grille 3x3
-    private TextView[][] solutionTiles = new TextView[3][3]; // Nouvelle grille solution 3x3
+    private TextView[][] tiles = new TextView[3][3]; // Grille du jeu 3x3
+    private TextView[][] solutionTiles = new TextView[3][3]; // Grille de la solution 3x3
     private int emptyRow = 2, emptyCol = 2; // Position initiale de l'espace vide
+    // private LabyrintheGameView labyrintheGameView; // Supposée si nécessaire
+
+    private Dialog pauseDialog; // Ajoutez cette ligne pour un dialog de pause global
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Masquer complètement la barre de statut et la barre de navigation
         hideSystemUI();
 
-        // Récupérer les GridLayouts pour les tuiles du jeu et de la solution
         GridLayout gridLayout = findViewById(R.id.gridLayout);
         GridLayout solutionGrid = findViewById(R.id.solutionGrid);
 
-        // Initialisation des tuiles du jeu
         initializeTiles(gridLayout, tiles);
-
-        // Initialisation des tuiles de la solution
         initializeSolutionTiles(solutionGrid);
+        shuffleTiles();
 
-        // Mélanger les tuiles du jeu
-        shuffleTiles(); // Mélanger les tuiles au démarrage
+        ImageView imageSettings = findViewById(R.id.settings);
+
+        imageSettings.setOnClickListener(v -> showPauseDialog());
+    }
+
+    private void showPauseDialog() {
+        // Créer et afficher un dialog personnalisé pour la pause
+        pauseDialog = new Dialog(this);
+        pauseDialog.setContentView(R.layout.dialog_pause);
+        pauseDialog.setCancelable(false); // Désactiver la fermeture en cliquant en dehors du dialog
+
+        Button buttonResume = pauseDialog.findViewById(R.id.btn_resume);
+        Button buttonRestart = pauseDialog.findViewById(R.id.btn_restart);
+        Button buttonQuit = pauseDialog.findViewById(R.id.btn_quit);
+
+        buttonResume.setOnClickListener(v -> pauseDialog.dismiss());
+
+        buttonRestart.setOnClickListener(v -> {
+            shuffleTiles();
+            pauseDialog.dismiss();
+        });
+
+        buttonQuit.setOnClickListener(v -> finish());
+
+        pauseDialog.show();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        hideSystemUI(); // Assurer que le mode plein écran est réactivé lors de la reprise
+        hideSystemUI(); // Assurer le mode plein écran au retour
     }
 
     private void hideSystemUI() {
-        // Masquer la barre de statut et la barre de navigation en utilisant les options modernes
         View decorView = getWindow().getDecorView();
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
@@ -56,18 +83,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initializeTiles(GridLayout gridLayout, TextView[][] tileArray) {
-        for (int i = 0; i < 3; i++) { // Changer la taille de 4 à 3
+
+        for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 int resID = getResources().getIdentifier("tile_" + (i * 3 + j + 1), "id", getPackageName());
-                if (resID == 0) {
-                    resID = getResources().getIdentifier("tile_empty", "id", getPackageName());
-                }
                 TextView tile = findViewById(resID);
                 tileArray[i][j] = tile;
 
-                tile.setText(String.valueOf(i * 3 + j + 1)); // Remplir les tuiles avec les valeurs
+                tile.setText(String.valueOf(i * 3 + j + 1));
                 if (i == 2 && j == 2) {
-                    tile.setText(""); // La dernière tuile est vide
+                    tile.setText(""); // Dernière tuile vide
                 }
 
                 final int row = i;
@@ -78,19 +103,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initializeSolutionTiles(GridLayout solutionGrid) {
-        for (int i = 0; i < 3; i++) { // Adapter à la grille 3x3
+        for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 int resID = getResources().getIdentifier("tile_" + (i * 3 + j + 1) + "_solution", "id", getPackageName());
-                if (resID == 0) {
-                    resID = getResources().getIdentifier("tile_empty_solution", "id", getPackageName());
-                }
                 TextView tile = findViewById(resID);
                 solutionTiles[i][j] = tile;
 
-                // Remplir les tuiles avec les valeurs de la solution
-                tile.setText(String.valueOf(i * 3 + j + 1)); // Remplir les tuiles avec les valeurs
+                tile.setText(String.valueOf(i * 3 + j + 1));
                 if (i == 2 && j == 2) {
-                    tile.setText(""); // La dernière tuile est vide dans la solution
+                    tile.setText(""); // Dernière tuile vide
                 }
             }
         }
@@ -111,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void shuffleTiles() {
         Random random = new Random();
-        for (int i = 0; i < 100; i++) { // Effectuer 100 mouvements aléatoires
+        for (int i = 0; i < 100; i++) {
             int direction = random.nextInt(4);
             int newRow = emptyRow, newCol = emptyCol;
 
@@ -122,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
                 case 3: newCol++; break; // Droite
             }
 
-            if (newRow >= 0 && newRow < 3 && newCol >= 0 && newCol < 3) { // Vérifier les limites de la grille 3x3
+            if (newRow >= 0 && newRow < 3 && newCol >= 0 && newCol < 3) {
                 tiles[emptyRow][emptyCol].setText(tiles[newRow][newCol].getText());
                 tiles[newRow][newCol].setText("");
                 emptyRow = newRow;
@@ -132,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean isGameWon() {
-        for (int i = 0; i < 3; i++) { // Vérifier la grille 3x3
+        for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 if (!tiles[i][j].getText().toString().equals(String.valueOf(i * 3 + j + 1))) {
                     return false;
