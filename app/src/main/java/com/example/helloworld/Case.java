@@ -6,11 +6,21 @@ public class Case {
     private int y;
     private int value;  // 0 pour une case vide, 1 pour une case grise (obstacle)
     private int caseNumber;  // Numéro de la case (uniquement pour les cases grises)
+    private int action; // Action associated with the case
 
-    public Case(int x, int y, int value) {
+    public Case(int x, int y, int value, int action) {
         this.x = x;
         this.y = y;
         this.value = value;
+        this.action = action;
+    }
+
+    public int getAction() {
+        return action;
+    }
+
+    public void setAction(int action) {
+        this.action = action;
     }
 
     // Getter et Setter

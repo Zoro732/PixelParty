@@ -2,9 +2,10 @@ package com.example.helloworld;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.graphics.Canvas;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -24,14 +25,15 @@ public class MainActivity extends AppCompatActivity {
 
         boardView = findViewById(R.id.boardView);  // 'this' refers to the MainActivity context
 
-        Button moveButton = findViewById(R.id.moveButton);
-        moveButton.setOnClickListener(new View.OnClickListener() {
+        Button dice = findViewById(R.id.dice);
+        dice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Exemple de déplacement du joueur
-                boardView.movePlayer(); // Méthode que vous définissez pour déplacer le joueur
+                // Exemple de déplacement du joueur avec dés
+                boardView.startDiceRoll();
             }
         });
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)

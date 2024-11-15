@@ -20,14 +20,16 @@
             android:layout_height="wrap_content" />
     </ScrollView>
 
-    <!-- Button pour déplacer le joueur -->
     <Button
-        android:id="@+id/moveButton"
+        android:id="@+id/dice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Déplacer le Joueur"
+        android:layout_marginRight="16dp"
+        android:text="dés"
+        android:fontFamily="@font/press2start"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        tools:ignore="MissingConstraints" />
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"  />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
