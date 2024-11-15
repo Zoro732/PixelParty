@@ -1,6 +1,6 @@
 package com.example.helloworld;
 
-public class Case {
+public class Board_Case {
 
     private int x;
     private int y;
@@ -8,7 +8,7 @@ public class Case {
     private int caseNumber;  // Numéro de la case (uniquement pour les cases grises)
     private int action; // Action associated with the case
 
-    public Case(int x, int y, int value, int action) {
+    public Board_Case(int x, int y, int value, int action) {
         this.x = x;
         this.y = y;
         this.value = value;

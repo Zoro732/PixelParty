@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/constraintLayout"
-    tools:context=".MainActivity">
+    tools:context=".Board_MA">
 
     <!-- ScrollView pour permettre le défilement -->
     <ScrollView
@@ -14,7 +14,7 @@
         android:layout_height="match_parent">
 
         <!-- BoardView personnalisé à l'intérieur du ScrollView -->
-        <com.example.helloworld.BoardView
+        <com.example.helloworld.Board_BoardView
             android:id="@+id/boardView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />

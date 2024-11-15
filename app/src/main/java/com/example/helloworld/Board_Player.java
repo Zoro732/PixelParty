@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
-public class Player {
+public class Board_Player {
 
     private int caseNumber;  // Le numéro de la case où se trouve le joueur
     private float x;  // Coordonnée x du joueur (en pixels, type float pour une animation fluide)
@@ -25,10 +25,10 @@ public class Player {
     private float targetY; // Coordonnée cible en y (en pixels)
     private boolean isMoving = false; // Indique si le joueur est en mouvement
     private final float moveSpeed = 30f; // Vitesse de déplacement en pixels par frame
-    private List<Case> currentPath; // The current path the player is following
+    private List<Board_Case> currentPath; // The current path the player is following
     private int currentPathIndex; // The index of the next tile in the path
 
-    public Player(int startingCaseNumber, Bitmap playerIdleSprite) {
+    public Board_Player(int startingCaseNumber, Bitmap playerIdleSprite) {
         this.caseNumber = startingCaseNumber;
         this.spriteSheet = new SpriteSheet(playerIdleSprite, 1, 8);
         this.currentSprite = spriteSheet.getSprite(0, currentSpriteIndex);
@@ -72,7 +72,7 @@ public class Player {
 
     public void setCaseNumber(int targetCaseNumber) {
         // Find the path to the target tile
-        List<Case> path = findPathToTarget(targetCaseNumber);
+        List<Board_Case> path = findPathToTarget(targetCaseNumber);
 
         // If a path is found, start moving along the path
         if (path != null && !path.isEmpty()) {
@@ -85,14 +85,14 @@ public class Player {
             Log.d("Player", "No valid path found to target case number: " + targetCaseNumber);
         }
 
-        Case currentTile = getTileByCaseNumber(caseNumber);
+        Board_Case currentTile = getTileByCaseNumber(caseNumber);
         if (currentTile != null && currentTile.getAction() == 1) {
             Log.d("Player","Action performed");
         }
     }
 
-    private Case getTileByCaseNumber(int caseNumber) {
-        for (Case tile : BoardView.cases) {
+    private Board_Case getTileByCaseNumber(int caseNumber) {
+        for (Board_Case tile : Board_BoardView.boardCases) {
             if (tile.getCaseNumber() == caseNumber) {
                 return tile;
             }
@@ -101,18 +101,18 @@ public class Player {
     }
 
     public void updatePosition() {
-        for (Case gameCase : BoardView.cases) {
-            if (gameCase.getCaseNumber() == caseNumber) {
+        for (Board_Case gameBoardCase : Board_BoardView.boardCases) {
+            if (gameBoardCase.getCaseNumber() == caseNumber) {
                 // Positionner directement le joueur sur sa case actuelle (sans animation)
-                this.x = gameCase.getX() * BoardView.cellSize + BoardView.cellSize / 2;
-                this.y = gameCase.getY() * BoardView.cellSize + BoardView.cellSize / 2;
+                this.x = gameBoardCase.getX() * Board_BoardView.cellSize + Board_BoardView.cellSize / 2;
+                this.y = gameBoardCase.getY() * Board_BoardView.cellSize + Board_BoardView.cellSize / 2;
                 break;
             }
         }
     }
 
-    private List<Case> getAdjacentValidTiles(Case tile) {
-        List<Case> adjacentTiles = new ArrayList<>();
+    private List<Board_Case> getAdjacentValidTiles(Board_Case tile) {
+        List<Board_Case> adjacentTiles = new ArrayList<>();
         int x = tile.getX();
         int y = tile.getY();
 
@@ -123,10 +123,10 @@ public class Player {
                 int nx = x + dx;
                 int ny = y + dy;
 
-                if (nx >= 0 && nx < BoardView.numColumns && ny >= 0 && ny < BoardView.numRows && BoardView.map[ny][nx] == 1) {
-                    for (Case gameCase : BoardView.cases) {
-                        if (gameCase.getX() == nx && gameCase.getY() == ny) {
-                            adjacentTiles.add(gameCase);
+                if (nx >= 0 && nx < Board_BoardView.numColumns && ny >= 0 && ny < Board_BoardView.numRows && Board_BoardView.map[ny][nx] == 1) {
+                    for (Board_Case gameBoardCase : Board_BoardView.boardCases) {
+                        if (gameBoardCase.getX() == nx && gameBoardCase.getY() == ny) {
+                            adjacentTiles.add(gameBoardCase);
                             break;
                         }
                     }
@@ -137,9 +137,9 @@ public class Player {
         return adjacentTiles;
     }
 
-    private List<Case> reconstructPath(Case targetTile, Map<Case, Case> parentMap) {
-        List<Case> path = new ArrayList<>();
-        Case currentTile = targetTile;
+    private List<Board_Case> reconstructPath(Board_Case targetTile, Map<Board_Case, Board_Case> parentMap) {
+        List<Board_Case> path = new ArrayList<>();
+        Board_Case currentTile = targetTile;
 
         while (currentTile != null) {
             path.add(0, currentTile);
@@ -174,9 +174,9 @@ public class Player {
 
     private void moveToNextTileInPath() {
         if (currentPath != null && currentPathIndex < currentPath.size()) {
-            Case nextTile = currentPath.get(currentPathIndex);
-            targetX = nextTile.getX() * BoardView.cellSize + BoardView.cellSize / 2;
-            targetY = nextTile.getY() * BoardView.cellSize + BoardView.cellSize / 2;
+            Board_Case nextTile = currentPath.get(currentPathIndex);
+            targetX = nextTile.getX() * Board_BoardView.cellSize + Board_BoardView.cellSize / 2;
+            targetY = nextTile.getY() * Board_BoardView.cellSize + Board_BoardView.cellSize / 2;
             currentPathIndex++;
 
             // Update the player's caseNumber to the current tile's caseNumber
@@ -188,24 +188,24 @@ public class Player {
         }
     }
 
-    private List<Case> findPathToTarget(int targetCaseNumber) {
+    private List<Board_Case> findPathToTarget(int targetCaseNumber) {
         // 1. Initialization
-        Queue<Case> queue = new LinkedList<>();
-        Map<Case, Case> parentMap = new HashMap<>();
+        Queue<Board_Case> queue = new LinkedList<>();
+        Map<Board_Case, Board_Case> parentMap = new HashMap<>();
 
-        Case startTile = getTileByCaseNumber(caseNumber);
+        Board_Case startTile = getTileByCaseNumber(caseNumber);
         queue.offer(startTile);
         parentMap.put(startTile, null);
 
         // 2. Breadth-First Search
         while (!queue.isEmpty()) {
-            Case currentTile = queue.poll();
+            Board_Case currentTile = queue.poll();
 
             if (currentTile.getCaseNumber() == targetCaseNumber) {
                 return reconstructPath(currentTile, parentMap);
             }
 
-            for (Case neighbor : getAdjacentValidTiles(currentTile)) {
+            for (Board_Case neighbor : getAdjacentValidTiles(currentTile)) {
                 if (!parentMap.containsKey(neighbor)) {
                     queue.offer(neighbor);
                     parentMap.put(neighbor, currentTile);

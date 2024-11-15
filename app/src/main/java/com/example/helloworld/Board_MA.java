@@ -3,15 +3,14 @@ package com.example.helloworld;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.graphics.Canvas;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-public class MainActivity extends AppCompatActivity {
+public class Board_MA extends AppCompatActivity {
 
-    private BoardView boardView; // Déclaration de la vue BoardView
+    private Board_BoardView boardBoardView; // Déclaration de la vue BoardView
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,16 +20,16 @@ public class MainActivity extends AppCompatActivity {
             hideNavigationBar();  // Masquer la barre de navigation
         }
 
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.board);
 
-        boardView = findViewById(R.id.boardView);  // 'this' refers to the MainActivity context
+        boardBoardView = findViewById(R.id.boardView);  // 'this' refers to the MainActivity context
 
         Button dice = findViewById(R.id.dice);
         dice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Exemple de déplacement du joueur avec dés
-                boardView.startDiceRoll();
+                boardBoardView.startDiceRoll();
             }
         });
 
