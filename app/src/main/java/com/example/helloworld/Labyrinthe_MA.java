@@ -1,6 +1,5 @@
 package com.example.helloworld;
 
-
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -13,19 +12,19 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-
 public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListener {
 
     private Labyrinthe_GameView labyrintheGameView;
     private SensorManager sensorManager;
     private Sensor gyroscope;
-    private String selection;
+    private String selection = "Blue";
     private TextView pauseText, timeText;
     private Button buttonResume, buttonRestart, buttonQuit;
 
@@ -37,13 +36,15 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
             hideNavigationBar();
         }
         setContentView(R.layout.labyrinthe);
+        // Initialize labyrintheGameView here, outside the if block
+        FrameLayout gameFrame = findViewById(R.id.gameFrame);
+        labyrintheGameView = new Labyrinthe_GameView(this, selection); // You might need to provide a default value for 'selection' if it's not always available
+        gameFrame.addView(labyrintheGameView);
 
         Intent intent = getIntent();
         if (intent.hasExtra("selection_key")) {
             selection = intent.getStringExtra("selection_key");
             // Créer une instance de GameView et l'ajouter au FrameLayout
-            FrameLayout gameFrame = findViewById(R.id.gameFrame);
-            labyrintheGameView = new Labyrinthe_GameView(this, selection);
             gameFrame.addView(labyrintheGameView);
             ImageView imageSettings = findViewById(R.id.settings);
             imageSettings.bringToFront();
@@ -61,7 +62,9 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
             // Définir un OnClickListener
             imageSettings.setOnClickListener(v -> {
                 // Action à réaliser lors du clic
-                labyrintheGameView.pauseGame();
+                if (labyrintheGameView != null) {
+                    labyrintheGameView.pauseGame();
+                }
                 pauseText.setText("Pause");
                 buttonResume.setVisibility(View.VISIBLE);
                 buttonRestart.setVisibility(View.VISIBLE);
@@ -70,14 +73,18 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
             });
 
             buttonResume.setOnClickListener(v -> {
-                labyrintheGameView.resumeGame();
+                if (labyrintheGameView != null) {
+                    labyrintheGameView.resumeGame();
+                }
                 buttonResume.setVisibility(View.GONE);
                 buttonRestart.setVisibility(View.GONE);
                 buttonQuit.setVisibility(View.GONE);
                 pauseText.setVisibility(View.GONE);
             });
             buttonRestart.setOnClickListener(v -> {
-                labyrintheGameView.restartGame();
+                if (labyrintheGameView != null) {
+                    labyrintheGameView.restartGame();
+                }
                 buttonResume.setVisibility(View.GONE);
                 buttonRestart.setVisibility(View.GONE);
                 buttonQuit.setVisibility(View.GONE);
@@ -85,20 +92,16 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
                 timeText.setVisibility(View.GONE);
             });
             buttonQuit.setOnClickListener(v -> {
-                labyrintheGameView.quitGame();
+                if (labyrintheGameView != null) {
+                    labyrintheGameView.quitGame();
+                }
             });
-
         }
 
-
         // Initialiser le gestionnaire de capteurs
-        sensorManager = (SensorManager)
-
-                getSystemService(Context.SENSOR_SERVICE);
-
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
     }
-
 
     @Override
     protected void onResume() {
@@ -107,7 +110,13 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
         if (gyroscope != null) {
             sensorManager.registerListener(this, gyroscope, SensorManager.SENSOR_DELAY_GAME);
         }
-        labyrintheGameView.resume();
+
+        // Vérification que labyrintheGameView n'est pas null avant d'appeler resume()
+        if (labyrintheGameView != null) {
+            labyrintheGameView.resume();
+        } else {
+            Log.e("Labyrinthe_MA", "Labyrinthe_GameView is not initialized.");
+        }
     }
 
     @Override
@@ -115,7 +124,9 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
         super.onPause();
         // Arrêter le listener du gyroscope
         sensorManager.unregisterListener(this);
-        labyrintheGameView.pause();
+        if (labyrintheGameView != null) {
+            labyrintheGameView.pause();
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -132,6 +143,11 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
 
     @Override
     public void onSensorChanged(SensorEvent event) {
+        if (labyrintheGameView == null) {
+            Log.e("Labyrinthe_MA", "Labyrinthe_GameView is null in onSensorChanged.");
+            return;
+        }
+
         if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
             // Récupérer les valeurs du gyroscope
             float x = event.values[0]; // Rotation autour de l'axe X
@@ -140,6 +156,8 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
             // Déplacer la boule en fonction des valeurs du gyroscope
             labyrintheGameView.moveBall(x, y); // Méthode à implémenter dans GameView
         }
+
+        // Vérification si le jeu est gagné ou perdu
         if (labyrintheGameView.isWin()) {
             labyrintheGameView.pauseGame();
             timeText.setText("Made in " + labyrintheGameView.getRemainingTime() + "s");
@@ -154,15 +172,11 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
             buttonQuit.setVisibility(View.VISIBLE);
             pauseText.setVisibility(View.VISIBLE);
             pauseText.setText("Game over !");
-
         }
-
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
         // Ne rien faire
     }
-
-
 }

@@ -37,11 +37,9 @@ public class MainActivity extends AppCompatActivity {
         TextView mainpage_text = findViewById(R.id.mainpage_text);
         mainpage_text.bringToFront();
 
-
-
         Button gameMode_Solo = findViewById(R.id.gameMode_Solo);
-        gameMode_Solo.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, SpriteActivity.class);
+        gameMode_Solo.setOnClickListener(v -> { // temporarely replace SpriteAcitivity with Board_MA
+            Intent intent = new Intent(MainActivity.this, Board_MA.class);
             startActivity(intent);
         });
 

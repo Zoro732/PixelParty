@@ -1,6 +1,7 @@
 package com.example.helloworld;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -79,62 +80,58 @@ public class Board_BoardView extends View {
     };
 
     private void init() {
+        // Initialize paints for drawing
         paint = new Paint();
         paint.setStyle(Paint.Style.FILL_AND_STROKE);
         paint.setTextAlign(Paint.Align.CENTER);
         paint.setTextSize(40);
 
+        // Initialize list for storing cases on the board
         boardCases = new ArrayList<>();
         int caseNumber = 0;
-        List<Board_Case> availableBoardCases = new ArrayList<>(); // Store available cases
 
-        // Combine the loops to initialize both the case and its action
+        // BFS setup: List of cases to explore, starting with an empty list
+        List<Board_Case> queue = new ArrayList<>();
         Board_Case startingBoardCase = null; // Variable to hold the starting case
+
+        // Find the starting case (caseNumber 0)
         for (int y = 0; y < numRows; y++) {
             for (int x = 0; x < numColumns; x++) {
                 if (map[y][x] == 1) { // Only for valid tiles
-                    // Initialize the case
-                    Board_Case gameBoardCase = new Board_Case(x, y, 1, 0); // Create new case with x, y, value 1, and initial action 0
-                    gameBoardCase.setCaseNumber(caseNumber++); // Assign a number to the case
-                    boardCases.add(gameBoardCase); // Add case to the list of all cases
-
-                    // Assign the action to the case
-                    int action = mapAction[y][x]; // Get the action for this case
-                    gameBoardCase.setAction(action); // Set the action
-                    Log.d("Debug", "Action set for case " + gameBoardCase.getCaseNumber() + ": " + gameBoardCase.getAction());
-
-                    availableBoardCases.add(gameBoardCase); // Add to available cases
-
-                    // If it's the starting case, store it
-                    if (startingBoardCase == null) {
-                        startingBoardCase = gameBoardCase; // Store the first valid case as starting case
-                    }
+                    // Initialize the case with its coordinates and initial action
+                    startingBoardCase = new Board_Case(x, y, 1, mapAction[y][x]);
+                    startingBoardCase.setCaseNumber(caseNumber++); // Assign a number to the case
+                    boardCases.add(startingBoardCase); // Add the starting case to the list
+                    queue.add(startingBoardCase); // Add it to the BFS queue
+                    break;
                 }
             }
+            if (startingBoardCase != null) break; // Stop searching once found
         }
 
-        // Generate the remaining tiles
-        while (!availableBoardCases.isEmpty()) {
-            Board_Case currentBoardCase = availableBoardCases.remove(0); // Get the first available case
+        // Use BFS to number remaining cases and assign actions
+        while (!queue.isEmpty()) {
+            Board_Case currentBoardCase = queue.remove(0); // Get the next case to explore
 
-            // Find adjacent gray squares that haven't been numbered yet
+            // Find adjacent valid tiles that haven't been numbered yet
             List<Board_Case> adjacentBoardCases = findAdjacentGraySquares(currentBoardCase, caseNumber);
 
-            if (!adjacentBoardCases.isEmpty()) {
-                // Choose a random adjacent case and assign the next case number
-                Board_Case nextBoardCase = adjacentBoardCases.get((int) (Math.random() * adjacentBoardCases.size()));
-                nextBoardCase.setCaseNumber(caseNumber++);
-                boardCases.add(nextBoardCase);
-                availableBoardCases.add(nextBoardCase); // Add to available cases
+            for (Board_Case nextBoardCase : adjacentBoardCases) {
+                nextBoardCase.setCaseNumber(caseNumber++); // Number the new case
+                nextBoardCase.setAction(mapAction[nextBoardCase.getY()][nextBoardCase.getX()]); // Assign the correct action
+                boardCases.add(nextBoardCase); // Add the case to the board list
+                queue.add(nextBoardCase); // Add to the queue for further exploration
             }
         }
 
+        // Load dice bitmap and set up player
         diceBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.dice_6);
         diceSpriteSheet = new SpriteSheet(diceBitmap, 1, 6);
 
         boardPlayer = new Board_Player(0, playerIdleBitmap);
-        animationHandler.post(animationRunnable);
+        animationHandler.post(animationRunnable); // Start animation loop for player
     }
+
 
 
     @Override
@@ -307,11 +304,14 @@ public class Board_BoardView extends View {
 
         // Move only if the target case is valid (value == 1)
         if (targetBoardCase != null && targetBoardCase.getValue() == 1) {
-            boardPlayer.setCaseNumber(targetCaseNumber);
+            boardPlayer.setCaseNumber(targetCaseNumber); // Move player
+
             // Check if the action of the target case is 1
             if (targetBoardCase.getAction() == 1) {
-                // Display a toast message if the action is 1
-                Toast.makeText(getContext(), "You landed on a special case!", Toast.LENGTH_SHORT).show();
+                // Start the Labyrinthe_MA activity
+                Context context = getContext(); // Get the context
+                Intent intent = new Intent(context, SpriteActivity.class); // Replace with your desired activity
+                //context.startActivity(intent); // Start the activity
             }
         } else {
             // Invalid move, show a toast or handle the invalid move logic

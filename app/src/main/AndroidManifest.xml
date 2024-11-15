@@ -20,6 +20,10 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".Board_MA"
+            android:screenOrientation="sensorLandscape">
+        </activity>
+
         <activity android:name=".OptionActivity"
             android:screenOrientation="sensorLandscape">
         </activity>
