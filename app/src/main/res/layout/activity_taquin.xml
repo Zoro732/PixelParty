@@ -5,6 +5,14 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <!-- Image en arrière-plan -->
+    <ImageView
+        android:id="@+id/backgroundImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/paysage"
+        android:scaleType="centerCrop" />
+
     <!-- Conteneur principal pour les grilles de jeu et de solution -->
     <LinearLayout
         android:layout_width="match_parent"
@@ -21,7 +29,6 @@
             android:gravity="center">
 
             <!-- Titre au-dessus de la grille de jeu -->
-
             <TextView
                 android:id="@+id/title_solution"
                 android:layout_width="wrap_content"
@@ -79,7 +86,6 @@
             android:fontFamily="@font/press2start"
             android:visibility="visible"
             android:width="75dp"/>
-
 
         <FrameLayout
             android:layout_width="0dp"
