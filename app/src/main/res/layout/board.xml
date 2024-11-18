@@ -9,9 +9,12 @@
     tools:context=".Board_MA">
 
     <!-- ScrollView pour permettre le défilement -->
+
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:layout_editor_absoluteX="162dp"
+        tools:layout_editor_absoluteY="36dp">
 
         <!-- BoardView personnalisé à l'intérieur du ScrollView -->
         <com.example.helloworld.Board_BoardView
@@ -31,5 +34,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"  />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/scoreText"
+        android:fontFamily="@font/press2start"
+        android:textSize="30dp"
+        android:textColor="@color/black"
+        android:gravity="center"
+        android:visibility="gone"
+        android:text=""/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

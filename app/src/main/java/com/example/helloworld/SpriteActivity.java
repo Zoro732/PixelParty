@@ -1,12 +1,9 @@
 package com.example.helloworld;
 
 import android.annotation.SuppressLint;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Vibrator;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -27,11 +24,12 @@ public class SpriteActivity extends AppCompatActivity {
     private TextView selectedCharacterText;
     private static final String PREFS_NAME = "GamePrefs";
     public String selection;
+    private Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sprite);
+        setContentView(R.layout.labyrinthe_sprite_selection);
 
         Button back = findViewById(R.id.back);
         back.setOnClickListener(v -> {
@@ -66,21 +64,25 @@ public class SpriteActivity extends AppCompatActivity {
         playerRed.setOnClickListener(view -> selectCharacter("Rouge", playerRed));
         playerPurple.setOnClickListener(view -> selectCharacter("Violet", playerPurple));
 
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             hideNavigationBar();
         }
+
+        // Recupération du game_mode, via plateau ou via menu minijeux
+        intent = getIntent();
+        intent.hasExtra("game_mode");
+        String game_mode = intent.getStringExtra("game_mode");
 
         Button start = findViewById(R.id.start);
         start.setOnClickListener(v -> {
             saveSelectedSprite(); // Enregistrer le sprite sélectionné
             if (selection != null) {
-                Intent intent = new Intent(SpriteActivity.this, Labyrinthe_MA.class);
+                intent = new Intent(SpriteActivity.this, Labyrinthe_MA.class);
+                intent.putExtra("selection_key", selection); // Envoi de la variable à Activity
+                intent.putExtra("game_mode", game_mode); // Envoi d'une autre valeur
                 startActivity(intent);
-                Intent envoi = new Intent(SpriteActivity.this, Labyrinthe_MA.class);
-                envoi.putExtra("selection_key", selection); // Envoi de la variable à ActivityB
-                startActivity(envoi);
                 overridePendingTransition(R.anim.zoom_in, R.anim.slide_out_bottom);
-
             }
             else {
                 Toast.makeText(this, "Aucun sprite selectionne", Toast.LENGTH_SHORT).show();

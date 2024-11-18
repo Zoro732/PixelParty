@@ -14,6 +14,9 @@ public class Board_Case {
         this.value = value;
         this.action = action;
     }
+    public Board_Case getCase () {
+        return this;
+    }
 
     public int getAction() {
         return action;

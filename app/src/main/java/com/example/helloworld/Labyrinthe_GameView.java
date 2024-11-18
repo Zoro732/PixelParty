@@ -1,6 +1,8 @@
 package com.example.helloworld;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -41,20 +43,20 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
     private static final int GRID_COLS = 15;// Nombre de colonnes
     private static final int GRID_ROWS = 9; // Nombre de lignes
     private final float goalRadius = 45; // Rayon du point d'arrivée
-    private final int[][] map = {
-            {0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-            {0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0},
-            {1, 0, 0, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1},
-            {1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1},
-            {1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1},
-            {1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1},
-            {1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0, 1, 1},
-            {1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0},
-            {1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1},
-            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-    };
+//    private final int[][] map = {
+//            {0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+//            {0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0},
+//            {1, 0, 0, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1},
+//            {1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1},
+//            {1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1},
+//            {1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1},
+//            {1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0, 1, 1},
+//            {1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0},
+//            {1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1},
+//            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+//    };
 
-   /* private final int[][] map = { // FOR DEBUG
+   private final int[][] map = { // FOR DEBUG
             {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
             {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
             {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -65,7 +67,7 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
             {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
             {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
             {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    };*/
+    };
 
     private final float tileSize_W;
     private final float tileSize_H;
@@ -120,9 +122,6 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
         // Charger l'image du joueur et initialiser l'objet Player
         if (selection != null) {
             switch (selection) {
-                case "Bleu":
-                    playerSpriteSheet = BitmapFactory.decodeResource(getResources(), R.drawable.player_move_blue);
-                    break;
                 case "Rouge":
                     playerSpriteSheet = BitmapFactory.decodeResource(getResources(), R.drawable.player_move_red);
                     break;
@@ -133,7 +132,11 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
                     playerSpriteSheet = BitmapFactory.decodeResource(getResources(), R.drawable.player_move_blue);
                     break;
             }
+        } else {
+            Log.d("Labyrinthe_GameView", "selection is null");
+            System.exit(1);
         }
+
         labyrinthePlayer = new Labyrinthe_Player(DefaultUserPosition[0], DefaultUserPosition[1], ballRadius, playerSpriteSheet);
 
         paint = new Paint();
@@ -443,8 +446,28 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
     }
 
     void quitGame() {
-        // Cette méthode peut être utilisée pour fermer l'application ou revenir à l'écran principal
-        System.exit(0);
+        // Arrêter les threads
+        try {
+            isPlaying = false; // Arrêter la boucle du jeu
+            if (gameThread != null) {
+                gameThread.join(500); // Attendre jusqu'à 500ms pour que le thread se termine
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Annuler le CountDownTimer
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+        }
+
+        // Libérer les autres ressources
+        if (vibrator != null) {
+            vibrator.cancel();
+        }
+
+        // Quitter l'application proprement
+        android.os.Process.killProcess(android.os.Process.myPid());
     }
 
     public int getRemainingTime() {

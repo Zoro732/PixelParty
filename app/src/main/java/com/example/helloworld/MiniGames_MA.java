@@ -23,6 +23,7 @@ public class MiniGames_MA extends AppCompatActivity {
         Button laby = findViewById(R.id.laby);
         laby.setOnClickListener(v -> {
             Intent intent = new Intent(MiniGames_MA.this, SpriteActivity.class);
+            intent.putExtra("game_mode", "minigames"); // Envoi d'une autre valeur
             startActivity(intent);
         });
 

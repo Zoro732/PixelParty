@@ -1,5 +1,6 @@
 package com.example.helloworld;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -64,6 +65,8 @@ public class Board_BoardView extends View {
     private Bitmap playerIdleBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.player_move_purple);
     private Typeface font =  ResourcesCompat.getFont(getContext(), R.font.press2start);;
     private final Handler animationHandler = new Handler(Looper.getMainLooper());
+
+    private static final int MINI_GAME_REQUEST_CODE = 1;
 
     public Board_BoardView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -131,8 +134,6 @@ public class Board_BoardView extends View {
         boardPlayer = new Board_Player(0, playerIdleBitmap);
         animationHandler.post(animationRunnable); // Start animation loop for player
     }
-
-
 
     @Override
     protected void onDetachedFromWindow() {
@@ -266,7 +267,6 @@ public class Board_BoardView extends View {
         }
     }
 
-
     public void startDiceRoll() {
         isRolling = true;
         new Thread(() -> {
@@ -306,19 +306,15 @@ public class Board_BoardView extends View {
         if (targetBoardCase != null && targetBoardCase.getValue() == 1) {
             boardPlayer.setCaseNumber(targetCaseNumber); // Move player
 
-            // Check if the action of the target case is 1
-            if (targetBoardCase.getAction() == 1) {
-                // Start the Labyrinthe_MA activity
-                Context context = getContext(); // Get the context
-                Intent intent = new Intent(context, SpriteActivity.class); // Replace with your desired activity
-                //context.startActivity(intent); // Start the activity
-            }
         } else {
-            // Invalid move, show a toast or handle the invalid move logic
             Toast.makeText(getContext(), "Invalid move!", Toast.LENGTH_SHORT).show();
         }
-    }
 
+
+    }
+    public int getCurrentCaseAction() {
+        return boardCases.get(boardPlayer.getCaseNumber()).getAction();
+    }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -328,4 +324,9 @@ public class Board_BoardView extends View {
         }
         return super.onTouchEvent(event);
     }
+
+    public void onMiniGameFinished(int score) {
+        Toast.makeText(getContext(), "Mini-jeu terminé. Score: " + score, Toast.LENGTH_SHORT).show();
+    }
+
 }
