@@ -21,7 +21,7 @@ public class TaquinActivity extends AppCompatActivity {
 
     // Timer
     private TextView timerTextView; // Affichage du timer
-    private int remainingSeconds = 120; // Compte à rebours initial (60 secondes)
+    private int remainingSeconds = 120; // Compte à rebours initial (120 secondes)
     private Handler timerHandler = new Handler();
     private boolean isTimerRunning = false;
 
@@ -70,27 +70,10 @@ public class TaquinActivity extends AppCompatActivity {
     }
 
     private void onCountdownFinished() {
-        Toast.makeText(this, "Temps écoulé ! Vous avez perdu.", Toast.LENGTH_LONG).show();
-        // Optionnel : bloquer l'interaction avec la grille
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        hideSystemUI(); // Assurer le mode plein écran au retour
-        if (!isTimerRunning) {
-            startCountdownTimer(); // Reprendre le timer si nécessaire
-        }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        stopCountdownTimer(); // Arrêter le timer quand l'activité est mise en pause
+        onGameOver(false); // Temps écoulé, la partie est perdue
     }
 
     private void showPauseDialog() {
-        // Créer et afficher un dialog personnalisé pour la pause
         stopCountdownTimer(); // Mettre en pause le compte à rebours
 
         pauseDialog = new Dialog(this);
@@ -174,9 +157,8 @@ public class TaquinActivity extends AppCompatActivity {
 
             if (isGameWon()) {
                 stopCountdownTimer(); // Arrêter le timer
-                Toast.makeText(this, "Bravo, vous avez gagné!", Toast.LENGTH_LONG).show();
+                onGameOver(true); // Le joueur a gagné
             }
-
         }
     }
 
@@ -220,4 +202,43 @@ public class TaquinActivity extends AppCompatActivity {
         return true;
     }
 
+    private void onGameOver(boolean isWin) {
+        // Créer le dialogue de fin de jeu
+        String message = isWin ? "Bravo, vous avez gagné !" : "Temps écoulé ! Vous avez perdu.";
+        String button1Text = "Rejouer";
+        String button2Text = "Quitter";
+
+        // Créer et afficher le dialogue
+        Dialog gameOverDialog = new Dialog(this);
+        gameOverDialog.setContentView(R.layout.dialog_game_over); // Utilisez un layout XML pour personnaliser le dialogue
+        gameOverDialog.setCancelable(false); // Empêche la fermeture en cliquant en dehors du dialog
+
+        // Assurer le centrage du dialog au milieu de l'écran
+        gameOverDialog.getWindow().setLayout(
+                (int) (getResources().getDisplayMetrics().widthPixels * 0.8), // Largeur : 80% de la largeur de l'écran
+                GridLayout.LayoutParams.WRAP_CONTENT // Hauteur : s'adapte au contenu
+        );
+
+        // Récupérer les éléments du dialog et ajuster leur contenu
+        TextView messageTextView = gameOverDialog.findViewById(R.id.message);
+        messageTextView.setText(message);
+
+        Button buttonRestart = gameOverDialog.findViewById(R.id.btn_restart);
+        Button buttonQuit = gameOverDialog.findViewById(R.id.btn_quit);
+
+        buttonRestart.setText(button1Text);
+        buttonQuit.setText(button2Text);
+
+        buttonRestart.setOnClickListener(v -> {
+            shuffleTiles();
+            remainingSeconds = 120; // Réinitialise le timer
+            timerTextView.setText(String.valueOf(remainingSeconds));
+            gameOverDialog.dismiss();
+            startCountdownTimer(); // Recommence le compte à rebours
+        });
+
+        buttonQuit.setOnClickListener(v -> finish());
+
+        gameOverDialog.show();
+    }
 }
