@@ -71,5 +71,88 @@
 
     </FrameLayout>
 
+    <LinearLayout
+        android:id="@+id/sprite"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:gravity="center"
+        android:visibility="gone">
 
+        <TextView
+            android:id="@+id/selected_character_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Selected Character: None"
+            android:textSize="18sp"
+            android:fontFamily="@font/press2start"
+            android:layout_marginBottom="24dp"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal">
+
+            <!-- Sprite 1 -->
+            <ImageView
+                android:id="@+id/bleu"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/player_blue"
+                android:layout_margin="20dp"
+                android:contentDescription="blue"
+                android:layout_marginLeft="-20dp"  />
+
+            <!-- Sprite 2 -->
+            <ImageView
+                android:id="@+id/rouge"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/player_red"
+                android:layout_margin="20dp"
+                android:contentDescription="red"/>
+
+            <!-- Sprite 3 -->
+            <ImageView
+                android:id="@+id/purple"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/player_purple"
+                android:layout_margin="20dp"
+                android:contentDescription="purple" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:visibility="gone">
+
+            <Button
+                android:id="@+id/start"
+                android:layout_width="150dp"
+                android:layout_height="50dp"
+                android:layout_marginRight="16dp"
+                android:background="@drawable/rounded_button"
+                android:text="Start"
+                android:fontFamily="@font/press2start"
+                android:layout_marginEnd="16dp" />
+
+            <Button
+                android:id="@+id/back"
+                android:layout_width="150dp"
+                android:layout_height="50dp"
+                android:background="@drawable/rounded_button"
+                android:text="Retour"
+                android:fontFamily="@font/press2start"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
