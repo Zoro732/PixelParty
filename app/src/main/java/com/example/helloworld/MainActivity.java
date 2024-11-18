@@ -11,21 +11,27 @@ import android.widget.Button;
 import android.content.Intent;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
 public class MainActivity extends AppCompatActivity {
 
-
+    private ImageView playerBlue, playerRed, playerPurple;
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         FrameLayout frameLayout = findViewById(R.id.gameFrame);
         ImageView imageView = new ImageView(this);
+
+        playerBlue = findViewById(R.id.bleu);
+        playerRed = findViewById(R.id.rouge);
+        playerPurple = findViewById(R.id.purple);
 
         Glide.with(this)
                 .asGif()
@@ -37,15 +43,24 @@ public class MainActivity extends AppCompatActivity {
         TextView mainpage_text = findViewById(R.id.mainpage_text);
         mainpage_text.bringToFront();
 
-
-
+        LinearLayout spriteLayout = findViewById(R.id.sprite);
+        LinearLayout boutonSprite = findViewById(R.id.button);
+        Button mini_jeux = findViewById(R.id.mini_jeux);
         Button gameMode_Solo = findViewById(R.id.gameMode_Solo);
-        gameMode_Solo.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, SpriteActivity.class);
+        gameMode_Solo.setOnClickListener(view -> {
+            gameMode_Solo.setVisibility(View.GONE);
+            mini_jeux.setVisibility(View.GONE);
+            mainpage_text.setVisibility(View.GONE);
+            spriteLayout.setVisibility(View.VISIBLE);
+            boutonSprite.setVisibility(View.VISIBLE);
+        });
+
+        Button start = findViewById(R.id.start);
+        start.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, Taquin_MA.class);
             startActivity(intent);
         });
 
-        Button mini_jeux = findViewById(R.id.mini_jeux);
         mini_jeux.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, MiniGames_MA.class);
             startActivity(intent);

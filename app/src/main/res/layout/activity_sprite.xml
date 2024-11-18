@@ -1,7 +1,7 @@
 <!-- res/layout/activity_main.xml -->
 
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/spriteFrame"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -16,13 +16,15 @@
         android:text="Selected Character: None"
         android:textSize="18sp"
         android:fontFamily="@font/press2start"
-        android:layout_marginBottom="24dp"/>
+        android:layout_marginBottom="24dp"
+        android:visibility="gone" />
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center_horizontal">
+        android:gravity="center_horizontal"
+        android:visibility="gone" >
 
         <!-- Sprite 1 -->
         <ImageView
@@ -59,7 +61,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center">
+        android:gravity="center"
+        android:visibility="gone" >
 
         <Button
             android:id="@+id/start"

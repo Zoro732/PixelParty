@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -43,6 +44,7 @@ public class SpriteActivity extends AppCompatActivity {
         playerBlue = findViewById(R.id.bleu);
         playerRed = findViewById(R.id.rouge);
         playerPurple = findViewById(R.id.purple);
+        ImageView imageView = new ImageView(this);
 
         // Insert gif into imageview
         Glide.with(this)
@@ -57,6 +59,8 @@ public class SpriteActivity extends AppCompatActivity {
                 .asGif()
                 .load(R.drawable.player_red_selection) // Remplacez par votre fichier GIF
                 .into(playerRed);
+
+
 
 
         selectedCharacterText = findViewById(R.id.selected_character_text);
