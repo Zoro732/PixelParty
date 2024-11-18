@@ -54,15 +54,15 @@
                 android:layout_marginTop="60dp">
 
                 <!-- Tuiles de la grille de jeu -->
-                <TextView android:id="@+id/tile_1" style="@style/TileStyle" />
-                <TextView android:id="@+id/tile_2" style="@style/TileStyle" />
-                <TextView android:id="@+id/tile_3" style="@style/TileStyle" />
-                <TextView android:id="@+id/tile_4" style="@style/TileStyle" />
-                <TextView android:id="@+id/tile_5" style="@style/TileStyle" />
-                <TextView android:id="@+id/tile_6" style="@style/TileStyle" />
-                <TextView android:id="@+id/tile_7" style="@style/TileStyle" />
-                <TextView android:id="@+id/tile_8" style="@style/TileStyle" />
-                <TextView android:id="@+id/tile_9" style="@style/TileStyle" />
+                <ImageView android:id="@+id/tile_1" style="@style/TileStyle" />
+                <ImageView android:id="@+id/tile_2" style="@style/TileStyle" />
+                <ImageView android:id="@+id/tile_3" style="@style/TileStyle" />
+                <ImageView android:id="@+id/tile_4" style="@style/TileStyle" />
+                <ImageView android:id="@+id/tile_5" style="@style/TileStyle" />
+                <ImageView android:id="@+id/tile_6" style="@style/TileStyle" />
+                <ImageView android:id="@+id/tile_7" style="@style/TileStyle" />
+                <ImageView android:id="@+id/tile_8" style="@style/TileStyle" />
+                <ImageView android:id="@+id/tile_9" style="@style/TileStyle" />
             </GridLayout>
 
             <ImageView
@@ -119,15 +119,15 @@
                 android:layout_marginTop="60dp">
 
                 <!-- Tuiles de la grille de solution -->
-                <TextView android:id="@+id/tile_1_solution" style="@style/TileStyle" />
-                <TextView android:id="@+id/tile_2_solution" style="@style/TileStyle" />
-                <TextView android:id="@+id/tile_3_solution" style="@style/TileStyle" />
-                <TextView android:id="@+id/tile_4_solution" style="@style/TileStyle" />
-                <TextView android:id="@+id/tile_5_solution" style="@style/TileStyle" />
-                <TextView android:id="@+id/tile_6_solution" style="@style/TileStyle" />
-                <TextView android:id="@+id/tile_7_solution" style="@style/TileStyle" />
-                <TextView android:id="@+id/tile_8_solution" style="@style/TileStyle" />
-                <TextView android:id="@+id/tile_9_solution" style="@style/TileStyle" />
+                <ImageView android:id="@+id/tile_1_solution" style="@style/TileStyle" />
+                <ImageView android:id="@+id/tile_2_solution" style="@style/TileStyle" />
+                <ImageView android:id="@+id/tile_3_solution" style="@style/TileStyle" />
+                <ImageView android:id="@+id/tile_4_solution" style="@style/TileStyle" />
+                <ImageView android:id="@+id/tile_5_solution" style="@style/TileStyle" />
+                <ImageView android:id="@+id/tile_6_solution" style="@style/TileStyle" />
+                <ImageView android:id="@+id/tile_7_solution" style="@style/TileStyle" />
+                <ImageView android:id="@+id/tile_8_solution" style="@style/TileStyle" />
+                <ImageView android:id="@+id/tile_9_solution" style="@style/TileStyle" />
             </GridLayout>
         </FrameLayout>
     </LinearLayout>

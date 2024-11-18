@@ -1,27 +1,36 @@
 package com.example.helloworld;
 
 import android.app.Dialog;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import java.util.Random;
 
 public class TaquinActivity extends AppCompatActivity {
 
-    private TextView[][] tiles = new TextView[3][3]; // Grille du jeu 3x3
-    private TextView[][] solutionTiles = new TextView[3][3]; // Grille de la solution 3x3
-    private int emptyRow = 2, emptyCol = 2; // Position initiale de l'espace vide
-    private Dialog pauseDialog; // Dialog pour la pause
+    private ImageView[][] tiles = new ImageView[3][3];
+    private ImageView[][] solutionTiles = new ImageView[3][3];
 
-    // Timer
-    private TextView timerTextView; // Affichage du timer
-    private int remainingSeconds = 120; // Compte à rebours initial (120 secondes)
+    private int emptyRow = 2, emptyCol = 2;
+    private Bitmap originalBitmap;
+
+    private Dialog pauseDialog;
+    private Dialog endDialog;
+
+    private TextView timerTextView;
+    private int remainingSeconds = 120;
     private Handler timerHandler = new Handler();
     private boolean isTimerRunning = false;
 
@@ -30,71 +39,95 @@ public class TaquinActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_taquin);
 
+        // Masquer l'interface système
         hideSystemUI();
 
-        // Initialisation des éléments
+        // Initialisation de la grille de jeu et de la solution
         GridLayout gridLayout = findViewById(R.id.gridLayout);
         GridLayout solutionGrid = findViewById(R.id.solutionGrid);
-        timerTextView = findViewById(R.id.timer); // Ajouter un TextView pour afficher le timer
+        timerTextView = findViewById(R.id.timer);
 
+        // Chargement de l'image originale
+        originalBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.enfant_espace);
+
+        // Initialisation des tuiles
         initializeTiles(gridLayout, tiles);
         initializeSolutionTiles(solutionGrid);
+
+        // Mélange des tuiles
         shuffleTiles();
 
+        // Paramètres du jeu
         ImageView imageSettings = findViewById(R.id.settings);
         imageSettings.setOnClickListener(v -> showPauseDialog());
 
-        startCountdownTimer(); // Démarrer le compte à rebours
+        // Démarre le chronomètre
+        startCountdownTimer();
     }
 
+    // Démarre le chronomètre
     private void startCountdownTimer() {
         isTimerRunning = true;
         timerHandler.post(new Runnable() {
             @Override
             public void run() {
                 if (remainingSeconds > 0) {
-                    timerTextView.setText(String.valueOf(remainingSeconds)); // Met à jour l'affichage
+                    timerTextView.setText(String.valueOf(remainingSeconds));
                     remainingSeconds--;
-                    timerHandler.postDelayed(this, 1000); // Réexécute après 1 seconde
+                    timerHandler.postDelayed(this, 1000);
                 } else {
-                    timerTextView.setText("0"); // Affiche 0 quand le temps est écoulé
-                    onCountdownFinished(); // Gère la fin du compte à rebours
+                    timerTextView.setText("0");
+                    onCountdownFinished();
                 }
             }
         });
     }
 
+    // Arrête le chronomètre
     private void stopCountdownTimer() {
         isTimerRunning = false;
-        timerHandler.removeCallbacksAndMessages(null); // Arrête le timer
+        timerHandler.removeCallbacksAndMessages(null);
     }
 
-    private void onCountdownFinished() {
-        onGameOver(false); // Temps écoulé, la partie est perdue
+    @Override
+    protected void onResume() {
+        super.onResume();
+        hideSystemUI();
+        if (!isTimerRunning) {
+            startCountdownTimer();
+        }
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopCountdownTimer();
+    }
+
+    // Affiche le dialogue de pause
     private void showPauseDialog() {
-        stopCountdownTimer(); // Mettre en pause le compte à rebours
+        stopCountdownTimer();
 
         pauseDialog = new Dialog(this);
         pauseDialog.setContentView(R.layout.dialog_pause);
-        pauseDialog.setCancelable(false); // Désactiver la fermeture en cliquant en dehors du dialog
+        pauseDialog.setCancelable(false);
 
         Button buttonResume = pauseDialog.findViewById(R.id.btn_resume);
         Button buttonRestart = pauseDialog.findViewById(R.id.btn_restart);
         Button buttonQuit = pauseDialog.findViewById(R.id.btn_quit);
 
+        // Actions des boutons du dialogue de pause
         buttonResume.setOnClickListener(v -> {
             pauseDialog.dismiss();
-            startCountdownTimer(); // Reprendre le timer
+            startCountdownTimer();
         });
 
         buttonRestart.setOnClickListener(v -> {
             shuffleTiles();
-            remainingSeconds = 120; // Réinitialise le timer
+            remainingSeconds = 120;
             timerTextView.setText(String.valueOf(remainingSeconds));
             pauseDialog.dismiss();
-            startCountdownTimer(); // Recommence le compte à rebours
+            startCountdownTimer();
         });
 
         buttonQuit.setOnClickListener(v -> finish());
@@ -102,6 +135,7 @@ public class TaquinActivity extends AppCompatActivity {
         pauseDialog.show();
     }
 
+    // Masque l'interface système pour passer en mode plein écran
     private void hideSystemUI() {
         View decorView = getWindow().getDecorView();
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN
@@ -114,16 +148,19 @@ public class TaquinActivity extends AppCompatActivity {
         decorView.setSystemUiVisibility(uiOptions);
     }
 
-    private void initializeTiles(GridLayout gridLayout, TextView[][] tileArray) {
+    // Initialisation des tuiles de la grille de jeu
+    private void initializeTiles(GridLayout gridLayout, ImageView[][] tileArray) {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 int resID = getResources().getIdentifier("tile_" + (i * 3 + j + 1), "id", getPackageName());
-                TextView tile = findViewById(resID);
+                ImageView tile = findViewById(resID);
                 tileArray[i][j] = tile;
 
-                tile.setText(String.valueOf(i * 3 + j + 1));
+                // On ne met pas d'image sur la case vide (en bas à droite)
                 if (i == 2 && j == 2) {
-                    tile.setText(""); // Dernière tuile vide
+                    tile.setImageResource(0);
+                } else {
+                    tile.setImageBitmap(getTileBitmap(i, j));
                 }
 
                 final int row = i;
@@ -133,35 +170,41 @@ public class TaquinActivity extends AppCompatActivity {
         }
     }
 
+    // Initialisation des tuiles de la solution
     private void initializeSolutionTiles(GridLayout solutionGrid) {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 int resID = getResources().getIdentifier("tile_" + (i * 3 + j + 1) + "_solution", "id", getPackageName());
-                TextView tile = findViewById(resID);
+                ImageView tile = findViewById(resID);
                 solutionTiles[i][j] = tile;
 
-                tile.setText(String.valueOf(i * 3 + j + 1));
                 if (i == 2 && j == 2) {
-                    tile.setText(""); // Dernière tuile vide
+                    tile.setImageResource(0);
+                } else {
+                    tile.setImageBitmap(getTileBitmap(i, j));
                 }
             }
         }
     }
 
+    // Gère le clic sur une tuile
     private void onTileClick(int row, int col) {
-        if (Math.abs(emptyRow - row) + Math.abs(emptyCol - col) == 1) { // Vérifie si la tuile est adjacente
-            tiles[emptyRow][emptyCol].setText(tiles[row][col].getText());
-            tiles[row][col].setText("");
+        if (Math.abs(emptyRow - row) + Math.abs(emptyCol - col) == 1) {
+            Bitmap tempBitmap = tiles[row][col].getDrawable() != null ? ((BitmapDrawable) tiles[row][col].getDrawable()).getBitmap() : null;
+            tiles[emptyRow][emptyCol].setImageBitmap(tempBitmap);
+            tiles[row][col].setImageResource(0);
             emptyRow = row;
             emptyCol = col;
 
+            // Vérification après chaque mouvement
             if (isGameWon()) {
-                stopCountdownTimer(); // Arrêter le timer
-                onGameOver(true); // Le joueur a gagné
+                stopCountdownTimer();
+                onGameWon();
             }
         }
     }
 
+    // Mélange aléatoire des tuiles
     private void shuffleTiles() {
         Random random = new Random();
         for (int i = 0; i < 100; i++) {
@@ -169,76 +212,104 @@ public class TaquinActivity extends AppCompatActivity {
             int newRow = emptyRow, newCol = emptyCol;
 
             switch (direction) {
-                case 0: newRow--; break; // Haut
-                case 1: newRow++; break; // Bas
-                case 2: newCol--; break; // Gauche
-                case 3: newCol++; break; // Droite
+                case 0: newRow--; break;
+                case 1: newRow++; break;
+                case 2: newCol--; break;
+                case 3: newCol++; break;
             }
 
             if (newRow >= 0 && newRow < 3 && newCol >= 0 && newCol < 3) {
-                tiles[emptyRow][emptyCol].setText(tiles[newRow][newCol].getText());
-                tiles[newRow][newCol].setText("");
+                Bitmap tempBitmap = tiles[newRow][newCol].getDrawable() != null ? ((BitmapDrawable) tiles[newRow][newCol].getDrawable()).getBitmap() : null;
+                tiles[emptyRow][emptyCol].setImageBitmap(tempBitmap);
+                tiles[newRow][newCol].setImageResource(0);
                 emptyRow = newRow;
                 emptyCol = newCol;
             }
         }
     }
 
-    private boolean isGameWon() {
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                // Vérifier les tuiles sauf la dernière
-                if (i == 2 && j == 2) {
-                    if (!tiles[i][j].getText().toString().isEmpty()) {
-                        return false; // La dernière case doit être vide
-                    }
-                } else {
-                    if (!tiles[i][j].getText().toString().equals(String.valueOf(i * 3 + j + 1))) {
-                        return false; // Les autres cases doivent correspondre à leur numéro
-                    }
-                }
-            }
-        }
-        return true;
+    // Action lorsque le chronomètre arrive à zéro (perte du jeu)
+    private void onCountdownFinished() {
+        showGameEndDialog("Temps écoulé ! Vous avez perdu.");
     }
 
-    private void onGameOver(boolean isWin) {
-        // Créer le dialogue de fin de jeu
-        String message = isWin ? "Bravo, vous avez gagné !" : "Temps écoulé ! Vous avez perdu.";
-        String button1Text = "Rejouer";
-        String button2Text = "Quitter";
+    // Affiche un dialogue de fin de jeu (perte)
+    private void showGameEndDialog(String message) {
+        // Crée et montre le pop-up de fin de jeu
+        endDialog = new Dialog(this);
+        endDialog.setContentView(R.layout.dialog_game_over);
+        endDialog.setCancelable(false);
 
-        // Créer et afficher le dialogue
-        Dialog gameOverDialog = new Dialog(this);
-        gameOverDialog.setContentView(R.layout.dialog_game_over); // Utilisez un layout XML pour personnaliser le dialogue
-        gameOverDialog.setCancelable(false); // Empêche la fermeture en cliquant en dehors du dialog
-
-        // Assurer le centrage du dialog au milieu de l'écran
-        gameOverDialog.getWindow().setLayout(
-                (int) (getResources().getDisplayMetrics().widthPixels * 0.8), // Largeur : 80% de la largeur de l'écran
-                GridLayout.LayoutParams.WRAP_CONTENT // Hauteur : s'adapte au contenu
-        );
-
-        // Récupérer les éléments du dialog et ajuster leur contenu
-        TextView messageTextView = gameOverDialog.findViewById(R.id.message);
+        TextView messageTextView = endDialog.findViewById(R.id.message);
         messageTextView.setText(message);
 
-        Button buttonRestart = gameOverDialog.findViewById(R.id.btn_restart);
-        Button buttonQuit = gameOverDialog.findViewById(R.id.btn_quit);
-
-        buttonRestart.setText(button1Text);
-        buttonQuit.setText(button2Text);
+        Button buttonRestart = endDialog.findViewById(R.id.btn_restart);
+        Button buttonQuit = endDialog.findViewById(R.id.btn_quit);
 
         buttonRestart.setOnClickListener(v -> {
             shuffleTiles();
-            remainingSeconds = 120; // Réinitialise le timer
+            remainingSeconds = 100;
             timerTextView.setText(String.valueOf(remainingSeconds));
-            gameOverDialog.dismiss();
-            startCountdownTimer(); // Recommence le compte à rebours
+            endDialog.dismiss();
+            startCountdownTimer();
         });
 
         buttonQuit.setOnClickListener(v -> finish());
 
-        gameOverDialog.show();
+        // Ajuster la taille de la fenêtre du dialogue
+        Window window = endDialog.getWindow();
+        if (window != null) {
+            window.setLayout(1500, 500);  // Modifier la largeur et la hauteur selon vos besoins
+        }
+
+        endDialog.show(); // Afficher le pop-up de fin de jeu
+    }
+
+    // Action lorsque le joueur gagne
+    private void onGameWon() {
+        if (endDialog != null && endDialog.isShowing()) {
+            return; // Empêcher l'ouverture de plusieurs dialogues
+        }
+
+        stopCountdownTimer();
+        showGameEndDialog("Félicitations ! Vous avez gagné.");
+    }
+
+    // Récupère le Bitmap d'une tuile donnée (i, j)
+    private Bitmap getTileBitmap(int row, int col) {
+        int tileWidth = originalBitmap.getWidth() / 3;
+        int tileHeight = originalBitmap.getHeight() / 3;
+
+        return Bitmap.createBitmap(originalBitmap, col * tileWidth, row * tileHeight, tileWidth, tileHeight);
+    }
+
+    // Vérifie si le jeu est gagné
+    private boolean isGameWon() {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (tiles[i][j].getDrawable() == null) {
+                    continue;  // Ignorer la case vide
+                }
+
+                Drawable tileDrawable = tiles[i][j].getDrawable();
+                Drawable solutionDrawable = solutionTiles[i][j].getDrawable();
+
+                if (tileDrawable != null && solutionDrawable != null
+                        && tileDrawable instanceof BitmapDrawable
+                        && solutionDrawable instanceof BitmapDrawable) {
+
+                    Bitmap tileBitmap = ((BitmapDrawable) tileDrawable).getBitmap();
+                    Bitmap solutionBitmap = ((BitmapDrawable) solutionDrawable).getBitmap();
+
+                    // Vérification que les tuiles sont aux bonnes positions
+                    if (!tileBitmap.sameAs(solutionBitmap)) {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            }
+        }
+        return true; // Si toutes les tuiles sont à la bonne place
     }
 }
