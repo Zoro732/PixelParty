@@ -8,7 +8,7 @@
     tools:context=".OptionActivity">
 
     <FrameLayout
-        android:id="@+id/gameFrame"
+        android:id="@+id/optionFrame"
         android:background="#FF3DC2EC"
         android:layout_width="0dp"
         android:layout_height="0dp"

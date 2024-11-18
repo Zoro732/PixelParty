@@ -155,4 +155,89 @@
         </LinearLayout>
 
     </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/optionFrame"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/theme"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginTop="125dp"
+            android:layout_marginLeft="100dp"
+            android:text="Thème :"
+            android:fontFamily="@font/press2start"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/buttonSombre"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="375dp"
+            android:background="@drawable/rounded_button"
+            android:layout_marginTop="115dp"
+            android:text="SOMBRE"
+            android:fontFamily="@font/press2start"/>
+
+        <Button
+            android:id="@+id/buttonClair"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_button"
+            android:layout_marginLeft="225dp"
+            android:layout_marginTop="115dp"
+            android:text="Clair"
+            android:fontFamily="@font/press2start"/>
+
+        <TextView
+            android:id="@+id/languageLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="250dp"
+            android:layout_marginLeft="100dp"
+            android:text="Langue :"
+            android:fontFamily="@font/press2start"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <Spinner
+            android:id="@+id/language"
+            android:layout_width="196dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|center"
+            android:fontFamily="@font/press2start"
+            android:layout_marginTop="250dp" />
+
+        <!-- Remplacer l'ImageButton par un simple Button -->
+        <Button
+            android:id="@+id/backbutton"
+            android:layout_width="wrap_content"
+            android:background="@drawable/rounded_button"
+            android:layout_height="52dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:text="Retour"
+            android:fontFamily="@font/press2start"/>
+
+        <Button
+            android:id="@+id/aboutButton"
+            android:layout_width="wrap_content"
+            android:layout_height="52dp"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="right"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/rounded_button"
+            android:text="À propos"
+            android:fontFamily="@font/press2start"/>
+
+    </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
