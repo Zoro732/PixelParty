@@ -13,25 +13,29 @@
         android:text="Pause"
         android:textSize="24sp"
         android:textStyle="bold"
-        android:paddingBottom="20dp"/>
+        android:paddingBottom="20dp"
+        android:fontFamily="@font/press2start"/>
 
     <Button
         android:id="@+id/btn_resume"
-        android:layout_width="wrap_content"
+        android:layout_width="238dp"
         android:layout_height="wrap_content"
-        android:text="Resume"/>
+        android:fontFamily="@font/press2start"
+        android:text="Resume" />
 
     <Button
         android:id="@+id/btn_restart"
-        android:layout_width="wrap_content"
+        android:layout_width="238dp"
         android:layout_height="wrap_content"
-        android:text="Restart"
-        android:layout_marginTop="20dp"/>
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/press2start"
+        android:text="Restart" />
 
     <Button
         android:id="@+id/btn_quit"
-        android:layout_width="wrap_content"
+        android:layout_width="238dp"
         android:layout_height="wrap_content"
-        android:text="Quit"
-        android:layout_marginTop="20dp"/>
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/press2start"
+        android:text="Quit" />
 </LinearLayout>

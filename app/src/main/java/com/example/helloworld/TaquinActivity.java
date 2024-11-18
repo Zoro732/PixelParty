@@ -2,8 +2,8 @@ package com.example.helloworld;
 
 import android.app.Dialog;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
-
 import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.ImageView;
@@ -12,16 +12,18 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.Random;
 
-
-
 public class TaquinActivity extends AppCompatActivity {
 
     private TextView[][] tiles = new TextView[3][3]; // Grille du jeu 3x3
     private TextView[][] solutionTiles = new TextView[3][3]; // Grille de la solution 3x3
     private int emptyRow = 2, emptyCol = 2; // Position initiale de l'espace vide
-    // private LabyrintheGameView labyrintheGameView; // Supposée si nécessaire
+    private Dialog pauseDialog; // Dialog pour la pause
 
-    private Dialog pauseDialog; // Ajoutez cette ligne pour un dialog de pause global
+    // Timer
+    private TextView timerTextView; // Affichage du timer
+    private int remainingSeconds = 120; // Compte à rebours initial (60 secondes)
+    private Handler timerHandler = new Handler();
+    private boolean isTimerRunning = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,20 +32,67 @@ public class TaquinActivity extends AppCompatActivity {
 
         hideSystemUI();
 
+        // Initialisation des éléments
         GridLayout gridLayout = findViewById(R.id.gridLayout);
         GridLayout solutionGrid = findViewById(R.id.solutionGrid);
+        timerTextView = findViewById(R.id.timer); // Ajouter un TextView pour afficher le timer
 
         initializeTiles(gridLayout, tiles);
         initializeSolutionTiles(solutionGrid);
         shuffleTiles();
 
         ImageView imageSettings = findViewById(R.id.settings);
-
         imageSettings.setOnClickListener(v -> showPauseDialog());
+
+        startCountdownTimer(); // Démarrer le compte à rebours
+    }
+
+    private void startCountdownTimer() {
+        isTimerRunning = true;
+        timerHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (remainingSeconds > 0) {
+                    timerTextView.setText(String.valueOf(remainingSeconds)); // Met à jour l'affichage
+                    remainingSeconds--;
+                    timerHandler.postDelayed(this, 1000); // Réexécute après 1 seconde
+                } else {
+                    timerTextView.setText("0"); // Affiche 0 quand le temps est écoulé
+                    onCountdownFinished(); // Gère la fin du compte à rebours
+                }
+            }
+        });
+    }
+
+    private void stopCountdownTimer() {
+        isTimerRunning = false;
+        timerHandler.removeCallbacksAndMessages(null); // Arrête le timer
+    }
+
+    private void onCountdownFinished() {
+        Toast.makeText(this, "Temps écoulé ! Vous avez perdu.", Toast.LENGTH_LONG).show();
+        // Optionnel : bloquer l'interaction avec la grille
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        hideSystemUI(); // Assurer le mode plein écran au retour
+        if (!isTimerRunning) {
+            startCountdownTimer(); // Reprendre le timer si nécessaire
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopCountdownTimer(); // Arrêter le timer quand l'activité est mise en pause
     }
 
     private void showPauseDialog() {
         // Créer et afficher un dialog personnalisé pour la pause
+        stopCountdownTimer(); // Mettre en pause le compte à rebours
+
         pauseDialog = new Dialog(this);
         pauseDialog.setContentView(R.layout.dialog_pause);
         pauseDialog.setCancelable(false); // Désactiver la fermeture en cliquant en dehors du dialog
@@ -52,22 +101,22 @@ public class TaquinActivity extends AppCompatActivity {
         Button buttonRestart = pauseDialog.findViewById(R.id.btn_restart);
         Button buttonQuit = pauseDialog.findViewById(R.id.btn_quit);
 
-        buttonResume.setOnClickListener(v -> pauseDialog.dismiss());
+        buttonResume.setOnClickListener(v -> {
+            pauseDialog.dismiss();
+            startCountdownTimer(); // Reprendre le timer
+        });
 
         buttonRestart.setOnClickListener(v -> {
             shuffleTiles();
+            remainingSeconds = 120; // Réinitialise le timer
+            timerTextView.setText(String.valueOf(remainingSeconds));
             pauseDialog.dismiss();
+            startCountdownTimer(); // Recommence le compte à rebours
         });
 
         buttonQuit.setOnClickListener(v -> finish());
 
         pauseDialog.show();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        hideSystemUI(); // Assurer le mode plein écran au retour
     }
 
     private void hideSystemUI() {
@@ -83,7 +132,6 @@ public class TaquinActivity extends AppCompatActivity {
     }
 
     private void initializeTiles(GridLayout gridLayout, TextView[][] tileArray) {
-
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 int resID = getResources().getIdentifier("tile_" + (i * 3 + j + 1), "id", getPackageName());
@@ -125,8 +173,10 @@ public class TaquinActivity extends AppCompatActivity {
             emptyCol = col;
 
             if (isGameWon()) {
+                stopCountdownTimer(); // Arrêter le timer
                 Toast.makeText(this, "Bravo, vous avez gagné!", Toast.LENGTH_LONG).show();
             }
+
         }
     }
 
@@ -155,11 +205,19 @@ public class TaquinActivity extends AppCompatActivity {
     private boolean isGameWon() {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                if (!tiles[i][j].getText().toString().equals(String.valueOf(i * 3 + j + 1))) {
-                    return false;
+                // Vérifier les tuiles sauf la dernière
+                if (i == 2 && j == 2) {
+                    if (!tiles[i][j].getText().toString().isEmpty()) {
+                        return false; // La dernière case doit être vide
+                    }
+                } else {
+                    if (!tiles[i][j].getText().toString().equals(String.valueOf(i * 3 + j + 1))) {
+                        return false; // Les autres cases doivent correspondre à leur numéro
+                    }
                 }
             }
         }
         return true;
     }
+
 }
