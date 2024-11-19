@@ -47,8 +47,10 @@ public class TaquinActivity extends AppCompatActivity {
         GridLayout solutionGrid = findViewById(R.id.solutionGrid);
         timerTextView = findViewById(R.id.timer);
 
-        // Chargement de l'image originale
-        originalBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.enfant_espace);
+        // Choisir aléatoirement l'image à utiliser
+        int[] images = {R.drawable.oiseaux, R.drawable.etoile, R.drawable.enfant_espace};
+        int randomImageIndex = new Random().nextInt(images.length);
+        originalBitmap = BitmapFactory.decodeResource(getResources(), images[randomImageIndex]);
 
         // Initialisation des tuiles
         initializeTiles(gridLayout, tiles);
@@ -204,6 +206,12 @@ public class TaquinActivity extends AppCompatActivity {
         }
     }
 
+    // Action lorsque le jeu est gagné
+    private void onGameWon() {
+        stopCountdownTimer();
+        showGameEndDialog("Félicitations ! Vous avez gagné.");
+    }
+
     // Mélange aléatoire des tuiles
     private void shuffleTiles() {
         Random random = new Random();
@@ -248,7 +256,7 @@ public class TaquinActivity extends AppCompatActivity {
 
         buttonRestart.setOnClickListener(v -> {
             shuffleTiles();
-            remainingSeconds = 100;
+            remainingSeconds = 120;
             timerTextView.setText(String.valueOf(remainingSeconds));
             endDialog.dismiss();
             startCountdownTimer();
@@ -262,54 +270,38 @@ public class TaquinActivity extends AppCompatActivity {
             window.setLayout(1500, 500);  // Modifier la largeur et la hauteur selon vos besoins
         }
 
-        endDialog.show(); // Afficher le pop-up de fin de jeu
+        endDialog.show();
     }
 
-    // Action lorsque le joueur gagne
-    private void onGameWon() {
-        if (endDialog != null && endDialog.isShowing()) {
-            return; // Empêcher l'ouverture de plusieurs dialogues
+    private boolean isGameWon() {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                Drawable solutionDrawable = solutionTiles[i][j].getDrawable();
+                Drawable tileDrawable = tiles[i][j].getDrawable();
+
+                // Vérifie si le Drawable est un BitmapDrawable
+                if (solutionDrawable instanceof BitmapDrawable && tileDrawable instanceof BitmapDrawable) {
+                    Bitmap solutionBitmap = ((BitmapDrawable) solutionDrawable).getBitmap();
+                    Bitmap tileBitmap = ((BitmapDrawable) tileDrawable).getBitmap();
+
+                    // Compare les Bitmaps
+                    if (!solutionBitmap.sameAs(tileBitmap)) {
+                        return false; // Les tuiles ne sont pas identiques
+                    }
+                } else if (solutionDrawable != null || tileDrawable != null) {
+                    return false; // Si l'un des Drawables est null, ce n'est pas une solution valide
+                }
+            }
         }
-
-        stopCountdownTimer();
-        showGameEndDialog("Félicitations ! Vous avez gagné.");
+        return true; // Toutes les tuiles sont en place
     }
 
-    // Récupère le Bitmap d'une tuile donnée (i, j)
+
+    // Récupère le bitmap de la tuile en fonction de la position
     private Bitmap getTileBitmap(int row, int col) {
         int tileWidth = originalBitmap.getWidth() / 3;
         int tileHeight = originalBitmap.getHeight() / 3;
 
         return Bitmap.createBitmap(originalBitmap, col * tileWidth, row * tileHeight, tileWidth, tileHeight);
-    }
-
-    // Vérifie si le jeu est gagné
-    private boolean isGameWon() {
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                if (tiles[i][j].getDrawable() == null) {
-                    continue;  // Ignorer la case vide
-                }
-
-                Drawable tileDrawable = tiles[i][j].getDrawable();
-                Drawable solutionDrawable = solutionTiles[i][j].getDrawable();
-
-                if (tileDrawable != null && solutionDrawable != null
-                        && tileDrawable instanceof BitmapDrawable
-                        && solutionDrawable instanceof BitmapDrawable) {
-
-                    Bitmap tileBitmap = ((BitmapDrawable) tileDrawable).getBitmap();
-                    Bitmap solutionBitmap = ((BitmapDrawable) solutionDrawable).getBitmap();
-
-                    // Vérification que les tuiles sont aux bonnes positions
-                    if (!tileBitmap.sameAs(solutionBitmap)) {
-                        return false;
-                    }
-                } else {
-                    return false;
-                }
-            }
-        }
-        return true; // Si toutes les tuiles sont à la bonne place
     }
 }
