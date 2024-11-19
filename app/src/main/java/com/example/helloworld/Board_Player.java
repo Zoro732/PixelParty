@@ -28,6 +28,8 @@ public class Board_Player {
     private List<Board_Case> currentPath; // The current path the player is following
     private int currentPathIndex; // The index of the next tile in the path
 
+    public boolean enablePlayerMovingAnimation = true;
+
     public Board_Player(int startingCaseNumber, Bitmap playerIdleSprite) {
         this.caseNumber = startingCaseNumber;
         this.spriteSheet = new SpriteSheet(playerIdleSprite, 1, 8);
@@ -53,7 +55,7 @@ public class Board_Player {
             float dy = targetY - y;
             float distance = (float) Math.sqrt(dx * dx + dy * dy);
 
-            if (distance > moveSpeed) {
+            if (distance > moveSpeed && enablePlayerMovingAnimation) {
                 // Calculer le déplacement en normalisant la direction
                 x += dx / distance * moveSpeed;
                 y += dy / distance * moveSpeed;
@@ -62,12 +64,38 @@ public class Board_Player {
                 x = targetX;
                 y = targetY;
                 isMoving = false;
+
             }
+
             if (!isMoving && currentPath != null && currentPathIndex < currentPath.size()) {
                 moveToNextTileInPath();
                 isMoving = true; // Continue moving to the next tile
             }
+
         }
+    }
+    public void setMovingAnimationToTargetCase (boolean value) { //if false, no animation just a Teleportation
+        enablePlayerMovingAnimation = value;
+    }
+
+    public boolean hasReachedTarget() {
+        if (isMoving) {
+            float dx = targetX - x;
+            float dy = targetY - y;
+            float distance = (float) Math.sqrt(dx * dx + dy * dy);
+
+            // Check if the player is close enough to the target
+            return distance < moveSpeed;
+        }
+        return false; // Not moving, so hasn't reached target
+    }
+
+    public boolean isMoving() {
+        return isMoving;
+    }
+
+    public void setMoving(boolean moving) {
+        isMoving = moving;
     }
 
     public void setCaseNumber(int targetCaseNumber) {

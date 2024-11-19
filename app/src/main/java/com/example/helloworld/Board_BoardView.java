@@ -38,10 +38,10 @@ public class Board_BoardView extends View {
             {0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0},
     };
     public static int[][] mapAction = {
-            {0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+            {0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 2, 2, 2, 2, 3, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 1, 3, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4},
             {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
             {0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1},
             {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -63,10 +63,10 @@ public class Board_BoardView extends View {
     private SpriteSheet diceSpriteSheet;
     private Bitmap diceBitmap;
     private Bitmap playerIdleBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.player_move_purple);
-    private Typeface font =  ResourcesCompat.getFont(getContext(), R.font.press2start);;
+    private Typeface font = ResourcesCompat.getFont(getContext(), R.font.press2start);
+    ;
     private final Handler animationHandler = new Handler(Looper.getMainLooper());
 
-    private static final int MINI_GAME_REQUEST_CODE = 1;
 
     public Board_BoardView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -133,6 +133,7 @@ public class Board_BoardView extends View {
 
         boardPlayer = new Board_Player(0, playerIdleBitmap);
         animationHandler.post(animationRunnable); // Start animation loop for player
+
     }
 
     @Override
@@ -141,6 +142,7 @@ public class Board_BoardView extends View {
         // Stop the animation loop when the view is detached
         animationHandler.removeCallbacks(animationRunnable);
     }
+
 
     // Helper function to find adjacent gray squares
     private List<Board_Case> findAdjacentGraySquares(Board_Case currentBoardCase, int caseNumber) {
@@ -168,7 +170,7 @@ public class Board_BoardView extends View {
                     }
 
                     if (!alreadyNumbered) {
-                        adjacentBoardCases.add(new Board_Case(nx, ny, 1,0));
+                        adjacentBoardCases.add(new Board_Case(nx, ny, 1, 0));
                     }
                 }
             }
@@ -226,6 +228,10 @@ public class Board_BoardView extends View {
         }
     }
 
+    public boolean isDiceRolling() {
+        return isRolling;
+    }
+
     private void drawTile(Canvas canvas, Board_Case gameBoardCase) {
         int x = gameBoardCase.getX();
         int y = gameBoardCase.getY();
@@ -253,7 +259,14 @@ public class Board_BoardView extends View {
             // Définir la couleur du texte en fonction de l'action
             if (gameBoardCase.getAction() == 1) {
                 paint.setColor(Color.BLUE); // Texte bleu pour les cases avec action 1
-            } else {
+            } else if (gameBoardCase.getAction() == 2) {
+                paint.setColor(Color.RED); // Texte rouge pour les cases avec action 2
+            } else if (gameBoardCase.getAction() == 3) {
+                paint.setColor(Color.GREEN); // Texte vert pour les cases avec action 3
+            } else if (gameBoardCase.getAction() == 4) {
+                paint.setColor(Color.MAGENTA);
+            }
+            else {
                 paint.setColor(Color.WHITE); // Texte blanc pour les autres
             }
 
@@ -312,6 +325,7 @@ public class Board_BoardView extends View {
 
 
     }
+
     public int getCurrentCaseAction() {
         return boardCases.get(boardPlayer.getCaseNumber()).getAction();
     }
@@ -325,8 +339,20 @@ public class Board_BoardView extends View {
         return super.onTouchEvent(event);
     }
 
-    public void onMiniGameFinished(int score) {
-        Toast.makeText(getContext(), "Mini-jeu terminé. Score: " + score, Toast.LENGTH_SHORT).show();
+    public int getPlayerCaseNumber() {
+        return boardPlayer.getCaseNumber();
+    }
+
+    public void setPlayerCaseNumber(int caseNumber) {
+        boardPlayer.setCaseNumber(caseNumber);
+    }
+
+    public void setPlayerMovingAnimationToTargetCase(boolean value) {
+        boardPlayer.setMovingAnimationToTargetCase(value);
+    }
+
+    public boolean isPlayerMoving() {
+        return boardPlayer.isMoving();
     }
 
 }

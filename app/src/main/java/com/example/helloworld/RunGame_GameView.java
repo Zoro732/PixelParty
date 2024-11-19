@@ -249,6 +249,10 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
         }
     }
 
+    public int getScore(){
+        return score;
+    }
+
 
     // Méthodes pour dessiner les éléments séparément
     private void drawBackground() {
@@ -439,4 +443,7 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
         gameThread.start();
     }
 
+    public boolean isDead() {
+        return isDead;
+    }
 }

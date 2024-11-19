@@ -1,144 +1,49 @@
 package com.example.helloworld;
 
-import android.app.Dialog;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.View;
-import android.view.Window;
-import android.widget.Button;
 import android.widget.GridLayout;
-import android.widget.ImageView;
 import android.widget.TextView;
-
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-
 import java.util.Random;
 
-public class TaquinActivity extends AppCompatActivity {
+public class Taquin_MA extends AppCompatActivity {
 
-    private ImageView[][] tiles = new ImageView[3][3];
-    private ImageView[][] solutionTiles = new ImageView[3][3];
-
-    private int emptyRow = 2, emptyCol = 2;
-    private Bitmap originalBitmap;
-
-    private Dialog pauseDialog;
-    private Dialog endDialog;
-
-    private TextView timerTextView;
-    private int remainingSeconds = 120;
-    private Handler timerHandler = new Handler();
-    private boolean isTimerRunning = false;
+    private TextView[][] tiles = new TextView[3][3]; // Nouvelle grille 3x3
+    private TextView[][] solutionTiles = new TextView[3][3]; // Nouvelle grille solution 3x3
+    private int emptyRow = 2, emptyCol = 2; // Position initiale de l'espace vide
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_taquin);
 
-        // Masquer l'interface système
+        // Masquer complètement la barre de statut et la barre de navigation
         hideSystemUI();
 
-        // Initialisation de la grille de jeu et de la solution
+        // Récupérer les GridLayouts pour les tuiles du jeu et de la solution
         GridLayout gridLayout = findViewById(R.id.gridLayout);
         GridLayout solutionGrid = findViewById(R.id.solutionGrid);
-        timerTextView = findViewById(R.id.timer);
 
-        // Choisir aléatoirement l'image à utiliser
-        int[] images = {R.drawable.oiseaux, R.drawable.etoile, R.drawable.enfant_espace};
-        int randomImageIndex = new Random().nextInt(images.length);
-        originalBitmap = BitmapFactory.decodeResource(getResources(), images[randomImageIndex]);
-
-        // Initialisation des tuiles
+        // Initialisation des tuiles du jeu
         initializeTiles(gridLayout, tiles);
+
+        // Initialisation des tuiles de la solution
         initializeSolutionTiles(solutionGrid);
 
-        // Mélange des tuiles
-        shuffleTiles();
-
-        // Paramètres du jeu
-        ImageView imageSettings = findViewById(R.id.settings);
-        imageSettings.setOnClickListener(v -> showPauseDialog());
-
-        // Démarre le chronomètre
-        startCountdownTimer();
-    }
-
-    // Démarre le chronomètre
-    private void startCountdownTimer() {
-        isTimerRunning = true;
-        timerHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (remainingSeconds > 0) {
-                    timerTextView.setText(String.valueOf(remainingSeconds));
-                    remainingSeconds--;
-                    timerHandler.postDelayed(this, 1000);
-                } else {
-                    timerTextView.setText("0");
-                    onCountdownFinished();
-                }
-            }
-        });
-    }
-
-    // Arrête le chronomètre
-    private void stopCountdownTimer() {
-        isTimerRunning = false;
-        timerHandler.removeCallbacksAndMessages(null);
+        // Mélanger les tuiles du jeu
+        shuffleTiles(); // Mélanger les tuiles au démarrage
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        hideSystemUI();
-        if (!isTimerRunning) {
-            startCountdownTimer();
-        }
+        hideSystemUI(); // Assurer que le mode plein écran est réactivé lors de la reprise
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        stopCountdownTimer();
-    }
-
-    // Affiche le dialogue de pause
-    private void showPauseDialog() {
-        stopCountdownTimer();
-
-        pauseDialog = new Dialog(this);
-        pauseDialog.setContentView(R.layout.dialog_pause);
-        pauseDialog.setCancelable(false);
-
-        Button buttonResume = pauseDialog.findViewById(R.id.btn_resume);
-        Button buttonRestart = pauseDialog.findViewById(R.id.btn_restart);
-        Button buttonQuit = pauseDialog.findViewById(R.id.btn_quit);
-
-        // Actions des boutons du dialogue de pause
-        buttonResume.setOnClickListener(v -> {
-            pauseDialog.dismiss();
-            startCountdownTimer();
-        });
-
-        buttonRestart.setOnClickListener(v -> {
-            shuffleTiles();
-            remainingSeconds = 120;
-            timerTextView.setText(String.valueOf(remainingSeconds));
-            pauseDialog.dismiss();
-            startCountdownTimer();
-        });
-
-        buttonQuit.setOnClickListener(v -> finish());
-
-        pauseDialog.show();
-    }
-
-    // Masque l'interface système pour passer en mode plein écran
     private void hideSystemUI() {
+        // Masquer la barre de statut et la barre de navigation en utilisant les options modernes
         View decorView = getWindow().getDecorView();
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
@@ -150,23 +55,19 @@ public class TaquinActivity extends AppCompatActivity {
         decorView.setSystemUiVisibility(uiOptions);
     }
 
-    // Initialisation des tuiles de la grille de jeu
-    private void initializeTiles(GridLayout gridLayout, ImageView[][] tileArray) {
-        // On doit tout d'abord réinitialiser l'état des tuiles
-        emptyRow = 2;
-        emptyCol = 2;
-
-        for (int i = 0; i < 3; i++) {
+    private void initializeTiles(GridLayout gridLayout, TextView[][] tileArray) {
+        for (int i = 0; i < 3; i++) { // Changer la taille de 4 à 3
             for (int j = 0; j < 3; j++) {
                 int resID = getResources().getIdentifier("tile_" + (i * 3 + j + 1), "id", getPackageName());
-                ImageView tile = findViewById(resID);
+                if (resID == 0) {
+                    resID = getResources().getIdentifier("tile_empty", "id", getPackageName());
+                }
+                TextView tile = findViewById(resID);
                 tileArray[i][j] = tile;
 
-                // On ne met pas d'image sur la case vide (en bas à droite)
+                tile.setText(String.valueOf(i * 3 + j + 1)); // Remplir les tuiles avec les valeurs
                 if (i == 2 && j == 2) {
-                    tile.setImageResource(0);  // La case vide doit être réinitialisée
-                } else {
-                    tile.setImageBitmap(getTileBitmap(i, j));
+                    tile.setText(""); // La dernière tuile est vide
                 }
 
                 final int row = i;
@@ -176,179 +77,70 @@ public class TaquinActivity extends AppCompatActivity {
         }
     }
 
-
-
-    // Initialisation des tuiles de la solution
     private void initializeSolutionTiles(GridLayout solutionGrid) {
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 3; i++) { // Adapter à la grille 3x3
             for (int j = 0; j < 3; j++) {
                 int resID = getResources().getIdentifier("tile_" + (i * 3 + j + 1) + "_solution", "id", getPackageName());
-                ImageView tile = findViewById(resID);
+                if (resID == 0) {
+                    resID = getResources().getIdentifier("tile_empty_solution", "id", getPackageName());
+                }
+                TextView tile = findViewById(resID);
                 solutionTiles[i][j] = tile;
 
+                // Remplir les tuiles avec les valeurs de la solution
+                tile.setText(String.valueOf(i * 3 + j + 1)); // Remplir les tuiles avec les valeurs
                 if (i == 2 && j == 2) {
-                    tile.setImageResource(0);
-                } else {
-                    tile.setImageBitmap(getTileBitmap(i, j));
+                    tile.setText(""); // La dernière tuile est vide dans la solution
                 }
             }
         }
     }
 
-    /// Gère le clic sur une tuile
     private void onTileClick(int row, int col) {
-        // Vérifier si la tuile cliquée est adjacente à la tuile vide
-        if (Math.abs(emptyRow - row) + Math.abs(emptyCol - col) == 1) {
-            Bitmap tempBitmap = tiles[row][col].getDrawable() != null ? ((BitmapDrawable) tiles[row][col].getDrawable()).getBitmap() : null;
-
-            // Déplacer la tuile dans la case vide
-            tiles[emptyRow][emptyCol].setImageBitmap(tempBitmap);
-
-            // Vider la tuile cliquée
-            tiles[row][col].setImageResource(0);
-
-            // Mettre à jour les indices de la case vide
+        if (Math.abs(emptyRow - row) + Math.abs(emptyCol - col) == 1) { // Vérifie si la tuile est adjacente
+            tiles[emptyRow][emptyCol].setText(tiles[row][col].getText());
+            tiles[row][col].setText("");
             emptyRow = row;
             emptyCol = col;
 
-            // Vérification après chaque mouvement
             if (isGameWon()) {
-                stopCountdownTimer();
-                onGameWon();
+                Toast.makeText(this, "Bravo, vous avez gagné!", Toast.LENGTH_LONG).show();
             }
         }
     }
 
-
-    // Action lorsque le jeu est gagné
-    private void onGameWon() {
-        stopCountdownTimer();
-        showGameEndDialog("Félicitations ! Vous avez gagné.");
-    }
-
-    // Mélange aléatoire des tuiles
     private void shuffleTiles() {
-        // Réinitialiser la case vide avant le mélange
-        tiles[emptyRow][emptyCol].setImageResource(0);  // Réinitialiser la case vide avant de mélanger
-
         Random random = new Random();
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 100; i++) { // Effectuer 100 mouvements aléatoires
             int direction = random.nextInt(4);
             int newRow = emptyRow, newCol = emptyCol;
 
             switch (direction) {
-                case 0: newRow--; break;
-                case 1: newRow++; break;
-                case 2: newCol--; break;
-                case 3: newCol++; break;
+                case 0: newRow--; break; // Haut
+                case 1: newRow++; break; // Bas
+                case 2: newCol--; break; // Gauche
+                case 3: newCol++; break; // Droite
             }
 
-            // Vérifier que la nouvelle position est valide
-            if (newRow >= 0 && newRow < 3 && newCol >= 0 && newCol < 3) {
-                // Récupérer le bitmap de la tuile à déplacer
-                Bitmap tempBitmap = tiles[newRow][newCol].getDrawable() != null ? ((BitmapDrawable) tiles[newRow][newCol].getDrawable()).getBitmap() : null;
-
-                // Déplacer la tuile vers la case vide
-                tiles[emptyRow][emptyCol].setImageBitmap(tempBitmap);
-
-                // Mettre à jour la tuile déplacée avec l'image vide
-                tiles[newRow][newCol].setImageResource(0);
-
-                // Mettre à jour les indices de la case vide
+            if (newRow >= 0 && newRow < 3 && newCol >= 0 && newCol < 3) { // Vérifier les limites de la grille 3x3
+                tiles[emptyRow][emptyCol].setText(tiles[newRow][newCol].getText());
+                tiles[newRow][newCol].setText("");
                 emptyRow = newRow;
                 emptyCol = newCol;
             }
         }
     }
 
-
-
-    // Action lorsque le chronomètre arrive à zéro (perte du jeu)
-    private void onCountdownFinished() {
-        showGameEndDialog("Temps écoulé ! Vous avez perdu.");
-    }
-
-    // Affiche un dialogue de fin de jeu (perte ou victoire)
-    private void showGameEndDialog(String message) {
-        // Crée et montre le pop-up de fin de jeu
-        endDialog = new Dialog(this);
-        endDialog.setContentView(R.layout.dialog_game_over);
-        endDialog.setCancelable(false);
-
-        TextView messageTextView = endDialog.findViewById(R.id.message);
-        messageTextView.setText(message);
-
-        Button buttonRestart = endDialog.findViewById(R.id.btn_restart);
-        Button buttonQuit = endDialog.findViewById(R.id.btn_quit);
-
-        buttonRestart.setOnClickListener(v -> {
-            // Choisir une nouvelle image aléatoire lorsque l'on rejoue
-            int[] images = {R.drawable.oiseaux, R.drawable.etoile, R.drawable.enfant_espace};
-            int randomImageIndex = new Random().nextInt(images.length);
-            originalBitmap = BitmapFactory.decodeResource(getResources(), images[randomImageIndex]);
-
-            // Réinitialiser les tuiles et la solution avec la nouvelle image
-            initializeTiles((GridLayout) findViewById(R.id.gridLayout), tiles);
-            initializeSolutionTiles((GridLayout) findViewById(R.id.solutionGrid));  // Réinitialise aussi la solution
-
-            // Réinitialiser la case vide (en bas à droite)
-            tiles[emptyRow][emptyCol].setImageResource(0);  // S'assurer que la case vide est vide
-
-            // Mélanger les tuiles avec la nouvelle image
-            shuffleTiles();  // Mélange les tuiles après réinitialisation
-
-            // Redémarrer le chronomètre
-            remainingSeconds = 120;
-            timerTextView.setText(String.valueOf(remainingSeconds));
-
-            // Fermer le dialogue et démarrer un nouveau jeu
-            endDialog.dismiss();
-            startCountdownTimer();
-        });
-
-        buttonQuit.setOnClickListener(v -> finish());
-
-        // Ajuster la taille de la fenêtre du dialogue
-        Window window = endDialog.getWindow();
-        if (window != null) {
-            window.setLayout(1500, 500);  // Modifier la largeur et la hauteur selon vos besoins
-        }
-
-        endDialog.show();
-    }
-
-
-
-
     private boolean isGameWon() {
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 3; i++) { // Vérifier la grille 3x3
             for (int j = 0; j < 3; j++) {
-                Drawable solutionDrawable = solutionTiles[i][j].getDrawable();
-                Drawable tileDrawable = tiles[i][j].getDrawable();
-
-                // Vérifie si le Drawable est un BitmapDrawable
-                if (solutionDrawable instanceof BitmapDrawable && tileDrawable instanceof BitmapDrawable) {
-                    Bitmap solutionBitmap = ((BitmapDrawable) solutionDrawable).getBitmap();
-                    Bitmap tileBitmap = ((BitmapDrawable) tileDrawable).getBitmap();
-
-                    // Compare les Bitmaps
-                    if (!solutionBitmap.sameAs(tileBitmap)) {
-                        return false; // Les tuiles ne sont pas identiques
-                    }
-                } else if (solutionDrawable != null || tileDrawable != null) {
-                    return false; // Si l'un des Drawables est null, ce n'est pas une solution valide
+                if (!tiles[i][j].getText().toString().equals(String.valueOf(i * 3 + j + 1))) {
+                    return false;
                 }
             }
         }
-        return true; // Toutes les tuiles sont en place
+        return true;
     }
 
 
-    // Récupère le bitmap de la tuile en fonction de la position
-    private Bitmap getTileBitmap(int row, int col) {
-        int tileWidth = originalBitmap.getWidth() / 3;
-        int tileHeight = originalBitmap.getHeight() / 3;
-
-        return Bitmap.createBitmap(originalBitmap, col * tileWidth, row * tileHeight, tileWidth, tileHeight);
-    }
 }

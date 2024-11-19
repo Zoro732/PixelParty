@@ -2,8 +2,8 @@ package com.example.helloworld;
 
 public class Board_Case {
 
-    private int x;
-    private int y;
+    private final int x;
+    private final int y;
     private int value;  // 0 pour une case vide, 1 pour une case grise (obstacle)
     private int caseNumber;  // Numéro de la case (uniquement pour les cases grises)
     private int action; // Action associated with the case

@@ -35,6 +35,7 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             hideNavigationBar();
         }
@@ -47,7 +48,6 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
         game_mode = intent.getStringExtra("game_mode");
 
         if (intent.hasExtra("selection_key")) {
-
             selection = intent.getStringExtra("selection_key");
             labyrintheGameView = new Labyrinthe_GameView(this, selection); // You might need to provide a default value for 'selection' if it's not always available
             gameFrame.addView(labyrintheGameView);
@@ -143,6 +143,14 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (labyrintheGameView != null) {
+            labyrintheGameView.quitGame();
+        }
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void hideNavigationBar() {
         getWindow().getDecorView().setSystemUiVisibility(
@@ -183,12 +191,10 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
                 buttonQuit.setVisibility(View.VISIBLE);
                 pauseText.setVisibility(View.VISIBLE);
                 pauseText.setText("You WIN !");
+
             } else if (game_mode.equals("board")) {
 
                 Log.d("Labyrinthe_MA", "Labyrinthe finished, returning to Board_MA");
-                Intent intent = new Intent(this, Board_MA.class);
-                intent.putExtra("score", String.valueOf(labyrintheGameView.getRemainingTime()));
-                setResult(Activity.RESULT_OK,intent);
                 finish();
                 labyrintheGameView.quitGame();
             }
@@ -212,7 +218,7 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
     public void finish() {
         Intent resultIntent = new Intent();
         // Ajoutez des données si nécessaire
-        resultIntent.putExtra("game_result", String.valueOf(labyrintheGameView.getRemainingTime())); // Exemple : temps écoulé
+        resultIntent.putExtra("score", String.valueOf(labyrintheGameView.getRemainingTime())); // Exemple : temps écoulé
         setResult(RESULT_OK, resultIntent);
         super.finish(); // Terminez l'Activity
     }

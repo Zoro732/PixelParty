@@ -35,15 +35,50 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"  />
 
+    <Button
+        android:id="@+id/play"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:text="play"
+        android:fontFamily="@font/press2start"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="16dp"  />
+
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="100dp"
         android:id="@+id/scoreText"
         android:fontFamily="@font/press2start"
-        android:textSize="30dp"
+        android:textSize="20dp"
         android:textColor="@color/black"
         android:gravity="center"
         android:visibility="gone"
+        android:background="@color/white"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="150dp"
         android:text=""/>
+
+    <Button
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:id="@+id/continueButton"
+        android:textSize="15sp"
+        android:fontFamily="@font/press2start"
+        android:textColor="@color/black"
+        android:text="Continue"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="200dp"
+        android:visibility="gone"/>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

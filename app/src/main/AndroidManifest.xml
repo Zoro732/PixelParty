@@ -21,7 +21,8 @@
         </activity>
 
         <activity android:name=".Board_MA"
-            android:screenOrientation="sensorLandscape">
+            android:screenOrientation="sensorLandscape"
+            android:launchMode="singleTop">
         </activity>
 
         <activity android:name=".OptionActivity"
@@ -43,7 +44,6 @@
         </activity>
 
         <activity android:name=".RunGame_MA">
-            
         </activity>
 
         <activity android:name=".Taquin_MA"

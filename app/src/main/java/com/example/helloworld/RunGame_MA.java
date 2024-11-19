@@ -4,6 +4,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -13,9 +14,13 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import android.os.Handler;
+import android.widget.Toast;
+
 public class RunGame_MA extends AppCompatActivity {
 
     private RunGame_GameView gameView;
+    private boolean isGameOver = false;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -25,7 +30,6 @@ public class RunGame_MA extends AppCompatActivity {
             hideNavigationBar();
         }
         setContentView(R.layout.rungame);
-        // Get instance of Vibrator from current Context
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         FrameLayout gameFrame = findViewById(R.id.gameFrame);
@@ -62,6 +66,7 @@ public class RunGame_MA extends AppCompatActivity {
             buttonQuit.setVisibility(View.GONE);
             pauseText.setVisibility(View.GONE);
         });
+
         buttonRestart.setOnClickListener(v -> {
             gameView.restartGame();
             buttonResume.setVisibility(View.GONE);
@@ -69,9 +74,50 @@ public class RunGame_MA extends AppCompatActivity {
             buttonQuit.setVisibility(View.GONE);
             pauseText.setVisibility(View.GONE);
         });
+
         buttonQuit.setOnClickListener(v -> {
             gameView.quitGame();
         });
+
+        // Vérifier si le joueur est mort à chaque seconde
+        final Handler handler = new Handler();
+        Runnable checkGameOver = new Runnable() {
+            @Override
+            public void run() {
+                if (!isGameOver) {
+                    // Vérifie si le joueur est mort
+                    if (gameView.isDead()) {
+                        // Le joueur est mort, gère la fin du jeu
+                        endGame();
+                        isGameOver = true;
+                    } else {
+                        // Sinon, vérifier à nouveau dans un certain délai
+                        handler.postDelayed(this, 1000); // Vérifier toutes les secondes
+                    }
+                }
+            }
+        };
+
+        // Lancer la vérification dès que le jeu commence
+        handler.post(checkGameOver);
+    }
+
+    // Méthode pour gérer la fin du jeu
+    private void endGame() {
+        // Afficher un message de fin de jeu ou effectuer une autre action
+        Toast.makeText(this, "Game Over!", Toast.LENGTH_SHORT).show();
+        // Par exemple, afficher un écran de game over
+        finish();
+    }
+
+
+    @Override
+    public void finish() {
+        Intent resultIntent = new Intent();
+        // Ajoutez des données si nécessaire
+        resultIntent.putExtra("score", String.valueOf(gameView.getScore()));
+        setResult(RESULT_OK, resultIntent);
+        super.finish(); // Terminez l'Activity
     }
 
     @Override
@@ -86,6 +132,12 @@ public class RunGame_MA extends AppCompatActivity {
         gameView.resume();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        gameView.pause();
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void hideNavigationBar() {
         getWindow().getDecorView().setSystemUiVisibility(
@@ -98,3 +150,4 @@ public class RunGame_MA extends AppCompatActivity {
         );
     }
 }
+
