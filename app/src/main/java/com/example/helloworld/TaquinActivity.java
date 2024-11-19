@@ -30,7 +30,7 @@ public class TaquinActivity extends AppCompatActivity {
     private Dialog endDialog;
 
     private TextView timerTextView;
-    private int remainingSeconds = 120;
+    private int remainingSeconds = 1;
     private Handler timerHandler = new Handler();
     private boolean isTimerRunning = false;
 
@@ -241,7 +241,7 @@ public class TaquinActivity extends AppCompatActivity {
         showGameEndDialog("Temps écoulé ! Vous avez perdu.");
     }
 
-    // Affiche un dialogue de fin de jeu (perte)
+    // Affiche un dialogue de fin de jeu (perte ou victoire)
     private void showGameEndDialog(String message) {
         // Crée et montre le pop-up de fin de jeu
         endDialog = new Dialog(this);
@@ -255,23 +255,33 @@ public class TaquinActivity extends AppCompatActivity {
         Button buttonQuit = endDialog.findViewById(R.id.btn_quit);
 
         buttonRestart.setOnClickListener(v -> {
-            shuffleTiles();
+            // Choisir une nouvelle image aléatoire lorsque l'on rejoue
+            int[] images = {R.drawable.oiseaux, R.drawable.etoile, R.drawable.enfant_espace};
+            int randomImageIndex = new Random().nextInt(images.length);
+            originalBitmap = BitmapFactory.decodeResource(getResources(), images[randomImageIndex]);
+
+            // Réinitialiser les tuiles et la solution avec la nouvelle image
+            initializeTiles((GridLayout) findViewById(R.id.gridLayout), tiles);
+            initializeSolutionTiles((GridLayout) findViewById(R.id.solutionGrid));  // Réinitialise aussi la solution
+
+            // Mélanger les tuiles avec la nouvelle image
+            shuffleTiles();  // Mélange les tuiles après réinitialisation
+
+            // Redémarrer le chronomètre
             remainingSeconds = 120;
             timerTextView.setText(String.valueOf(remainingSeconds));
+
+            // Fermer le dialogue et démarrer un nouveau jeu
             endDialog.dismiss();
             startCountdownTimer();
         });
 
         buttonQuit.setOnClickListener(v -> finish());
 
-        // Ajuster la taille de la fenêtre du dialogue
-        Window window = endDialog.getWindow();
-        if (window != null) {
-            window.setLayout(1500, 500);  // Modifier la largeur et la hauteur selon vos besoins
-        }
-
         endDialog.show();
     }
+
+
 
     private boolean isGameWon() {
         for (int i = 0; i < 3; i++) {
