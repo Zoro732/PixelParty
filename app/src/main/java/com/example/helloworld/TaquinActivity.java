@@ -30,7 +30,7 @@ public class TaquinActivity extends AppCompatActivity {
     private Dialog endDialog;
 
     private TextView timerTextView;
-    private int remainingSeconds = 1;
+    private int remainingSeconds = 120;
     private Handler timerHandler = new Handler();
     private boolean isTimerRunning = false;
 
