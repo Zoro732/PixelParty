@@ -152,6 +152,10 @@ public class TaquinActivity extends AppCompatActivity {
 
     // Initialisation des tuiles de la grille de jeu
     private void initializeTiles(GridLayout gridLayout, ImageView[][] tileArray) {
+        // On doit tout d'abord réinitialiser l'état des tuiles
+        emptyRow = 2;
+        emptyCol = 2;
+
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 int resID = getResources().getIdentifier("tile_" + (i * 3 + j + 1), "id", getPackageName());
@@ -160,7 +164,7 @@ public class TaquinActivity extends AppCompatActivity {
 
                 // On ne met pas d'image sur la case vide (en bas à droite)
                 if (i == 2 && j == 2) {
-                    tile.setImageResource(0);
+                    tile.setImageResource(0);  // La case vide doit être réinitialisée
                 } else {
                     tile.setImageBitmap(getTileBitmap(i, j));
                 }
@@ -171,6 +175,8 @@ public class TaquinActivity extends AppCompatActivity {
             }
         }
     }
+
+
 
     // Initialisation des tuiles de la solution
     private void initializeSolutionTiles(GridLayout solutionGrid) {
@@ -189,12 +195,19 @@ public class TaquinActivity extends AppCompatActivity {
         }
     }
 
-    // Gère le clic sur une tuile
+    /// Gère le clic sur une tuile
     private void onTileClick(int row, int col) {
+        // Vérifier si la tuile cliquée est adjacente à la tuile vide
         if (Math.abs(emptyRow - row) + Math.abs(emptyCol - col) == 1) {
             Bitmap tempBitmap = tiles[row][col].getDrawable() != null ? ((BitmapDrawable) tiles[row][col].getDrawable()).getBitmap() : null;
+
+            // Déplacer la tuile dans la case vide
             tiles[emptyRow][emptyCol].setImageBitmap(tempBitmap);
+
+            // Vider la tuile cliquée
             tiles[row][col].setImageResource(0);
+
+            // Mettre à jour les indices de la case vide
             emptyRow = row;
             emptyCol = col;
 
@@ -206,6 +219,7 @@ public class TaquinActivity extends AppCompatActivity {
         }
     }
 
+
     // Action lorsque le jeu est gagné
     private void onGameWon() {
         stopCountdownTimer();
@@ -214,6 +228,9 @@ public class TaquinActivity extends AppCompatActivity {
 
     // Mélange aléatoire des tuiles
     private void shuffleTiles() {
+        // Réinitialiser la case vide avant le mélange
+        tiles[emptyRow][emptyCol].setImageResource(0);  // Réinitialiser la case vide avant de mélanger
+
         Random random = new Random();
         for (int i = 0; i < 100; i++) {
             int direction = random.nextInt(4);
@@ -226,15 +243,25 @@ public class TaquinActivity extends AppCompatActivity {
                 case 3: newCol++; break;
             }
 
+            // Vérifier que la nouvelle position est valide
             if (newRow >= 0 && newRow < 3 && newCol >= 0 && newCol < 3) {
+                // Récupérer le bitmap de la tuile à déplacer
                 Bitmap tempBitmap = tiles[newRow][newCol].getDrawable() != null ? ((BitmapDrawable) tiles[newRow][newCol].getDrawable()).getBitmap() : null;
+
+                // Déplacer la tuile vers la case vide
                 tiles[emptyRow][emptyCol].setImageBitmap(tempBitmap);
+
+                // Mettre à jour la tuile déplacée avec l'image vide
                 tiles[newRow][newCol].setImageResource(0);
+
+                // Mettre à jour les indices de la case vide
                 emptyRow = newRow;
                 emptyCol = newCol;
             }
         }
     }
+
+
 
     // Action lorsque le chronomètre arrive à zéro (perte du jeu)
     private void onCountdownFinished() {
@@ -264,6 +291,9 @@ public class TaquinActivity extends AppCompatActivity {
             initializeTiles((GridLayout) findViewById(R.id.gridLayout), tiles);
             initializeSolutionTiles((GridLayout) findViewById(R.id.solutionGrid));  // Réinitialise aussi la solution
 
+            // Réinitialiser la case vide (en bas à droite)
+            tiles[emptyRow][emptyCol].setImageResource(0);  // S'assurer que la case vide est vide
+
             // Mélanger les tuiles avec la nouvelle image
             shuffleTiles();  // Mélange les tuiles après réinitialisation
 
@@ -278,8 +308,15 @@ public class TaquinActivity extends AppCompatActivity {
 
         buttonQuit.setOnClickListener(v -> finish());
 
+        // Ajuster la taille de la fenêtre du dialogue
+        Window window = endDialog.getWindow();
+        if (window != null) {
+            window.setLayout(1500, 500);  // Modifier la largeur et la hauteur selon vos besoins
+        }
+
         endDialog.show();
     }
+
 
 
 
