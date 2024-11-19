@@ -40,10 +40,9 @@ public class RunGame_Coin {
     }
 
     public void reset(int newX) {
-        x = newX;
+        this.x = newX;
         // Taille de la pièce
-        int size = 50;
-        y = -size;
+        this.y = -100;
     }
 
     public RectF getRect() {

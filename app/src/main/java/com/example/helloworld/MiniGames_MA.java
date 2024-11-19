@@ -30,6 +30,7 @@ public class MiniGames_MA extends AppCompatActivity {
         Button run = findViewById(R.id.run);
         run.setOnClickListener(v -> {
             Intent intent = new Intent(MiniGames_MA.this, RunGame_MA.class);
+            intent.putExtra("game_mode", "minigames"); // Envoi d'une autre valeur
             startActivity(intent);
         });
 

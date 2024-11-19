@@ -33,7 +33,7 @@ public class SpriteActivity extends AppCompatActivity {
 
         Button back = findViewById(R.id.back);
         back.setOnClickListener(v -> {
-            Intent intent = new Intent(SpriteActivity.this, MainActivity.class);
+            Intent intent = new Intent(SpriteActivity.this, MiniGames_MA.class);
             startActivity(intent);
         });
 

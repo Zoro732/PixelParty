@@ -91,15 +91,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Apparition du choix de sprite avant le menu de minijeux
         mini_jeux.setOnClickListener(v -> {
-            //Intent intent = new Intent(MainActivity.this, MiniGames_MA.class);
-            //startActivity(intent);
-            gameMode_Solo.setVisibility(View.GONE);
-            mini_jeux.setVisibility(View.GONE);
-            mainpage_text.setVisibility(View.GONE);
-            sprite.setVisibility(View.VISIBLE);
-            button.setVisibility(View.VISIBLE);
-            option.setVisibility(View.GONE);
-            settings.setVisibility(View.VISIBLE);
+            Intent intent = new Intent(MainActivity.this, MiniGames_MA.class);
+            startActivity(intent);
+
         });
 
 

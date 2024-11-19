@@ -46,7 +46,6 @@ public class Board_MA extends AppCompatActivity {
         continueButton = findViewById(R.id.continueButton);
         playButton = findViewById(R.id.play);
 
-
         // Initialiser le bouton de lancer de dés
         dice = findViewById(R.id.dice);
         dice.setOnClickListener(new View.OnClickListener() {
@@ -54,6 +53,7 @@ public class Board_MA extends AppCompatActivity {
             public void onClick(View v) {
                 if (dice.isEnabled()) {
                     dice.setEnabled(false);
+
                     playButton.setEnabled(false);
                     boardBoardView.startDiceRoll();
 
@@ -61,13 +61,17 @@ public class Board_MA extends AppCompatActivity {
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
+
                             if (!boardBoardView.isDiceRolling()) {
                                 // Dice roll complete
                                 // Keep dice button disabled
                                 // Enable play button only if on a mini-game tile
-                                if (getPlayerCurrentCaseActionFromBoardView() != 0) {
-                                    playButton.setEnabled(true);
+                                playButton.setEnabled(true);
+                                if (getPlayerCurrentCaseActionFromBoardView() == 0) {
+                                    dice.setEnabled(true);
                                 }
+
+
                             } else {
                                 // If still rolling, schedule another check
                                 handler.postDelayed(this, 100);
@@ -97,12 +101,18 @@ public class Board_MA extends AppCompatActivity {
             Log.d("Board_MA", "Starting Labyrinthe_MA");
             startActivityForResult(intent, LABY_REQUEST_CODE); // Lance le mini-jeu laby
 
-        } else if (getPlayerCurrentCaseActionFromBoardView() == 2){
+        } else if (getPlayerCurrentCaseActionFromBoardView() == 2) {
             // Si l'action est de type 1 (par exemple, démarrer un mini-jeu)
             Intent intent = new Intent(Board_MA.this, RunGame_MA.class);
             intent.putExtra("game_mode", "board");
             Log.d("Board_MA", "Starting Rngame");
             startActivityForResult(intent, RUN_REQUEST_CODE); // Lance le mini-jeu
+
+        } else if (getPlayerCurrentCaseActionFromBoardView() == 3) {
+            // Si l'action est de type 1 (par exemple, démarrer un mini-jeu)
+            Intent intent = new Intent(Board_MA.this, Taquin_MA.class);
+            Log.d("Board_MA", "Starting TAquin");
+            startActivityForResult(intent, TAQUIN_REQUEST_CODE); // Lance le mini-jeu
         }
     }
 
@@ -159,7 +169,7 @@ public class Board_MA extends AppCompatActivity {
         if (requestCode == TAQUIN_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {
                 String result = data.getStringExtra("score");
-                Log.d("Board_MA", "Score received from RunGame: " + result);
+                Log.d("Board_MA", "Score received from TAquin: " + result);
                 scoreMessage.setText("Taquin finished in " + result + "s");
                 scoreMessage.setVisibility(View.VISIBLE);
                 continueButton.setVisibility(View.VISIBLE);

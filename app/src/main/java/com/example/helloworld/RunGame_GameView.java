@@ -12,6 +12,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 
@@ -99,10 +100,9 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
     }
 
     private void generateCoins() {
-
         int distanceBetweenCoins = 400;
         int currentY = -100; // Position de départ pour les obstacles
-        int numberOfCoinsPerGroup = 10;  // Par exemple, génère entre 1 et 5 groupes de pièces
+        int numberOfCoinsPerGroup = 5;  // Par exemple, génère entre 1 et 5 groupes de pièces
         List<RunGame_Coin> newRunGameCoin = new ArrayList<>();
 
         for (int i = 0; i < numberOfCoinsPerGroup; i++) {
@@ -113,10 +113,12 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
             // Générer un espacement aléatoire pour chaque obstacle
             currentY -= distanceBetweenCoins;
         }
+
         // Ajouter tous les nouveaux obstacles générés à la pool
         runGameCoinPool.addAll(newRunGameCoin);
-
     }
+
+
 
     private RunGame_Obstacle createObstacle() {
         List<Integer> availableLanes = new ArrayList<>(Arrays.asList(0, 1, 2));
@@ -141,7 +143,7 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
             newRunGameObstacles.add(runGameObstacle);
 
             // Générer un espacement aléatoire pour chaque obstacle
-            int spacing = 301 + (int) (Math.random() * 201);
+            int spacing = 401 + (int) (Math.random() * 301);
             currentY -= spacing;
         }
 
@@ -227,7 +229,7 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
                 }
             }
         }
-
+        Log.d("DEBUG","rungamecoinpool size " + runGameCoinPool.size());
         // Mise à jour des pièces et collecte
         for (int i = runGameCoinPool.size() - 1; i >= 0; i--) {
             RunGame_Coin coin = runGameCoinPool.get(i);

@@ -7,6 +7,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -21,6 +22,9 @@ public class RunGame_MA extends AppCompatActivity {
 
     private RunGame_GameView gameView;
     private boolean isGameOver = false;
+
+    private String game_mode;
+
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -37,6 +41,10 @@ public class RunGame_MA extends AppCompatActivity {
         gameView = new RunGame_GameView(this, getWindowManager().getDefaultDisplay().getWidth(),
                 getWindowManager().getDefaultDisplay().getHeight());
         gameFrame.addView(gameView);
+
+
+        Intent intent = getIntent();
+        game_mode = intent.getStringExtra("game_mode");
 
         ImageView imageSettings = findViewById(R.id.settings);
         imageSettings.bringToFront();
@@ -88,7 +96,13 @@ public class RunGame_MA extends AppCompatActivity {
                     // Vérifie si le joueur est mort
                     if (gameView.isDead()) {
                         // Le joueur est mort, gère la fin du jeu
-                        endGame();
+                        if (game_mode.equals("board")) {
+                            Log.d("RunGame_MA", "game_mode.equals(\"board\")" + game_mode.equals("board"));
+                            finish();
+                        }
+                        if (game_mode.equals("minigames")) {
+                            Log.d("RunGame_MA", "gamemode" + game_mode.equals("minigames"));
+                        }
                         isGameOver = true;
                     } else {
                         // Sinon, vérifier à nouveau dans un certain délai
@@ -100,14 +114,6 @@ public class RunGame_MA extends AppCompatActivity {
 
         // Lancer la vérification dès que le jeu commence
         handler.post(checkGameOver);
-    }
-
-    // Méthode pour gérer la fin du jeu
-    private void endGame() {
-        // Afficher un message de fin de jeu ou effectuer une autre action
-        Toast.makeText(this, "Game Over!", Toast.LENGTH_SHORT).show();
-        // Par exemple, afficher un écran de game over
-        finish();
     }
 
 

@@ -9,6 +9,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="violet">#FF402E7A</color>
     <color name="cyan">#FF3DC2EC</color>
+    <color name="red">#FF0000</color>
     <color name="textViolet">#FFFFFFFF</color> <!-- Couleur du texte en mode sombre -->
     <color name="textCyan">#FF000000</color> <!-- Couleur du texte en mode clair -->
 </resources>
