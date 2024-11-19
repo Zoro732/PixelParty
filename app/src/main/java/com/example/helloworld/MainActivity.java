@@ -48,11 +48,13 @@ public class MainActivity extends AppCompatActivity {
         Button mini_jeux = findViewById(R.id.mini_jeux);
         Button gameMode_Solo = findViewById(R.id.gameMode_Solo);
         gameMode_Solo.setOnClickListener(view -> {
-            gameMode_Solo.setVisibility(View.GONE);
-            mini_jeux.setVisibility(View.GONE);
-            mainpage_text.setVisibility(View.GONE);
-            spriteLayout.setVisibility(View.VISIBLE);
-            boutonSprite.setVisibility(View.VISIBLE);
+//            gameMode_Solo.setVisibility(View.GONE);
+//            mini_jeux.setVisibility(View.GONE);
+//            mainpage_text.setVisibility(View.GONE);
+//            spriteLayout.setVisibility(View.VISIBLE);
+//            boutonSprite.setVisibility(View.VISIBLE);
+            Intent intent = new Intent(MainActivity.this, SpriteActivity.class);
+            startActivity(intent);
         });
 
         Button start = findViewById(R.id.start);

@@ -111,8 +111,16 @@ public class SpriteActivity extends AppCompatActivity {
         playerRed.setBackgroundColor(Color.TRANSPARENT);
         playerPurple.setBackgroundColor(Color.TRANSPARENT);
 
-        // Mettre en surbrillance le personnage sélectionné
-        selectedCharacter.setBackgroundColor(Color.LTGRAY);
+        ImageView animationBackground = findViewById(R.id.animation_background);
+        animationBackground.setVisibility(View.VISIBLE);
+
+        Glide.with(this)
+                .asGif()
+                .load(R.drawable.sprite_selection) // Remplacez par votre GIF d'animation
+                .into(animationBackground);
+
+        // Garder le sprite devant l'animation
+        selectedCharacter.bringToFront();
 
         // Mettre à jour le texte du personnage sélectionné
         selectedCharacterText.setText("Selected Character: " + characterName);

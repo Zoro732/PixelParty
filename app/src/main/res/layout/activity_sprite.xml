@@ -16,15 +16,19 @@
         android:text="Selected Character: None"
         android:textSize="18sp"
         android:fontFamily="@font/press2start"
-        android:layout_marginBottom="24dp"
-        android:visibility="gone" />
+        android:layout_marginBottom="24dp" />
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center_horizontal"
-        android:visibility="gone" >
+        android:gravity="center_horizontal">
+
+        <ImageView
+            android:id="@+id/animation_background"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop" />
 
         <!-- Sprite 1 -->
         <ImageView
@@ -61,8 +65,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center"
-        android:visibility="gone" >
+        android:gravity="center">
 
         <Button
             android:id="@+id/start"
