@@ -43,11 +43,15 @@ public class MainActivity extends AppCompatActivity {
         Button mini_jeux = findViewById(R.id.mini_jeux);
         Button backButton = findViewById(R.id.backbutton);
         Button back = findViewById(R.id.back);
+        Button backminijeux = findViewById(R.id.backminijeux);
+        Button laby = findViewById(R.id.laby);
+        Button run = findViewById(R.id.run);
+        Button taquin = findViewById(R.id.taquin);
         ImageView settings = findViewById(R.id.settings);
-
         LinearLayout sprite = findViewById(R.id.sprite);
         LinearLayout button = findViewById(R.id.button);
         FrameLayout option = findViewById(R.id.optionFrame);
+
         playerBlue = findViewById(R.id.bleu);
         playerRed = findViewById(R.id.rouge);
         playerPurple = findViewById(R.id.purple);
@@ -63,10 +67,8 @@ public class MainActivity extends AppCompatActivity {
         TextView mainpage_text = findViewById(R.id.mainpage_text);
         mainpage_text.bringToFront();
 
-        // Apparition de la selection de sprite avant de commencer
+        // Bouton start
         gameMode_Solo.setOnClickListener(v -> { // temporarely replace SpriteAcitivity with Board_MA
-            //Intent intent = new Intent(MainActivity.this, SpriteActivity.class);
-            //startActivity(intent);
             gameMode_Solo.setVisibility(View.GONE);
             mini_jeux.setVisibility(View.GONE);
             mainpage_text.setVisibility(View.GONE);
@@ -76,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
             settings.setVisibility(View.GONE);
         });
 
+        // Chargement des images GIF
         Glide.with(this)
                 .asGif()
                 .load(R.drawable.player_blue_selection) // Remplacez par votre fichier GIF
@@ -88,28 +91,6 @@ public class MainActivity extends AppCompatActivity {
                 .asGif()
                 .load(R.drawable.player_red_selection) // Remplacez par votre fichier GIF
                 .into(playerRed);
-
-        // Apparition du choix de sprite avant le menu de minijeux
-        mini_jeux.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, MiniGames_MA.class);
-            startActivity(intent);
-
-        });
-
-
-        settings.bringToFront();
-
-        settings.setOnClickListener(v -> {
-            //Intent intent = new Intent(MainActivity.this, OptionActivity.class);
-            //startActivity(intent);
-            gameMode_Solo.setVisibility(View.GONE);
-            mini_jeux.setVisibility(View.GONE);
-            mainpage_text.setVisibility(View.GONE);
-            sprite.setVisibility(View.GONE);
-            button.setVisibility(View.GONE);
-            option.setVisibility(View.VISIBLE);
-            settings.setVisibility(View.GONE);
-        });
 
         selectedCharacterText = findViewById(R.id.selected_character_text);
 
@@ -130,6 +111,73 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "Aucun sprite selectionne", Toast.LENGTH_SHORT).show();
             }
         });
+
+        back.setOnClickListener(v -> {
+            gameMode_Solo.setVisibility(View.VISIBLE);
+            mini_jeux.setVisibility(View.VISIBLE);
+            mainpage_text.setVisibility(View.VISIBLE);
+            sprite.setVisibility(View.GONE);
+            button.setVisibility(View.GONE);
+            option.setVisibility(View.GONE);
+            settings.setVisibility(View.VISIBLE);
+        });
+
+        // Bouton Mini jeux
+        mini_jeux.setOnClickListener(v -> {
+            gameMode_Solo.setVisibility(View.GONE);
+            mini_jeux.setVisibility(View.GONE);
+            mainpage_text.setVisibility(View.GONE);
+            taquin.setVisibility(View.VISIBLE);
+            run.setVisibility(View.VISIBLE);
+            laby.setVisibility(View.VISIBLE);
+            backminijeux.setVisibility(View.VISIBLE);
+            settings.setVisibility(View.GONE);
+
+        });
+
+        backminijeux.setOnClickListener(v -> {
+            gameMode_Solo.setVisibility(View.VISIBLE);
+            mini_jeux.setVisibility(View.VISIBLE);
+            mainpage_text.setVisibility(View.VISIBLE);
+            sprite.setVisibility(View.GONE);
+            button.setVisibility(View.GONE);
+            option.setVisibility(View.GONE);
+            settings.setVisibility(View.VISIBLE);
+            taquin.setVisibility(View.GONE);
+            run.setVisibility(View.GONE);
+            laby.setVisibility(View.GONE);
+            backminijeux.setVisibility(View.GONE);
+        });
+
+        run.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, RunGame_MA.class);
+            startActivity(intent);
+        });
+
+        laby.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, Labyrinthe_MA.class);
+            startActivity(intent);
+        });
+
+        taquin.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, Taquin_MA.class);
+            startActivity(intent);
+        });
+
+        // Bouton option
+        settings.bringToFront();
+
+        settings.setOnClickListener(v -> {
+            gameMode_Solo.setVisibility(View.GONE);
+            mini_jeux.setVisibility(View.GONE);
+            mainpage_text.setVisibility(View.GONE);
+            sprite.setVisibility(View.GONE);
+            button.setVisibility(View.GONE);
+            option.setVisibility(View.VISIBLE);
+            settings.setVisibility(View.GONE);
+        });
+
+
 
         // Initialiser le Spinner
         Spinner languageSpinner = findViewById(R.id.language);
@@ -166,18 +214,7 @@ public class MainActivity extends AppCompatActivity {
             option.setVisibility(View.GONE);
             settings.setVisibility(View.VISIBLE);
         });
-        // Définir l'écouteur d'événements pour le bouton retour
-        back.setOnClickListener(v -> {
-            //Intent intent = new Intent(OptionActivity.this, MainActivity.class);
-            //startActivity(intent);
-            gameMode_Solo.setVisibility(View.VISIBLE);
-            mini_jeux.setVisibility(View.VISIBLE);
-            mainpage_text.setVisibility(View.VISIBLE);
-            sprite.setVisibility(View.GONE);
-            button.setVisibility(View.GONE);
-            option.setVisibility(View.GONE);
-            settings.setVisibility(View.VISIBLE);
-        });
+
         hideNavigationBar();
 
     }
