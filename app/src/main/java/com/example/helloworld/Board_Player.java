@@ -42,7 +42,7 @@ public class Board_Player {
     public void update() {
         // Gérer l'animation du sprite
         frameCounter++;
-        int framesPerSprite = 5; // Changez ce nombre pour ajuster la vitesse d'animation
+        int framesPerSprite = 1; // Changez ce nombre pour ajuster la vitesse d'animation
         if (frameCounter >= framesPerSprite) {
             frameCounter = 0;
             currentSpriteIndex = (currentSpriteIndex + 1) % spriteSheet.getCols();

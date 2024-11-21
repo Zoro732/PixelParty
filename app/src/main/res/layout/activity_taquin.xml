@@ -38,6 +38,7 @@
                 android:gravity="center"
                 android:paddingBottom="10dp"
                 android:text="Votre JEU :"
+                android:textColor="@color/black"
                 android:textSize="18sp"
                 android:fontFamily="@font/press2start"/>
 
@@ -101,6 +102,7 @@
                 android:gravity="center"
                 android:text="Solution :"
                 android:textSize="18sp"
+                android:textColor="@color/black"
                 android:layout_gravity="top|center"
                 android:paddingBottom="10dp"
                 android:layout_marginTop="30dp"

@@ -8,6 +8,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -36,13 +37,20 @@ public class Taquin_MA extends AppCompatActivity {
     private Handler timerHandler = new Handler();
     private boolean isTimerRunning = false;
 
-    private Intent intent = new Intent();
-    private String game_mode = intent.getStringExtra("game_mode");
+    private Intent intent;
+    private String game_mode;
+
+    private boolean isLoose = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_taquin);
+
+        intent = getIntent();
+        game_mode = intent.getStringExtra("game_mode");
+
+        Log.d("Taquin_MA", "onCreate called, game_mode: " + game_mode);
 
         // Masquer l'interface système
         hideSystemUI();
@@ -53,7 +61,10 @@ public class Taquin_MA extends AppCompatActivity {
         timerTextView = findViewById(R.id.timer);
 
         // Choisir aléatoirement l'image à utiliser
-        int[] images = {R.drawable.oiseaux, R.drawable.etoile, R.drawable.enfant_espace};
+        int[] images = {R.drawable.taquin_shape,
+                        R.drawable.taquin_fox,
+                        R.drawable.taquin_dog};
+
         int randomImageIndex = new Random().nextInt(images.length);
         originalBitmap = BitmapFactory.decodeResource(getResources(), images[randomImageIndex]);
 
@@ -67,6 +78,12 @@ public class Taquin_MA extends AppCompatActivity {
         // Paramètres du jeu
         ImageView imageSettings = findViewById(R.id.settings);
         imageSettings.setOnClickListener(v -> showPauseDialog());
+
+        if (intent != null && intent.hasExtra("game_mode")) {
+            if (game_mode.equals("board")) {
+                imageSettings.setVisibility(View.GONE);
+            }
+        }
 
         // Démarre le chronomètre
         startCountdownTimer();
@@ -182,7 +199,6 @@ public class Taquin_MA extends AppCompatActivity {
     }
 
 
-
     // Initialisation des tuiles de la solution
     private void initializeSolutionTiles(GridLayout solutionGrid) {
         for (int i = 0; i < 3; i++) {
@@ -229,7 +245,14 @@ public class Taquin_MA extends AppCompatActivity {
     private void onGameWon() {
         stopCountdownTimer();
         showGameEndDialog("Félicitations ! Vous avez gagné.");
-        if (game_mode.equals("board"))finish();
+        isLoose = false;
+        if (intent != null && intent.hasExtra("game_mode")) {
+            if (game_mode.equals("board")) {
+                finish();
+            }
+        } else {
+            Log.d("Taquin_MA", "Intent is null or does not have game_mode extra");
+        }
     }
 
     // Mélange aléatoire des tuiles
@@ -243,10 +266,18 @@ public class Taquin_MA extends AppCompatActivity {
             int newRow = emptyRow, newCol = emptyCol;
 
             switch (direction) {
-                case 0: newRow--; break;
-                case 1: newRow++; break;
-                case 2: newCol--; break;
-                case 3: newCol++; break;
+                case 0:
+                    newRow--;
+                    break;
+                case 1:
+                    newRow++;
+                    break;
+                case 2:
+                    newCol--;
+                    break;
+                case 3:
+                    newCol++;
+                    break;
             }
 
             // Vérifier que la nouvelle position est valide
@@ -268,10 +299,10 @@ public class Taquin_MA extends AppCompatActivity {
     }
 
 
-
     // Action lorsque le chronomètre arrive à zéro (perte du jeu)
     private void onCountdownFinished() {
         showGameEndDialog("Temps écoulé ! Vous avez perdu.");
+        isLoose = true;
         timerValue = -1;
         finish();
     }
@@ -291,7 +322,11 @@ public class Taquin_MA extends AppCompatActivity {
 
         buttonRestart.setOnClickListener(v -> {
             // Choisir une nouvelle image aléatoire lorsque l'on rejoue
-            int[] images = {R.drawable.oiseaux, R.drawable.etoile, R.drawable.enfant_espace};
+            int[] images = {R.drawable.taquin_dog,
+                            R.drawable.taquin_fox,
+                            R.drawable.taquin_shape,
+                            R.drawable.taquin_sus,
+                            R.drawable.taquin_globe};
             int randomImageIndex = new Random().nextInt(images.length);
             originalBitmap = BitmapFactory.decodeResource(getResources(), images[randomImageIndex]);
 
@@ -360,10 +395,70 @@ public class Taquin_MA extends AppCompatActivity {
 
     @Override
     public void finish() {
+        Log.d("Taquin_MA", "beging of finish called: score= " + timerValue);
         Intent resultIntent = new Intent();
-        // Ajoutez des données si nécessaire
-        resultIntent.putExtra("score", String.valueOf(defaultTimerValue - timerValue));
+        // Si l'utilisateur quitte explicitement
+        if (timerValue == -1) {
+            resultIntent.putExtra("score", String.valueOf(timerValue));
+        } else {
+            resultIntent.putExtra("score", String.valueOf(defaultTimerValue - timerValue));
+        }
         setResult(RESULT_OK, resultIntent);
-        super.finish(); // Terminez l'Activity
+        Log.d("Taquin_MA", "finish called: score= " + timerValue);
+
+        super.finish();
     }
+
+
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (isFinishing()) {
+            Log.d("Taquin_MA", "onStop: L'utilisateur quitte l'application avec un balayage.");
+            // Définir un score spécifique pour signaler une fermeture de l'application
+            timerValue = -1;
+        } else {
+            Log.d("Taquin_MA", "onStop: L'application est simplement mise en arrière-plan.");
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (isFinishing()) {
+            Log.d("Taquin_MA", "onDestroy: L'utilisateur quitte définitivement l'activité.");
+            timerValue = -1;
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra("score", String.valueOf(timerValue));
+            setResult(RESULT_OK, resultIntent);
+        } else {
+            Log.d("Taquin_MA", "onDestroy: L'activité est détruite par le système.");
+        }
+        timerHandler.removeCallbacksAndMessages(null);
+    }
+
+    @Override
+    public void onBackPressed() {
+        onPause();
+        Log.d("Taquin_MA","Player want to quit app");
+        // Créez une boîte de dialogue de confirmation
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Quitter le jeu")
+                .setMessage("Êtes-vous sûr de vouloir quitter ? Votre progression sera perdue.")
+                .setPositiveButton("Oui", (dialog, which) -> {
+                    Log.d("Taquin_MA", "L'utilisateur a confirmé de quitter.");
+                    timerValue = -1;
+                    finish(); // Appelle finish() pour gérer la fermeture
+                })
+                .setNegativeButton("Non", (dialog, which) -> {
+                    Log.d("Taquin_MA", "L'utilisateur a annulé la fermeture.");
+                    dialog.dismiss(); // Ferme la boîte de dialogue sans quitter
+                })
+                .setCancelable(false) // Empêche la fermeture de la boîte de dialogue en appuyant à l'extérieur
+                .show();
+    }
+
+
+
 }

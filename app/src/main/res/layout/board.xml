@@ -79,6 +79,20 @@
         android:layout_marginTop="200dp"
         android:visibility="gone"/>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/round_number"
+        android:fontFamily="@font/press2start"
+        android:textSize="10dp"
+        android:textColor="@color/white"
+        android:gravity="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginBottom="100dp"
+        android:layout_marginLeft="20dp"
+        android:text="Round"/>
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

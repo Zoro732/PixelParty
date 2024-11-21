@@ -51,62 +51,65 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
             selection = intent.getStringExtra("selection_key");
             labyrintheGameView = new Labyrinthe_GameView(this, selection); // You might need to provide a default value for 'selection' if it's not always available
             gameFrame.addView(labyrintheGameView);
+            if (game_mode != null) {
+                if (game_mode.equals("minigames")) { //Si on start l'activity depuis le minijeux
+                    Log.d("Labyrinthe_MA", "Starting Labyrinthe_GameView in onCreate for minigames");
+                    // Créer une instance de GameView et l'ajouter au FrameLayout
+                    ImageView imageSettings = findViewById(R.id.settings);
+                    imageSettings.bringToFront();
 
-            if (game_mode.equals("minigames")) { //Si on start l'activity depuis le minijeux
-                Log.d("Labyrinthe_MA", "Starting Labyrinthe_GameView in onCreate for minigames");
-                // Créer une instance de GameView et l'ajouter au FrameLayout
-                ImageView imageSettings = findViewById(R.id.settings);
-                imageSettings.bringToFront();
+                    // Récupérer l'ImageView
+                    buttonResume = findViewById(R.id.resume);
+                    buttonRestart = findViewById(R.id.restart);
+                    buttonQuit = findViewById(R.id.quit);
 
-                // Récupérer l'ImageView
-                buttonResume = findViewById(R.id.resume);
-                buttonRestart = findViewById(R.id.restart);
-                buttonQuit = findViewById(R.id.quit);
+                    pauseText = findViewById(R.id.gamePause);
+                    timeText = findViewById(R.id.timerIndicator);
+                    timeText.bringToFront();
+                    pauseText.bringToFront();
 
-                pauseText = findViewById(R.id.gamePause);
-                timeText = findViewById(R.id.timerIndicator);
-                timeText.bringToFront();
-                pauseText.bringToFront();
+                    // Définir un OnClickListener
+                    imageSettings.setOnClickListener(v -> {
+                        // Action à réaliser lors du clic
+                        if (labyrintheGameView != null) {
+                            labyrintheGameView.pauseGame();
+                        }
+                        pauseText.setText("Pause");
+                        buttonResume.setVisibility(View.VISIBLE);
+                        buttonRestart.setVisibility(View.VISIBLE);
+                        buttonQuit.setVisibility(View.VISIBLE);
+                        pauseText.setVisibility(View.VISIBLE);
+                    });
 
-                // Définir un OnClickListener
-                imageSettings.setOnClickListener(v -> {
-                    // Action à réaliser lors du clic
-                    if (labyrintheGameView != null) {
-                        labyrintheGameView.pauseGame();
-                    }
-                    pauseText.setText("Pause");
-                    buttonResume.setVisibility(View.VISIBLE);
-                    buttonRestart.setVisibility(View.VISIBLE);
-                    buttonQuit.setVisibility(View.VISIBLE);
-                    pauseText.setVisibility(View.VISIBLE);
-                });
-
-                buttonResume.setOnClickListener(v -> {
-                    if (labyrintheGameView != null) {
-                        labyrintheGameView.resumeGame();
-                    }
-                    buttonResume.setVisibility(View.GONE);
-                    buttonRestart.setVisibility(View.GONE);
-                    buttonQuit.setVisibility(View.GONE);
-                    pauseText.setVisibility(View.GONE);
-                });
-                buttonRestart.setOnClickListener(v -> {
-                    if (labyrintheGameView != null) {
-                        labyrintheGameView.restartGame();
-                    }
-                    buttonResume.setVisibility(View.GONE);
-                    buttonRestart.setVisibility(View.GONE);
-                    buttonQuit.setVisibility(View.GONE);
-                    pauseText.setVisibility(View.GONE);
-                    timeText.setVisibility(View.GONE);
-                });
-                buttonQuit.setOnClickListener(v -> {
-                    if (labyrintheGameView != null) {
-                        labyrintheGameView.quitGame();
-                    }
-                });
+                    buttonResume.setOnClickListener(v -> {
+                        if (labyrintheGameView != null) {
+                            labyrintheGameView.resumeGame();
+                        }
+                        buttonResume.setVisibility(View.GONE);
+                        buttonRestart.setVisibility(View.GONE);
+                        buttonQuit.setVisibility(View.GONE);
+                        pauseText.setVisibility(View.GONE);
+                    });
+                    buttonRestart.setOnClickListener(v -> {
+                        if (labyrintheGameView != null) {
+                            labyrintheGameView.restartGame();
+                        }
+                        buttonResume.setVisibility(View.GONE);
+                        buttonRestart.setVisibility(View.GONE);
+                        buttonQuit.setVisibility(View.GONE);
+                        pauseText.setVisibility(View.GONE);
+                        timeText.setVisibility(View.GONE);
+                    });
+                    buttonQuit.setOnClickListener(v -> {
+                        if (labyrintheGameView != null) {
+                            labyrintheGameView.quitGame();
+                        }
+                    });
+                } else {
+                    Log.d("Labyrinthe_MA", "Starting Labyrinthe_GameView in onCreate for board");
+                }
             } else {
-                Log.d("Labyrinthe_MA", "Starting Labyrinthe_GameView in onCreate for board");
+                Log.e("Labyrinthe_MA", "game_mode is null in onCreate.");
             }
         } else {
             Log.e("Labyrinthe_MA", "Labyrinthe_GameView is null in onCreate.");
@@ -182,21 +185,24 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
         // Vérification si le jeu est gagné ou perdu
         if (labyrintheGameView.isWin() && !isGameFinished) {
             isGameFinished = true;
+            if (game_mode != null) {
+                if (game_mode.equals("minigames")) {
+                    labyrintheGameView.pauseGame();
+                    timeText.setText("Made in " + labyrintheGameView.getRemainingTime() + "s");
+                    timeText.setVisibility(View.VISIBLE);
+                    buttonRestart.setVisibility(View.VISIBLE);
+                    buttonQuit.setVisibility(View.VISIBLE);
+                    pauseText.setVisibility(View.VISIBLE);
+                    pauseText.setText("You WIN !");
 
-            if (game_mode.equals("minigames")) {
-                labyrintheGameView.pauseGame();
-                timeText.setText("Made in " + labyrintheGameView.getRemainingTime() + "s");
-                timeText.setVisibility(View.VISIBLE);
-                buttonRestart.setVisibility(View.VISIBLE);
-                buttonQuit.setVisibility(View.VISIBLE);
-                pauseText.setVisibility(View.VISIBLE);
-                pauseText.setText("You WIN !");
+                } else if (game_mode.equals("board")) {
 
-            } else if (game_mode.equals("board")) {
-
-                Log.d("Labyrinthe_MA", "Labyrinthe finished, returning to Board_MA");
-                finish();
-                labyrintheGameView.quitGame();
+                    Log.d("Labyrinthe_MA", "Labyrinthe finished, returning to Board_MA");
+                    finish();
+                    labyrintheGameView.quitGame();
+                }
+            } else {
+                Log.d("Labyrinthe_MA", "game_mode is null in onSensorChanged.");
             }
         }
 

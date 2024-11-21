@@ -1,8 +1,6 @@
 package com.example.helloworld;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -13,7 +11,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Toast;
 import android.os.Handler;
 import android.os.Looper;
 
@@ -38,8 +35,8 @@ public class Board_BoardView extends View {
             {0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0},
     };
     public static int[][] mapAction = {
-            {0, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 3, 3, 3, 3, 3, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // 1 = Laby, 2 = Run, 3 = Taquin, Shop = 4 & MiniBoss = 5
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
             {0, 0, 0, 0, 0, 0, 0, 1, 3, 0, 0, 0, 0},
             {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4},
             {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
@@ -62,10 +59,14 @@ public class Board_BoardView extends View {
     private final Random random = new Random();
     private SpriteSheet diceSpriteSheet;
     private Bitmap diceBitmap;
-    private Bitmap playerIdleBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.player_move_purple);
+    private Bitmap currentPlayerBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.player_move_purple);
     private Typeface font = ResourcesCompat.getFont(getContext(), R.font.press2start);
-    ;
+
     private final Handler animationHandler = new Handler(Looper.getMainLooper());
+
+    private String playerSprite;
+
+    private boolean isPlayerFinishedMoving = false;
 
 
     public Board_BoardView(Context context, AttributeSet attrs) {
@@ -73,14 +74,31 @@ public class Board_BoardView extends View {
         init();
     }
 
-    private final Runnable animationRunnable = new Runnable() {
-        @Override
-        public void run() {
-            boardPlayer.update();
-            invalidate(); // Trigger a redraw
-            animationHandler.postDelayed(this, 100); // Adjust the delay for animation speed
+    public void setPlayerSpriteSelection (String selection){
+        this.playerSprite = selection;
+        if (playerSprite != null) {
+            switch (playerSprite){
+                case "Rouge":
+                    currentPlayerBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.player_move_red);
+                    break;
+                case "Violet":
+                    currentPlayerBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.player_move_purple);
+                    break;
+                case "Bleu":
+                    currentPlayerBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.player_move_blue);
+                    break;
+            }
+        } else {
+            Log.d("Board_BoardView","playerSprite is null");
         }
-    };
+        Log.d("Board_BoardView", "END Received selection in setPlayerSpriteSelection: " + playerSprite);
+        boardPlayer = new Board_Player(0, currentPlayerBitmap);
+
+    }
+    public String getPlayerSpriteSelection(){
+        return this.playerSprite;
+    }
+
 
     private void init() {
         // Initialize paints for drawing
@@ -117,7 +135,7 @@ public class Board_BoardView extends View {
             Board_Case currentBoardCase = queue.remove(0); // Get the next case to explore
 
             // Find adjacent valid tiles that haven't been numbered yet
-            List<Board_Case> adjacentBoardCases = findAdjacentGraySquares(currentBoardCase, caseNumber);
+            List<Board_Case> adjacentBoardCases = findAdjacentValidCase(currentBoardCase);
 
             for (Board_Case nextBoardCase : adjacentBoardCases) {
                 nextBoardCase.setCaseNumber(caseNumber++); // Number the new case
@@ -131,7 +149,7 @@ public class Board_BoardView extends View {
         diceBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.dice_6);
         diceSpriteSheet = new SpriteSheet(diceBitmap, 1, 6);
 
-        boardPlayer = new Board_Player(0, playerIdleBitmap);
+
         animationHandler.post(animationRunnable); // Start animation loop for player
 
     }
@@ -143,9 +161,22 @@ public class Board_BoardView extends View {
         animationHandler.removeCallbacks(animationRunnable);
     }
 
+    private final Runnable animationRunnable = new Runnable() {
+        @Override
+        public void run() {
+            boardPlayer.update();
+            invalidate(); // Trigger a redraw
+            animationHandler.postDelayed(this, 100); // Adjust the delay for animation speed
+
+            if (!getIsPlayerMoving()) {
+                Log.d("Board_BoardView","Player is not moving");
+            }
+        }
+    };
+
 
     // Helper function to find adjacent gray squares
-    private List<Board_Case> findAdjacentGraySquares(Board_Case currentBoardCase, int caseNumber) {
+    private List<Board_Case> findAdjacentValidCase(Board_Case currentBoardCase) {
         List<Board_Case> adjacentBoardCases = new ArrayList<>();
         int x = currentBoardCase.getX();
         int y = currentBoardCase.getY();
@@ -204,7 +235,7 @@ public class Board_BoardView extends View {
 
         // Draw the player
         boardPlayer.draw(canvas, paint);
-        boardPlayer.update();
+        //boardPlayer.update();
 
         if (isRolling || diceResult != 0) {
             textPaint.setColor(Color.BLACK);
@@ -235,50 +266,54 @@ public class Board_BoardView extends View {
     private void drawTile(Canvas canvas, Board_Case gameBoardCase) {
         int x = gameBoardCase.getX();
         int y = gameBoardCase.getY();
-        int tileValue = gameBoardCase.getValue();
         int left = x * cellSize;
         int top = y * cellSize;
-        int right = left + cellSize;
         int bottom = top + cellSize;
+        int right = left + cellSize;
+        int tileValue = gameBoardCase.getValue();
 
         // Dessiner la couleur de la case en fonction de sa valeur
-        if (tileValue == 0) {
-            paint.setColor(Color.WHITE); // Cases vides
-        } else if (tileValue == 1) {
-            paint.setColor(Color.DKGRAY); // Cases valides
+        if (tileValue == 1) {
+            paint.setColor(Color.parseColor("#8B4513")); // terre
         } else {
-            paint.setColor(Color.WHITE); // Couleur par défaut
+            paint.setColor(Color.parseColor("#228B22")); // herbe
         }
 
         // Dessiner la case
         canvas.drawRect(left, top, right, bottom, paint);
 
-        // Si la case est valide (tileValue == 1), afficher le numéro et l'action
-        if (tileValue == 1) {
-            paint.setTypeface(font); // Appliquer la police définie
+        // Afficher le texte si nécessaire (uniquement pour les cases valides)
+        if (gameBoardCase.getValue() == 1) {
+            paint.setTypeface(font);
+
             // Définir la couleur du texte en fonction de l'action
-            if (gameBoardCase.getAction() == 1) {
-                paint.setColor(Color.BLUE); // Texte bleu pour les cases avec action 1
-            } else if (gameBoardCase.getAction() == 2) {
-                paint.setColor(Color.RED); // Texte rouge pour les cases avec action 2
-            } else if (gameBoardCase.getAction() == 3) {
-                paint.setColor(Color.GREEN); // Texte vert pour les cases avec action 3
-            } else if (gameBoardCase.getAction() == 4) {
-                paint.setColor(Color.MAGENTA);
-            }
-            else {
-                paint.setColor(Color.WHITE); // Texte blanc pour les autres
+            switch (gameBoardCase.getAction()) {
+                case 1:
+                    paint.setColor(Color.BLUE);
+                    break;
+                case 2:
+                    paint.setColor(Color.RED);
+                    break;
+                case 3:
+                    paint.setColor(Color.GREEN);
+                    break;
+                case 4:
+                    paint.setColor(Color.MAGENTA);
+                    break;
+                default:
+                    paint.setColor(Color.WHITE);
             }
 
             // Positionner le texte au centre de la case
+            paint.setTextAlign(Paint.Align.CENTER);
             float textX = left + cellSize / 2;
             float textY = bottom - paint.descent() - 10;
 
             // Afficher le numéro de la case
             canvas.drawText(String.valueOf(gameBoardCase.getCaseNumber()), textX, textY, paint);
-
         }
     }
+
 
     public void startDiceRoll() {
         isRolling = true;
@@ -318,12 +353,21 @@ public class Board_BoardView extends View {
         // Move only if the target case is valid (value == 1)
         if (targetBoardCase != null && targetBoardCase.getValue() == 1) {
             boardPlayer.setCaseNumber(targetCaseNumber); // Move player
-
-        } else {
-            Toast.makeText(getContext(), "Invalid move!", Toast.LENGTH_SHORT).show();
+            onPlayerMovementFinished(); // Call the new method
         }
 
 
+    }
+    public void onPlayerMovementFinished() {
+        isPlayerFinishedMoving = true;
+    }
+
+    private void sleep() {
+        try {
+            Thread.sleep(16); // 60 FPS
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public int getCurrentCaseAction() {
@@ -351,8 +395,12 @@ public class Board_BoardView extends View {
         boardPlayer.setMovingAnimationToTargetCase(value);
     }
 
-    public boolean isPlayerMoving() {
+    public boolean getIsPlayerMoving() {
         return boardPlayer.isMoving();
+    }
+
+    public void setPlayerFinishedMoving(boolean isPlayerFinishedMoving) {
+        this.isPlayerFinishedMoving = isPlayerFinishedMoving;
     }
 
 }

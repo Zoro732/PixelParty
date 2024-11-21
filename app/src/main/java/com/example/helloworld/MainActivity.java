@@ -122,16 +122,13 @@ public class MainActivity extends AppCompatActivity {
         start.setOnClickListener(v -> {
             saveSelectedSprite(); // Enregistrer le sprite sélectionné
             if (selection != null) {
-                intent = new Intent(MainActivity.this, Labyrinthe_MA.class);
+                intent = new Intent(this, Board_MA.class);
                 intent.putExtra("selection_key", selection); // Envoi de la variable
-                //intent.putExtra("game_mode", game_mode); // Envoi d'une autre valeur
                 startActivity(intent);
             }
             else {
                 Toast.makeText(this, "Aucun sprite selectionne", Toast.LENGTH_SHORT).show();
             }
-            Intent intent = new Intent(MainActivity.this, Board_MA.class);
-            startActivity(intent);
         });
 
         // Initialiser le Spinner

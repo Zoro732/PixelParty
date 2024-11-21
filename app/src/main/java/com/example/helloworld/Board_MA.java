@@ -30,6 +30,11 @@ public class Board_MA extends AppCompatActivity {
 
     public int currentPlayerCaseNumber;
 
+    private int currentRound = 1; // Compteur pour le numéro de tour
+    private TextView roundTextView; // TextView pour afficher le numéro du tour
+    private int previousRound;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,13 +46,39 @@ public class Board_MA extends AppCompatActivity {
         setContentView(R.layout.board);
         boardBoardView = findViewById(R.id.boardView);
 
+
+        boardBoardView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                Intent intent = getIntent();
+                if (intent != null) {
+                    String selection = intent.getStringExtra("selection_key");
+                    Log.d("Board_MA", "Received selection: " + selection + "setting player sprite");
+                    boardBoardView.setPlayerSpriteSelection(selection);
+                    Log.d("Board_MA", "Received selection: " + selection + "player sprite set");
+                }
+                if (getPlayerCurrentCaseActionFromBoardView() != 0) {
+                    playButton.setEnabled(true);
+                    //dice.setEnabled(true);
+                } else {
+                    dice.setEnabled(true);
+                }
+            }
+        });
+
+
         // Initialisation des items du layout
         scoreMessage = findViewById(R.id.scoreText);
         continueButton = findViewById(R.id.continueButton);
         playButton = findViewById(R.id.play);
+        playButton.setEnabled(false);
 
-        // Initialiser le bouton de lancer de dés
         dice = findViewById(R.id.dice);
+
+        // Initialisation du TextView pour le numéro de tour
+        roundTextView = findViewById(R.id.round_number); // Assurez-vous que cette vue existe dans votre layout XML
+        updateRoundDisplay();
+
         dice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -61,23 +92,17 @@ public class Board_MA extends AppCompatActivity {
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-
                             if (!boardBoardView.isDiceRolling()) {
-                                // Dice roll complete
-                                // Keep dice button disabled
-                                // Enable play button only if on a mini-game tile
-                                playButton.setEnabled(true);
-                                if (getPlayerCurrentCaseActionFromBoardView() == 0) {
-                                    dice.setEnabled(true);
-                                }
 
+                                playButton.setEnabled(false);
+                                dice.setEnabled(false);
 
                             } else {
-                                // If still rolling, schedule another check
                                 handler.postDelayed(this, 100);
                             }
                         }
                     }, 100);
+
                 }
             }
         });
@@ -90,29 +115,43 @@ public class Board_MA extends AppCompatActivity {
         });
     }
 
+    private void updateRoundDisplay() {
+        roundTextView.setText("Round : " + currentRound); // Met à jour le TextView
+    }
+
+
+    private void nextRound() {
+        currentRound++;
+        updateRoundDisplay();
+        Log.d("Board_MA", "Next round started: Round " + currentRound);
+    }
+
+
+
     // Méthode appelée pour démarrer le mini-jeu
     private void startMiniGame() {
         Log.d("Board_MA", "Starting startMiniGame");
-        // Vérifie l'action de la case sur laquelle le joueur est situé
         if (getPlayerCurrentCaseActionFromBoardView() == 1) {
+
             Intent intent = new Intent(Board_MA.this, Labyrinthe_MA.class);
             intent.putExtra("game_mode", "board");
             intent.putExtra("selection_key", "Bleu");
             Log.d("Board_MA", "Starting Labyrinthe_MA");
-            startActivityForResult(intent, LABY_REQUEST_CODE); // Lance le mini-jeu laby
+            startActivityForResult(intent, LABY_REQUEST_CODE);
 
         } else if (getPlayerCurrentCaseActionFromBoardView() == 2) {
-            // Si l'action est de type 1 (par exemple, démarrer un mini-jeu)
+
             Intent intent = new Intent(Board_MA.this, RunGame_MA.class);
             intent.putExtra("game_mode", "board");
             Log.d("Board_MA", "Starting Rngame");
-            startActivityForResult(intent, RUN_REQUEST_CODE); // Lance le mini-jeu
+            startActivityForResult(intent, RUN_REQUEST_CODE);
 
         } else if (getPlayerCurrentCaseActionFromBoardView() == 3) {
-            // Si l'action est de type 1 (par exemple, démarrer un mini-jeu)
+
             Intent intent = new Intent(Board_MA.this, Taquin_MA.class);
+            intent.putExtra("game_mode", "board");
             Log.d("Board_MA", "Starting TAquin");
-            startActivityForResult(intent, TAQUIN_REQUEST_CODE); // Lance le mini-jeu
+            startActivityForResult(intent, TAQUIN_REQUEST_CODE);
         }
     }
 
@@ -120,6 +159,7 @@ public class Board_MA extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
         if (requestCode == LABY_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {
                 String result = data.getStringExtra("score");
@@ -135,7 +175,6 @@ public class Board_MA extends AppCompatActivity {
                     public void onClick(View v) {
                         scoreMessage.setVisibility(View.GONE);
                         continueButton.setVisibility(View.GONE);
-                        playButton.setEnabled(true);
                         dice.setEnabled(true);
                     }
                 });
@@ -159,7 +198,6 @@ public class Board_MA extends AppCompatActivity {
                     public void onClick(View v) {
                         scoreMessage.setVisibility(View.GONE);
                         continueButton.setVisibility(View.GONE);
-                        playButton.setEnabled(true);
                         dice.setEnabled(true);
                     }
                 });
@@ -170,7 +208,12 @@ public class Board_MA extends AppCompatActivity {
             if (resultCode == Activity.RESULT_OK) {
                 String result = data.getStringExtra("score");
                 Log.d("Board_MA", "Score received from TAquin: " + result);
-                scoreMessage.setText("Taquin finished in " + result + "s");
+                if(result.equals("-1")) {
+                    scoreMessage.setText("Taquin Failed");
+                } else {
+                    scoreMessage.setText("Taquin finished in " + result + "s");
+
+                }
                 scoreMessage.setVisibility(View.VISIBLE);
                 continueButton.setVisibility(View.VISIBLE);
                 playButton.setEnabled(false);
@@ -181,13 +224,18 @@ public class Board_MA extends AppCompatActivity {
                     public void onClick(View v) {
                         scoreMessage.setVisibility(View.GONE);
                         continueButton.setVisibility(View.GONE);
-                        playButton.setEnabled(true);
                         dice.setEnabled(true);
                     }
                 });
 
+            } else {
+                Log.d("Board_MA","result code invalid for taquin");
             }
+        } else {
+            Log.d("Board_MA","request code invalid for taquin");
         }
+        nextRound();
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
