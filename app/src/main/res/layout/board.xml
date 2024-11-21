@@ -10,11 +10,13 @@
 
     <!-- ScrollView pour permettre le défilement -->
 
+    <!-- Boutons de jeu -->
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:layout_editor_absoluteX="162dp"
-        tools:layout_editor_absoluteY="36dp">
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp">
 
         <!-- BoardView personnalisé à l'intérieur du ScrollView -->
         <com.example.helloworld.Board_BoardView
@@ -27,30 +29,30 @@
         android:id="@+id/dice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
         android:layout_marginRight="16dp"
         android:text="dés"
         android:fontFamily="@font/press2start"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"  />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
         android:id="@+id/play"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="16dp"
         android:text="play"
         android:fontFamily="@font/press2start"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginStart="16dp"
-        android:layout_marginBottom="16dp"  />
+        app:layout_constraintStart_toStartOf="parent" />
 
+    <!-- Score affiché temporairement -->
     <TextView
+        android:id="@+id/scoreText"
         android:layout_width="match_parent"
         android:layout_height="100dp"
-        android:id="@+id/scoreText"
         android:fontFamily="@font/press2start"
         android:textSize="20dp"
         android:textColor="@color/black"
@@ -61,13 +63,13 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="150dp"
-        android:text=""/>
+        android:layout_marginBottom="150dp" />
 
+    <!-- Bouton pour continuer -->
     <Button
+        android:id="@+id/continueButton"
         android:layout_width="200dp"
         android:layout_height="50dp"
-        android:id="@+id/continueButton"
         android:textSize="15sp"
         android:fontFamily="@font/press2start"
         android:textColor="@color/black"
@@ -77,22 +79,87 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="200dp"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
-    <TextView
+    <!-- Fenêtre d'inventaire -->
+    <RelativeLayout
+        android:id="@+id/inventoryWindow"
+        android:layout_width="0dp"
+        app:layout_constraintWidth_percent="0.3"
+        android:layout_height="match_parent"
+        android:background="#E6E6E6"
+        android:visibility="gone"
+        android:layout_gravity="start"
+        android:elevation="8dp">
+
+        <TextView
+            android:id="@+id/inventoryTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="Inventory"
+            android:fontFamily="@font/press2start"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/closeInventoryButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_margin="16dp"
+            android:textColor="@color/black"
+            android:text="X" />
+
+        <Button
+            android:id="@+id/plusOneButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="Dice +1"
+            android:textSize="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="100dp"
+            android:textColor="@color/black"
+            android:fontFamily="@font/press2start">
+        </Button>
+
+
+    </RelativeLayout>
+
+    <!-- Bouton pour ouvrir l'inventaire -->
+    <Button
+        android:id="@+id/inventory"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/round_number"
-        android:fontFamily="@font/press2start"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="150dp"
+        android:textColor="@color/black"
+        android:text="Inventory"
         android:textSize="10dp"
-        android:textColor="@color/white"
-        android:gravity="center"
+        android:fontFamily="@font/press2start"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginBottom="100dp"
-        android:layout_marginLeft="20dp"
-        android:text="Round"/>
+        app:layout_constraintStart_toStartOf="parent" />
 
-
+    <TextView
+        android:id="@+id/textView_DicePlusOne"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/press2start"
+        android:gravity="center"
+        android:text="+1"
+        android:textColor="@color/white"
+        android:textSize="10dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginLeft="70dp"
+        android:layout_marginTop="120dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

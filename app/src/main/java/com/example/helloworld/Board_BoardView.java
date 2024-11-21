@@ -35,8 +35,8 @@ public class Board_BoardView extends View {
             {0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0},
     };
     public static int[][] mapAction = {
-            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // 1 = Laby, 2 = Run, 3 = Taquin, Shop = 4 & MiniBoss = 5
-            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // 1 = Laby, 2 = Run, 3 = Taquin, Shop = 4 & MiniBoss = 5
+            {0, 0, 3, 0, 1, 2, 3, 0, 0, 0, 0, 0, 0},
             {0, 0, 0, 0, 0, 0, 0, 1, 3, 0, 0, 0, 0},
             {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4},
             {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
@@ -55,7 +55,7 @@ public class Board_BoardView extends View {
     private Paint borderPaint = new Paint();
     private String text = "Texte au milieu de l'écran";
     private int diceResult = 0; // Variable to store the dice roll result
-    private boolean isRolling = false; // Flag to track if the dice is rolling
+    public boolean isRolling = false; // Flag to track if the dice is rolling
     private final Random random = new Random();
     private SpriteSheet diceSpriteSheet;
     private Bitmap diceBitmap;
@@ -68,14 +68,17 @@ public class Board_BoardView extends View {
 
     private boolean isPlayerFinishedMoving = false;
 
+    public int itemAction = 0; // 0=no action pending, 1 = dice +1, -1= dice -1 of oppenent
+
 
     public Board_BoardView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public boolean isPlayerFinishedMoving() {
-        return isPlayerFinishedMoving;
+
+    public void setItemAction(int ItemAction) {
+        this.itemAction = ItemAction;
     }
 
     public void setPlayerSpriteSelection (String selection){
@@ -238,12 +241,8 @@ public class Board_BoardView extends View {
         //boardPlayer.update();
 
         if (isRolling || diceResult != 0) {
-            textPaint.setColor(Color.BLACK);
-            textPaint.setTextSize(60);
-            textPaint.setTextAlign(Paint.Align.CENTER);
 
             Bitmap originalBitmap = diceSpriteSheet.getSprite(0, diceResult - 1);
-
             int scaledWidth = originalBitmap.getWidth() * 2;
             int scaledHeight = originalBitmap.getHeight() * 2;
             Bitmap scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, scaledWidth, scaledHeight, false);
@@ -331,17 +330,29 @@ public class Board_BoardView extends View {
     }
 
     public void stopDiceRoll() {
+        Log.d("Board_BoardView", "in stopdiceroll() diceResult = " + diceResult);
+
         isRolling = false;
         // Only move if the target tile is valid (1)
         movePlayer();
         invalidate();
         onPlayerMovementFinished();
-
     }
 
     // Method to move the player to the valid tile
     private void movePlayer() {
-        int targetCaseNumber = boardPlayer.getCaseNumber() + diceResult;
+        Log.d("Board_BoardView", "movePlayer called, itemaction = " + itemAction);
+        Log.d("Board_BoardView", "out of if, dicersult = " + diceResult);
+
+        int targetCaseNumber;
+        if (itemAction != 0) {
+            targetCaseNumber = boardPlayer.getCaseNumber() + diceResult + itemAction;
+            itemAction = 0;
+            Log.d("Board_BoardView", "in if, dicersult = " + diceResult);
+        } else {
+            targetCaseNumber = boardPlayer.getCaseNumber() + diceResult;
+        }
+
         Board_Case targetBoardCase = null;
 
         // Find the target case with the corresponding case number
@@ -363,13 +374,6 @@ public class Board_BoardView extends View {
         isPlayerFinishedMoving = true;
     }
 
-    private void sleep() {
-        try {
-            Thread.sleep(16); // 60 FPS
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
 
     public int getCurrentCaseAction() {
         return boardCases.get(boardPlayer.getCaseNumber()).getAction();

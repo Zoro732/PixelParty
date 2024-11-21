@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class Board_MA extends AppCompatActivity {
 
@@ -30,12 +31,11 @@ public class Board_MA extends AppCompatActivity {
 
     public int currentPlayerCaseNumber;
 
-    private int currentRound = 1; // Compteur pour le numéro de tour
-    private TextView roundTextView; // TextView pour afficher le numéro du tour
-    private int previousRound;
-
     private Handler playerMovementHandler = new Handler(Looper.getMainLooper());
 
+    public boolean doPlayerUsePlusOneItem = false;
+    private Button plusOneToDiceButton;
+    private TextView textView_DicePlusOne;
 
 
     @Override
@@ -78,15 +78,18 @@ public class Board_MA extends AppCompatActivity {
 
         dice = findViewById(R.id.dice);
 
+        plusOneToDiceButton = findViewById(R.id.plusOneButton);
+        textView_DicePlusOne = findViewById(R.id.textView_DicePlusOne);
+
+
         // Initialisation du TextView pour le numéro de tour
-        roundTextView = findViewById(R.id.round_number); // Assurez-vous que cette vue existe dans votre layout XML
-        updateRoundDisplay();
 
         dice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (dice.isEnabled()) {
                     boardBoardView.startDiceRoll();
+                    plusOneToDiceButton.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -99,41 +102,74 @@ public class Board_MA extends AppCompatActivity {
         });
 
         playerMovementHandler.post(playerMovementRunnable);
+
+        //Inventory management
+
+        // Gestion de l'inventaire
+        Button inventoryButton = findViewById(R.id.inventory);
+        View inventoryWindow = findViewById(R.id.inventoryWindow);
+        Button closeInventoryButton = findViewById(R.id.closeInventoryButton);
+
+
+        plusOneToDiceButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(Board_MA.this, "Item Used : Dice +1", Toast.LENGTH_SHORT).show();
+                plusOneToDiceButton.setEnabled(false);
+                doPlayerUsePlusOneItem = true;
+                boardBoardView.setItemAction(1);
+            }
+        });
+
+
+        // Animation pour ouvrir l'inventaire
+        inventoryButton.setOnClickListener(v -> {
+            inventoryWindow.setVisibility(View.VISIBLE);
+            inventoryWindow.animate()
+                    .translationX(10)
+                    .setDuration(200) // Durée de l'animation
+                    .start();
+        });
+
+        // Animation pour fermer l'inventaire
+        closeInventoryButton.setOnClickListener(v -> {
+            inventoryWindow.animate()
+                    .translationX(0)
+                    .setDuration(200) // Durée de l'animation
+                    .withEndAction(() -> inventoryWindow.setVisibility(View.GONE)) // Cache la vue après l'animation
+                    .start();
+        });
+
     }
 
     private Runnable playerMovementRunnable = new Runnable() {
 
         @Override
         public void run() {
-            Log.d("Board_MA", "Player movement runnable, isplayerfinishedmoving = " + boardBoardView.isPlayerFinishedMoving());
             if (!boardBoardView.getIsPlayerMoving() && getPlayerCurrentCaseActionFromBoardView() == 0) {
                 dice.setEnabled(true);
                 boardBoardView.setPlayerFinishedMoving(false); // Reset the flag
-                Log.d("Board_MA", "Player finished moving & action = 0");
+                textView_DicePlusOne.setVisibility(View.GONE);
             } else if (!boardBoardView.getIsPlayerMoving() && getPlayerCurrentCaseActionFromBoardView() != 0) {
                 playButton.setEnabled(true);
                 dice.setEnabled(false);
                 boardBoardView.setPlayerFinishedMoving(false);
-                Log.d("Board_MA", "Player finished moving  & action != 0");
+                textView_DicePlusOne.setVisibility(View.GONE);
             } else if (boardBoardView.getIsPlayerMoving()) {
                 dice.setEnabled(false);
-                Log.d("Board_MA", "Player is moving");
+            }
+            if (boardBoardView.isDiceRolling()) {
+                if (doPlayerUsePlusOneItem) {
+                    textView_DicePlusOne.setVisibility(View.VISIBLE);
+                    Log.d("Board_MA", "Dice is rolling with +1");
+                }
+                Log.d("Board_MA", "Dice is rolling");
+            } else {
+                doPlayerUsePlusOneItem = false;
             }
             playerMovementHandler.postDelayed(this, 100); // Check every 100 milliseconds
         }
     };
-
-    private void updateRoundDisplay() {
-        roundTextView.setText("Round : " + currentRound); // Met à jour le TextView
-    }
-
-
-    private void nextRound() {
-        currentRound++;
-        updateRoundDisplay();
-        Log.d("Board_MA", "Next round started: Round " + currentRound);
-    }
-
 
 
     // Méthode appelée pour démarrer le mini-jeu
@@ -242,7 +278,6 @@ public class Board_MA extends AppCompatActivity {
         } else {
             Log.d("Board_MA","request code invalid for taquin");
         }
-        nextRound();
 
     }
 
@@ -263,6 +298,7 @@ public class Board_MA extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        onPause();
         currentPlayerCaseNumber = boardBoardView.getPlayerCaseNumber();
         outState.putInt("playerCaseNumber", currentPlayerCaseNumber); // Sauvegarde
         Log.d("Board_MA", "Saving player case number = " + currentPlayerCaseNumber);
