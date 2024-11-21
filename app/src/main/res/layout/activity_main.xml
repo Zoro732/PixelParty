@@ -162,35 +162,72 @@
             android:orientation="horizontal"
             android:gravity="center_horizontal">
 
-            <!-- Sprite 1 -->
-            <ImageView
-                android:id="@+id/bleu"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:src="@drawable/player_blue"
-                android:layout_margin="20dp"
-                android:contentDescription="blue"
-                android:layout_marginLeft="-20dp"  />
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/animation_background1"
+                    android:layout_width="125dp"
+                    android:layout_height="125dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="7dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/sprite_selection"
+                    android:visibility="gone"/>
+                <!-- Sprite 1 -->
+                <ImageView
+                    android:id="@+id/bleu"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:src="@drawable/player_blue"
+                    android:layout_margin="20dp"
+                    android:contentDescription="blue"
+                    android:layout_marginLeft="-20dp"  />
+            </FrameLayout>
 
-            <!-- Sprite 2 -->
-            <ImageView
-                android:id="@+id/rouge"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:src="@drawable/player_red"
-                android:layout_margin="20dp"
-                android:contentDescription="red"/>
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/animation_background2"
+                    android:layout_width="125dp"
+                    android:layout_height="125dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="7dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/sprite_selection"
+                    android:visibility="gone"/>
+                <!-- Sprite 2 -->
+                <ImageView
+                    android:id="@+id/rouge"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:src="@drawable/player_red"
+                    android:layout_margin="20dp"
+                    android:contentDescription="red"/>
+            </FrameLayout>
 
-            <!-- Sprite 3 -->
-            <ImageView
-                android:id="@+id/purple"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:src="@drawable/player_purple"
-                android:layout_margin="20dp"
-                android:contentDescription="purple" />
-
-
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/animation_background3"
+                    android:layout_width="125dp"
+                    android:layout_height="125dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="7dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/sprite_selection"
+                    android:visibility="gone"/>
+                <!-- Sprite 3 -->
+                <ImageView
+                    android:id="@+id/purple"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:src="@drawable/player_purple"
+                    android:layout_margin="20dp"
+                    android:contentDescription="purple" />
+            </FrameLayout>
         </LinearLayout>
 
         <LinearLayout

@@ -242,7 +242,39 @@ public class MainActivity extends AppCompatActivity {
         playerPurple.setBackgroundColor(Color.TRANSPARENT);
 
         // Mettre en surbrillance le personnage sélectionné
-        selectedCharacter.setBackgroundColor(Color.LTGRAY);
+        ImageView animationBackground1 = findViewById(R.id.animation_background1);
+        ImageView animationBackground2 = findViewById(R.id.animation_background2);
+        ImageView animationBackground3 = findViewById(R.id.animation_background3);
+
+        if (selectedCharacter == playerBlue) {
+            animationBackground1.setVisibility(View.VISIBLE);
+            animationBackground2.setVisibility(View.GONE);
+            animationBackground3.setVisibility(View.GONE);
+            Glide.with(this)
+                    .asGif()
+                    .load(R.drawable.sprite_selection) // Remplacez par votre GIF d'animation
+                    .into(animationBackground1);
+        }
+
+        if (selectedCharacter == playerRed) {
+            animationBackground1.setVisibility(View.GONE);
+            animationBackground2.setVisibility(View.VISIBLE);
+            animationBackground3.setVisibility(View.GONE);
+            Glide.with(this)
+                    .asGif()
+                    .load(R.drawable.sprite_selection) // Remplacez par votre GIF d'animation
+                    .into(animationBackground2);
+        }
+
+        if (selectedCharacter == playerPurple) {
+            animationBackground1.setVisibility(View.GONE);
+            animationBackground2.setVisibility(View.GONE);
+            animationBackground3.setVisibility(View.VISIBLE);
+            Glide.with(this)
+                    .asGif()
+                    .load(R.drawable.sprite_selection) // Remplacez par votre GIF d'animation
+                    .into(animationBackground3);
+        }
 
         // Mettre à jour le texte du personnage sélectionné
         selectedCharacterText.setText("Selected Character: " + characterName);
