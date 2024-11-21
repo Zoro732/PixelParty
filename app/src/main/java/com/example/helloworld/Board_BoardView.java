@@ -74,6 +74,10 @@ public class Board_BoardView extends View {
         init();
     }
 
+    public boolean isPlayerFinishedMoving() {
+        return isPlayerFinishedMoving;
+    }
+
     public void setPlayerSpriteSelection (String selection){
         this.playerSprite = selection;
         if (playerSprite != null) {
@@ -167,10 +171,6 @@ public class Board_BoardView extends View {
             boardPlayer.update();
             invalidate(); // Trigger a redraw
             animationHandler.postDelayed(this, 100); // Adjust the delay for animation speed
-
-            if (!getIsPlayerMoving()) {
-                Log.d("Board_BoardView","Player is not moving");
-            }
         }
     };
 
@@ -335,6 +335,8 @@ public class Board_BoardView extends View {
         // Only move if the target tile is valid (1)
         movePlayer();
         invalidate();
+        onPlayerMovementFinished();
+
     }
 
     // Method to move the player to the valid tile
@@ -353,7 +355,6 @@ public class Board_BoardView extends View {
         // Move only if the target case is valid (value == 1)
         if (targetBoardCase != null && targetBoardCase.getValue() == 1) {
             boardPlayer.setCaseNumber(targetCaseNumber); // Move player
-            onPlayerMovementFinished(); // Call the new method
         }
 
 

@@ -34,6 +34,9 @@ public class Board_MA extends AppCompatActivity {
     private TextView roundTextView; // TextView pour afficher le numéro du tour
     private int previousRound;
 
+    private Handler playerMovementHandler = new Handler(Looper.getMainLooper());
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,26 +86,7 @@ public class Board_MA extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (dice.isEnabled()) {
-                    dice.setEnabled(false);
-
-                    playButton.setEnabled(false);
                     boardBoardView.startDiceRoll();
-
-                    final Handler handler = new Handler(Looper.getMainLooper());
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (!boardBoardView.isDiceRolling()) {
-
-                                playButton.setEnabled(false);
-                                dice.setEnabled(false);
-
-                            } else {
-                                handler.postDelayed(this, 100);
-                            }
-                        }
-                    }, 100);
-
                 }
             }
         });
@@ -113,7 +97,31 @@ public class Board_MA extends AppCompatActivity {
                 startMiniGame();
             }
         });
+
+        playerMovementHandler.post(playerMovementRunnable);
     }
+
+    private Runnable playerMovementRunnable = new Runnable() {
+
+        @Override
+        public void run() {
+            Log.d("Board_MA", "Player movement runnable, isplayerfinishedmoving = " + boardBoardView.isPlayerFinishedMoving());
+            if (!boardBoardView.getIsPlayerMoving() && getPlayerCurrentCaseActionFromBoardView() == 0) {
+                dice.setEnabled(true);
+                boardBoardView.setPlayerFinishedMoving(false); // Reset the flag
+                Log.d("Board_MA", "Player finished moving & action = 0");
+            } else if (!boardBoardView.getIsPlayerMoving() && getPlayerCurrentCaseActionFromBoardView() != 0) {
+                playButton.setEnabled(true);
+                dice.setEnabled(false);
+                boardBoardView.setPlayerFinishedMoving(false);
+                Log.d("Board_MA", "Player finished moving  & action != 0");
+            } else if (boardBoardView.getIsPlayerMoving()) {
+                dice.setEnabled(false);
+                Log.d("Board_MA", "Player is moving");
+            }
+            playerMovementHandler.postDelayed(this, 100); // Check every 100 milliseconds
+        }
+    };
 
     private void updateRoundDisplay() {
         roundTextView.setText("Round : " + currentRound); // Met à jour le TextView
@@ -269,6 +277,12 @@ public class Board_MA extends AppCompatActivity {
             boardBoardView.setPlayerCaseNumber(currentPlayerCaseNumber);
             Log.d("Board_MA", "Retrieving player case number = " + currentPlayerCaseNumber);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        playerMovementHandler.removeCallbacks(playerMovementRunnable);
     }
 
 }
