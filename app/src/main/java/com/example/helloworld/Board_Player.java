@@ -23,7 +23,7 @@ public class Board_Player {
     private final int radius = 50; // Rayon du joueur
     private float targetX; // Coordonnée cible en x (en pixels)
     private float targetY; // Coordonnée cible en y (en pixels)
-    private boolean isMoving = false; // Indique si le joueur est en mouvement
+    public boolean isMoving = false; // Indique si le joueur est en mouvement
     private final float moveSpeed = 30f; // Vitesse de déplacement en pixels par frame
     private List<Board_Case> currentPath; // The current path the player is following
     private int currentPathIndex; // The index of the next tile in the path
@@ -78,17 +78,6 @@ public class Board_Player {
         enablePlayerMovingAnimation = value;
     }
 
-    public boolean hasReachedTarget() {
-        if (isMoving) {
-            float dx = targetX - x;
-            float dy = targetY - y;
-            float distance = (float) Math.sqrt(dx * dx + dy * dy);
-
-            // Check if the player is close enough to the target
-            return distance < moveSpeed;
-        }
-        return false; // Not moving, so hasn't reached target
-    }
 
     public boolean isMoving() {
         return isMoving;
