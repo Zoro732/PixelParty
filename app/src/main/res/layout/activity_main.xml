@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:background="@color/green">
 
-    <!-- Zone de score -->
+    <!-- Zone de score (en haut à gauche) -->
     <TextView
         android:id="@+id/tv_score"
         android:layout_width="wrap_content"
@@ -14,13 +14,39 @@
         android:textSize="24sp"
         android:textColor="@color/white" />
 
-    <!-- Taupes (exemple d'une seule taupe) -->
-    <ImageButton
-        android:id="@+id/mole1"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+    <!-- Taupes placées horizontalement -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:background="@drawable/mole"
-        android:visibility="invisible" />
+        android:orientation="horizontal"
+        android:gravity="center_horizontal">
 
+        <!-- Taupe 1 -->
+        <ImageButton
+            android:id="@+id/mole1"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_margin="16dp"
+            android:background="@drawable/mole"
+            android:visibility="invisible" />
+
+        <!-- Taupe 2 -->
+        <ImageButton
+            android:id="@+id/mole2"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_margin="16dp"
+            android:background="@drawable/mole"
+            android:visibility="invisible" />
+
+        <!-- Taupe 3 -->
+        <ImageButton
+            android:id="@+id/mole3"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_margin="16dp"
+            android:background="@drawable/mole"
+            android:visibility="invisible" />
+    </LinearLayout>
 </RelativeLayout>
