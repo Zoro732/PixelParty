@@ -19,7 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import com.bumptech.glide.Glide;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         FrameLayout frameLayout = findViewById(R.id.gameFrame);
         ImageView imageView = new ImageView(this);
 
-        Button gameMode_Solo = findViewById(R.id.gameMode_Solo);
+        ImageView gameMode_Solo = findViewById(R.id.gameMode_Solo);
         Button mini_jeux = findViewById(R.id.mini_jeux);
         Button backButton = findViewById(R.id.backbutton);
         Button back = findViewById(R.id.back);
@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
 
         TextView mainpage_text = findViewById(R.id.mainpage_text);
         mainpage_text.bringToFront();
+        gameMode_Solo.bringToFront();
 
         // Bouton start
         gameMode_Solo.setOnClickListener(v -> { // temporarely replace SpriteAcitivity with Board_MA
@@ -249,30 +250,18 @@ public class MainActivity extends AppCompatActivity {
             animationBackground1.setVisibility(View.VISIBLE);
             animationBackground2.setVisibility(View.GONE);
             animationBackground3.setVisibility(View.GONE);
-            Glide.with(this)
-                    .asGif()
-                    .load(R.drawable.sprite_selection) // Remplacez par votre GIF d'animation
-                    .into(animationBackground1);
         }
 
         if (selectedCharacter == playerRed) {
             animationBackground1.setVisibility(View.GONE);
             animationBackground2.setVisibility(View.VISIBLE);
             animationBackground3.setVisibility(View.GONE);
-            Glide.with(this)
-                    .asGif()
-                    .load(R.drawable.sprite_selection) // Remplacez par votre GIF d'animation
-                    .into(animationBackground2);
         }
 
         if (selectedCharacter == playerPurple) {
             animationBackground1.setVisibility(View.GONE);
             animationBackground2.setVisibility(View.GONE);
             animationBackground3.setVisibility(View.VISIBLE);
-            Glide.with(this)
-                    .asGif()
-                    .load(R.drawable.sprite_selection) // Remplacez par votre GIF d'animation
-                    .into(animationBackground3);
         }
 
         // Mettre à jour le texte du personnage sélectionné
