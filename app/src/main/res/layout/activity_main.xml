@@ -4,49 +4,138 @@
     android:layout_height="match_parent"
     android:background="@color/green">
 
-    <!-- Zone de score (en haut à gauche) -->
+    <!-- Zone de score (en haut à gauche, décalé pour laisser la place au bouton settings) -->
+
+    <!-- Bouton Settings (en haut à gauche) -->
+
     <TextView
         android:id="@+id/tv_score"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
         android:text="Score: 0"
+        android:textColor="@color/white"
         android:textSize="24sp"
-        android:textColor="@color/white" />
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:fontFamily="@font/press2start"
+        android:layout_margin="16dp"/>
 
-    <!-- Taupes placées horizontalement -->
-    <LinearLayout
-        android:layout_width="match_parent"
+
+    <ImageView
+        android:id="@+id/settings"
+        android:layout_width="43dp"
+        android:layout_height="43dp"
+        android:layout_margin="5dp"
+        android:contentDescription="Settings"
+        android:src="@drawable/settings" />
+
+    <!-- Zone pour le temps (en haut à droite) -->
+    <TextView
+        android:id="@+id/tv_time"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:orientation="horizontal"
-        android:gravity="center_horizontal">
+        android:layout_alignParentEnd="true"
+        android:layout_margin="16dp"
+        android:text="30s"
+        android:textSize="24sp"
+        android:textColor="@color/white"
+        android:fontFamily="@font/press2start"/>
+
+    <!-- Zone pour les taupes -->
+
+    <!-- Vue de pause pour les boutons "Resume", "Restart", et "Quit" -->
+
+    <FrameLayout
+        android:id="@+id/frameLayout"
+        android:layout_width="714dp"
+        android:layout_height="304dp"
+        android:layout_below="@id/tv_score"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="26dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginRight="4dp">
 
         <!-- Taupe 1 -->
         <ImageButton
             android:id="@+id/mole1"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_margin="16dp"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center"
             android:background="@drawable/mole"
             android:visibility="invisible" />
 
         <!-- Taupe 2 -->
         <ImageButton
             android:id="@+id/mole2"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_margin="16dp"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center"
             android:background="@drawable/mole"
             android:visibility="invisible" />
 
         <!-- Taupe 3 -->
         <ImageButton
             android:id="@+id/mole3"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_margin="16dp"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center"
             android:background="@drawable/mole"
             android:visibility="invisible" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/pauseMenu"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:background="#CC000000"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/gamePause"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pause"
+            android:textColor="@color/white"
+            android:textSize="36sp"
+            android:layout_marginBottom="40dp" />
+
+        <Button
+            android:id="@+id/resume"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Resume"
+            android:fontFamily="@font/press2start"
+            android:layout_marginBottom="20dp" />
+
+        <Button
+            android:id="@+id/restart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Restart"
+            android:fontFamily="@font/press2start"
+            android:layout_marginBottom="20dp" />
+
+        <Button
+            android:id="@+id/quit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Quit"
+            android:fontFamily="@font/press2start" />
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_countdown"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Début dans"
+        android:textSize="60sp"
+        android:textColor="@android:color/black"
+        android:visibility="gone"
+        android:layout_centerInParent="true"
+        android:fontFamily="@font/press2start"/>
+
+
 </RelativeLayout>
