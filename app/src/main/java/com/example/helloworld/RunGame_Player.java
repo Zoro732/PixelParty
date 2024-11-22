@@ -102,7 +102,15 @@ public class RunGame_Player {
             Bitmap resizedSprite = Bitmap.createScaledBitmap(currentSprite, newWidth, newHeight, false);
 
             // Draw the resized sprite
-            canvas.drawBitmap(resizedSprite, getX(), getY(), paint);
+            //canvas.drawBitmap(resizedSprite, getX(), getY(), paint);
+
+            canvas.drawCircle(
+                    getX() + newWidth / 2,  // Coordonnée X du centre
+                    getY() + newHeight / 2, // Coordonnée Y du centre
+                    50, // Rayon (pour s'assurer que le cercle tient dans le rectangle initial)
+                    paint             // Peinture utilisée pour dessiner
+            );
+
 
             // Reset paint style for other drawing
             paint.setStyle(Paint.Style.FILL);

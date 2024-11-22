@@ -59,7 +59,15 @@ public class RunGame_Coin {
         int newHeight = currentCoinImage.getHeight() * 2;
 
         currentCoinImage = Bitmap.createScaledBitmap(currentCoinImage, newWidth, newHeight, false);
-        canvas.drawBitmap(currentCoinImage, x, y, paint);
+        //canvas.drawBitmap(currentCoinImage, x, y, paint);
+
+        canvas.drawCircle(
+                x + newWidth / 2,  // Coordonnée X du centre
+                y + newHeight / 2, // Coordonnée Y du centre
+                Math.min(newWidth, newHeight) / 2, // Rayon (pour s'assurer que le cercle tient dans le rectangle initial)
+                paint             // Peinture utilisée pour dessiner
+        );
+
     }
 
     public void setY(int currentY) {

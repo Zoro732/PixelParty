@@ -261,18 +261,6 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
         paint.setColor(Color.DKGRAY);
         canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(), paint);
 
-        // Lignes blanches
-        paint.setColor(Color.WHITE);
-        int laneWidth = canvas.getWidth() / 3;
-        int lineLength = 300;
-        int gapLength = 130;
-
-        for (int laneIndex = 1; laneIndex < 3; laneIndex++) {
-            int lineX = laneIndex * laneWidth;
-            for (int y = 0; y < canvas.getHeight(); y += lineLength + gapLength) {
-                canvas.drawLine(lineX, y, lineX, y + lineLength, paint);
-            }
-        }
     }
 
     private void draw() {
@@ -296,14 +284,29 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
 
     private void drawObstacles() {
         for (RunGame_Obstacle runGameObstacle : runGameObstaclePool) {
-            if (runGameObstacle.getImage() != null && !runGameObstacle.getImage().isRecycled()) {
-                canvas.drawBitmap(runGameObstacle.getImage(), runGameObstacle.getX(), runGameObstacle.getY(), paint);
+            if (runGameObstacle != null) {
+                // Dessiner un carré à la place de l'image
+                if (runGameObstacle.isJumpable()) {
+                    paint.setColor(Color.BLUE); // Couleur du carré (modifiable selon vos besoins)
+
+                } else {
+                    paint.setColor(Color.RED); // Couleur du carré (modifiable selon vos besoins)
+                }
+                int size = 100; // Taille des carrés (modifiable)
+                canvas.drawRect(
+                        runGameObstacle.getX(),
+                        runGameObstacle.getY(),
+                        runGameObstacle.getX() + size,
+                        runGameObstacle.getY() + size,
+                        paint
+                );
             }
         }
     }
 
     private void drawCoins() {
         for (RunGame_Coin runGameCoin : runGameCoinPool) {
+            paint.setColor(Color.YELLOW);
             runGameCoin.draw(canvas, paint);
         }
     }
