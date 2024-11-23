@@ -14,6 +14,7 @@
     <string name="sombre">SOMBRE</string>
     <string name="clair">Clair</string>
     <string name="langue">Langue :</string>
+    <string name="pixel_party">Pixel Party</string>
 
     <!-- Ajout du tableau de langues -->
     <string-array name="language_options">
