@@ -6,6 +6,7 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.media.Image;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -39,9 +40,10 @@ public class MainActivity extends AppCompatActivity {
         ImageView imageView = new ImageView(this);
 
         ImageView gameMode_Solo = findViewById(R.id.gameMode_Solo);
-        Button mini_jeux = findViewById(R.id.mini_jeux);
-        Button backButton = findViewById(R.id.backbutton);
-        Button back = findViewById(R.id.back);
+        ImageView mini_jeux = findViewById(R.id.mini_jeux);
+        ImageView backButton = findViewById(R.id.backbutton);
+        ImageView back = findViewById(R.id.back);
+        ImageView start = findViewById(R.id.start);
         Button backminijeux = findViewById(R.id.backminijeux);
         Button laby = findViewById(R.id.laby);
         Button run = findViewById(R.id.run);
@@ -66,6 +68,10 @@ public class MainActivity extends AppCompatActivity {
         TextView mainpage_text = findViewById(R.id.mainpage_text);
         mainpage_text.bringToFront();
         gameMode_Solo.bringToFront();
+        mini_jeux.bringToFront();
+        start.bringToFront();
+        back.bringToFront();
+        backButton.bringToFront();
 
         // Bouton start
         gameMode_Solo.setOnClickListener(v -> { // temporarely replace SpriteAcitivity with Board_MA
@@ -76,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
             button.setVisibility(View.VISIBLE);
             option.setVisibility(View.GONE);
             settings.setVisibility(View.GONE);
+
         });
 
         // Chargement des images GIF
@@ -99,7 +106,6 @@ public class MainActivity extends AppCompatActivity {
         playerPurple.setOnClickListener(view -> selectCharacter("Violet", playerPurple));
 
         // Lancement de la partie
-        Button start = findViewById(R.id.start);
         start.setOnClickListener(v -> {
             saveSelectedSprite(); // Enregistrer le sprite sélectionné
             if (selection != null) {
@@ -189,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
         // Configurer les boutons pour le changement de thème
         Button buttonClair = findViewById(R.id.buttonClair);
         Button buttonSombre = findViewById(R.id.buttonSombre);
-        Button aboutButton = findViewById(R.id.aboutButton); // Nouveau bouton
+        ImageView aboutButton = findViewById(R.id.aboutButton);
         TextView themeLabel = findViewById(R.id.theme);
         TextView languageLabel = findViewById(R.id.languageLabel);
 

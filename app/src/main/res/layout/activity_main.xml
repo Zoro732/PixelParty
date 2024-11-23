@@ -23,6 +23,7 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:visibility="gone"/>
+
     <Button
         android:id="@+id/laby"
         android:layout_width="150dp"
@@ -74,23 +75,6 @@
         app:layout_constraintTop_toTopOf="parent"
         android:visibility="gone"/>
 
-    <Button
-        android:id="@+id/mini_jeux"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginLeft="200dp"
-        android:layout_marginTop="90dp"
-        android:background="@drawable/rounded_button"
-        android:fontFamily="@font/press2start"
-        android:textColor="@color/white"
-        android:text="Mini jeux"
-        android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <FrameLayout
         android:id="@+id/gameFrame"
@@ -117,8 +101,16 @@
             android:layout_gravity="center_horizontal"
             android:background="@drawable/start_button"
             android:layout_marginRight="130dp"
-            android:layout_marginTop="325dp" />
+            android:layout_marginTop="275dp" />
 
+        <ImageView
+            android:id="@+id/mini_jeux"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/more_button"
+            android:layout_marginLeft="120dp"
+            android:layout_marginTop="275dp" />
 
         <ImageView
             android:id="@+id/settings"
@@ -229,23 +221,25 @@
             android:gravity="center"
             android:visibility="gone">
 
-            <Button
-                android:id="@+id/start"
-                android:layout_width="150dp"
-                android:layout_height="50dp"
-                android:layout_marginRight="16dp"
-                android:background="@drawable/rounded_button"
-                android:text="Start"
-                android:fontFamily="@font/press2start"
-                android:layout_marginEnd="16dp" />
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <ImageView
+                    android:id="@+id/start"
+                    android:layout_width="100dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/play_button"
+                    android:layout_marginRight="130dp" />
 
-            <Button
-                android:id="@+id/back"
-                android:layout_width="150dp"
-                android:layout_height="50dp"
-                android:background="@drawable/rounded_button"
-                android:text="Retour"
-                android:fontFamily="@font/press2start"/>
+                <ImageView
+                    android:id="@+id/back"
+                    android:layout_width="100dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/back_button"
+                    android:layout_marginLeft="120dp" />
+            </FrameLayout>
 
         </LinearLayout>
 
@@ -313,26 +307,23 @@
             android:layout_marginTop="250dp" />
 
         <!-- Remplacer l'ImageButton par un simple Button -->
-        <Button
-            android:id="@+id/backbutton"
-            android:layout_width="wrap_content"
-            android:background="@drawable/rounded_button"
-            android:layout_height="52dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="10dp"
-            android:text="Retour"
-            android:fontFamily="@font/press2start"/>
 
-        <Button
+        <ImageView
+            android:id="@+id/backbutton"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:background="@drawable/back_button"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"/>
+
+        <ImageView
             android:id="@+id/aboutButton"
-            android:layout_width="wrap_content"
-            android:layout_height="52dp"
-            android:layout_marginTop="10dp"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:background="@drawable/credit_button"
             android:layout_gravity="right"
             android:layout_marginRight="10dp"
-            android:background="@drawable/rounded_button"
-            android:text="À propos"
-            android:fontFamily="@font/press2start"/>
+            android:layout_marginTop="10dp"/>
 
     </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
