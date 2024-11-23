@@ -3,6 +3,17 @@
     <string name="edit_message">Saisissez un message</string>
     <string name="button_send">Envoyer</string>
     <string name="maintext">Texte en français</string>
+    <string name="retour">Retour</string>
+    <string name="labyrinth">Labyrinth</string>
+    <string name="run">Run</string>
+    <string name="taquin">Taquin</string>
+    <string name="blue">bleu</string>
+    <string name="red">rouge</string>
+    <string name="purple">violet</string>
+    <string name="th_me">Thème :</string>
+    <string name="sombre">SOMBRE</string>
+    <string name="clair">Clair</string>
+    <string name="langue">Langue :</string>
 
     <!-- Ajout du tableau de langues -->
     <string-array name="language_options">

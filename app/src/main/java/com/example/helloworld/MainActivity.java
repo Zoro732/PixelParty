@@ -242,6 +242,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private void selectCharacter(String characterName, ImageView selectedCharacter) {
         // Réinitialiser l'arrière-plan pour tous les personnages
         playerBlue.setBackgroundColor(Color.TRANSPARENT);

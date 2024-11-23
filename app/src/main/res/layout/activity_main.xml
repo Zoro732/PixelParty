@@ -10,7 +10,8 @@
         android:id="@+id/backminijeux"
         android:layout_width="150dp"
         android:layout_height="50dp"
-        android:text="Retour"
+        android:layout_marginStart="600dp"
+        android:text="@string/retour"
         android:fontFamily="@font/press2start"
         android:layout_marginBottom="300dp"
         android:textSize="12sp"
@@ -32,7 +33,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginRight="450dp"
         android:background="@drawable/rounded_button"
-        android:text="Labyrinth"
+        android:text="@string/labyrinth"
         android:fontFamily="@font/press2start"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -49,7 +50,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginRight="50dp"
         android:background="@drawable/rounded_button"
-        android:text="Run"
+        android:text="@string/run"
         android:fontFamily="@font/press2start"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -66,7 +67,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginLeft="350dp"
         android:background="@drawable/rounded_button"
-        android:text="Taquin"
+        android:text="@string/taquin"
         android:fontFamily="@font/press2start"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -164,7 +165,7 @@
                     android:layout_height="100dp"
                     android:src="@drawable/player_blue"
                     android:layout_margin="20dp"
-                    android:contentDescription="blue"
+                    android:contentDescription="@string/blue"
                     android:layout_marginLeft="-20dp"  />
             </FrameLayout>
 
@@ -187,7 +188,7 @@
                     android:layout_height="100dp"
                     android:src="@drawable/player_red"
                     android:layout_margin="20dp"
-                    android:contentDescription="red"/>
+                    android:contentDescription="@string/red"/>
             </FrameLayout>
 
             <FrameLayout
@@ -209,7 +210,7 @@
                     android:layout_height="100dp"
                     android:src="@drawable/player_purple"
                     android:layout_margin="20dp"
-                    android:contentDescription="purple" />
+                    android:contentDescription="@string/purple" />
             </FrameLayout>
         </LinearLayout>
 
@@ -262,7 +263,7 @@
             android:layout_gravity="left"
             android:layout_marginTop="125dp"
             android:layout_marginLeft="100dp"
-            android:text="Thème :"
+            android:text="@string/th_me"
             android:fontFamily="@font/press2start"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -274,7 +275,7 @@
             android:layout_marginLeft="375dp"
             android:background="@drawable/rounded_button"
             android:layout_marginTop="115dp"
-            android:text="SOMBRE"
+            android:text="@string/sombre"
             android:fontFamily="@font/press2start"/>
 
         <Button
@@ -284,7 +285,7 @@
             android:background="@drawable/rounded_button"
             android:layout_marginLeft="225dp"
             android:layout_marginTop="115dp"
-            android:text="Clair"
+            android:text="@string/clair"
             android:fontFamily="@font/press2start"/>
 
         <TextView
@@ -293,7 +294,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="250dp"
             android:layout_marginLeft="100dp"
-            android:text="Langue :"
+            android:text="@string/langue"
             android:fontFamily="@font/press2start"
             android:textSize="18sp"
             android:textStyle="bold" />
