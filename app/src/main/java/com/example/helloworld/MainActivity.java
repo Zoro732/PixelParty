@@ -48,6 +48,11 @@ public class MainActivity extends AppCompatActivity {
         Button laby = findViewById(R.id.laby);
         Button run = findViewById(R.id.run);
         Button taquin = findViewById(R.id.taquin);
+        Button buttonClair = findViewById(R.id.buttonClair);
+        Button buttonSombre = findViewById(R.id.buttonSombre);
+        ImageView aboutButton = findViewById(R.id.aboutButton);
+        TextView themeLabel = findViewById(R.id.theme);
+        TextView languageLabel = findViewById(R.id.languageLabel);
         ImageView settings = findViewById(R.id.settings);
         LinearLayout sprite = findViewById(R.id.sprite);
         LinearLayout button = findViewById(R.id.button);
@@ -193,11 +198,7 @@ public class MainActivity extends AppCompatActivity {
         languageSpinner.setAdapter(adapter);
 
         // Configurer les boutons pour le changement de thème
-        Button buttonClair = findViewById(R.id.buttonClair);
-        Button buttonSombre = findViewById(R.id.buttonSombre);
-        ImageView aboutButton = findViewById(R.id.aboutButton);
-        TextView themeLabel = findViewById(R.id.theme);
-        TextView languageLabel = findViewById(R.id.languageLabel);
+
 
         // Afficher un dialogue "À propos" lorsque le bouton est cliqué
         aboutButton.setOnClickListener(v -> {
