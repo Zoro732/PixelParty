@@ -298,7 +298,6 @@ public class Board_MA extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        onPause();
         currentPlayerCaseNumber = boardBoardView.getPlayerCaseNumber();
         outState.putInt("playerCaseNumber", currentPlayerCaseNumber); // Sauvegarde
         Log.d("Board_MA", "Saving player case number = " + currentPlayerCaseNumber);
@@ -308,6 +307,10 @@ public class Board_MA extends AppCompatActivity {
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         if (savedInstanceState != null) {
+            Log.d("Board_MA", "in beging of onRestoreInstanceState");
+            if (boardBoardView == null) {
+                Log.d("Board_MA", "boardBoardView is null");
+            }
             boardBoardView.setPlayerMovingAnimationToTargetCase(false);
             currentPlayerCaseNumber = savedInstanceState.getInt("playerCaseNumber");
             boardBoardView.setPlayerCaseNumber(currentPlayerCaseNumber);

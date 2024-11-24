@@ -67,7 +67,7 @@
             </GridLayout>
 
             <ImageView
-                android:id="@+id/settings"
+                android:id="@+id/iv_Settings"
                 android:layout_width="43dp"
                 android:layout_height="49dp"
                 android:layout_gravity="top|left"

@@ -76,7 +76,7 @@ public class Taquin_MA extends AppCompatActivity {
         shuffleTiles();
 
         // Paramètres du jeu
-        ImageView imageSettings = findViewById(R.id.settings);
+        ImageView imageSettings = findViewById(R.id.iv_Settings);
         imageSettings.setOnClickListener(v -> showPauseDialog());
 
         if (intent != null && intent.hasExtra("game_mode")) {

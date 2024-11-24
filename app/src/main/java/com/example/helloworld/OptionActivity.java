@@ -19,7 +19,7 @@ public class OptionActivity extends AppCompatActivity {
         hideNavigationBar();
         setContentView(R.layout.activity_option);
 
-        Button backButton = findViewById(R.id.back);
+        Button backButton = findViewById(R.id.backButton_BoardSpriteSelection);
         gameFrame = findViewById(R.id.gameFrame);  // Initialiser le FrameLayout pour le changement de thème
 
         // Définir l'écouteur d'événements pour le bouton retour

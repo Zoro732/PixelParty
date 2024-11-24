@@ -58,7 +58,7 @@
             android:layout_marginBottom="60dp"/>
 
         <ImageView
-            android:id="@+id/settings"
+            android:id="@+id/iv_Settings"
             android:layout_width="49dp"
             android:layout_height="58dp"
             android:layout_marginStart="20dp"

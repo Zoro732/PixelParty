@@ -4,7 +4,6 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.Sensor;
@@ -55,7 +54,7 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
                 if (game_mode.equals("minigames")) { //Si on start l'activity depuis le minijeux
                     Log.d("Labyrinthe_MA", "Starting Labyrinthe_GameView in onCreate for minigames");
                     // Créer une instance de GameView et l'ajouter au FrameLayout
-                    ImageView imageSettings = findViewById(R.id.settings);
+                    ImageView imageSettings = findViewById(R.id.iv_Settings);
                     imageSettings.bringToFront();
 
                     // Récupérer l'ImageView

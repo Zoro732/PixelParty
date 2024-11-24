@@ -35,8 +35,8 @@ public class Board_BoardView extends View {
             {0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0},
     };
     public static int[][] mapAction = {
-            {0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // 1 = Laby, 2 = Run, 3 = Taquin, Shop = 4 & MiniBoss = 5
-            {0, 0, 3, 0, 1, 2, 3, 0, 0, 0, 0, 0, 0},
+            {0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // 1 = Laby, 2 = Run, 3 = Taquin, Shop = 4 & MiniBoss = 5
+            {0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0},
             {0, 0, 0, 0, 0, 0, 0, 1, 3, 0, 0, 0, 0},
             {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4},
             {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
@@ -51,9 +51,7 @@ public class Board_BoardView extends View {
 
     private Board_Player boardPlayer;
 
-    private Paint textPaint = new Paint();
-    private Paint borderPaint = new Paint();
-    private String text = "Texte au milieu de l'écran";
+
     private int diceResult = 0; // Variable to store the dice roll result
     public boolean isRolling = false; // Flag to track if the dice is rolling
     private final Random random = new Random();
@@ -398,6 +396,7 @@ public class Board_BoardView extends View {
 
     public void setPlayerMovingAnimationToTargetCase(boolean value) {
         boardPlayer.setMovingAnimationToTargetCase(value);
+        Log.d("Board_BoardView", "setPlayerMovingAnimationToTargetCase called, value = " + value);
     }
 
     public boolean getIsPlayerMoving() {

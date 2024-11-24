@@ -70,7 +70,7 @@
 
         <!-- Remplacer l'ImageButton par un simple Button -->
         <Button
-            android:id="@+id/back"
+            android:id="@+id/backButton_BoardSpriteSelection"
             android:layout_width="wrap_content"
             android:background="@drawable/rounded_button"
             android:layout_height="52dp"

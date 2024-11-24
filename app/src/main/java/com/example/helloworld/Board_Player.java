@@ -56,6 +56,7 @@ public class Board_Player {
             float distance = (float) Math.sqrt(dx * dx + dy * dy);
 
             if (distance > moveSpeed && enablePlayerMovingAnimation) {
+                Log.d("Board_Player","In update() enablePlayerMovingAnimation = " + enablePlayerMovingAnimation);
                 // Calculer le déplacement en normalisant la direction
                 x += dx / distance * moveSpeed;
                 y += dy / distance * moveSpeed;
@@ -76,6 +77,7 @@ public class Board_Player {
     }
     public void setMovingAnimationToTargetCase (boolean value) { //if false, no animation just a Teleportation
         enablePlayerMovingAnimation = value;
+        Log.d("Player", "enablePlayerMovingAnimation set to: " + enablePlayerMovingAnimation);
     }
 
 

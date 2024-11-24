@@ -1,280 +1,278 @@
 package com.example.helloworld;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.media.Image;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.content.Intent;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.bumptech.glide.Glide;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ImageView playerBlue, playerRed, playerPurple;
+    // Constants
     private static final String PREFS_NAME = "GamePrefs";
-    public String selection;
-    private Intent intent;
+
+    // UI Elements
+    private ImageView playerBlue, playerRed, playerPurple;
     private TextView selectedCharacterText;
+    private String selection;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        // Initialize UI Components
+        initializeUI();
+        // Set Background GIF
+        setBackgroundGif();
+        // Configure Button Click Listeners
+        configureButtons();
+        // Configure Character Selection
+        configureCharacterSelection();
+        // Initialize Spinner
+        initializeSpinner();
+        // Hide Navigation Bar
+        hideNavigationBar();
+    }
 
+    private void initializeUI() {
+        // Main Frame and Background
         FrameLayout frameLayout = findViewById(R.id.gameFrame);
         ImageView imageView = new ImageView(this);
 
-        ImageView gameMode_Solo = findViewById(R.id.gameMode_Solo);
-        ImageView mini_jeux = findViewById(R.id.mini_jeux);
-        ImageView backButton = findViewById(R.id.backbutton);
-        ImageView back = findViewById(R.id.back);
-        ImageView start = findViewById(R.id.start);
-        Button backminijeux = findViewById(R.id.backminijeux);
-        Button laby = findViewById(R.id.laby);
-        Button run = findViewById(R.id.run);
-        Button taquin = findViewById(R.id.taquin);
-        Button buttonClair = findViewById(R.id.buttonClair);
-        Button buttonSombre = findViewById(R.id.buttonSombre);
-        ImageView aboutButton = findViewById(R.id.aboutButton);
-        TextView themeLabel = findViewById(R.id.theme);
-        TextView languageLabel = findViewById(R.id.languageLabel);
-        ImageView settings = findViewById(R.id.settings);
-        LinearLayout sprite = findViewById(R.id.sprite);
-        LinearLayout button = findViewById(R.id.button);
-        FrameLayout option = findViewById(R.id.optionFrame);
-
+        // UI Components
         playerBlue = findViewById(R.id.bleu);
         playerRed = findViewById(R.id.rouge);
         playerPurple = findViewById(R.id.purple);
+        selectedCharacterText = findViewById(R.id.selected_character_text);
 
+        // Buttons and Options
+        ImageView iv_SpriteSelectionForBoard = findViewById(R.id.iv_SpriteSelectionForBoard);
+        ImageView iv_MiniGames = findViewById(R.id.iv_MiniGames);
+        ImageView backButtonSettings = findViewById(R.id.backButtonSettings);
+        ImageView backButton_BoardSpriteSelection = findViewById(R.id.backButton_BoardSpriteSelection);
+        ImageView startBoard = findViewById(R.id.start);
+        ImageView iv_Settings = findViewById(R.id.iv_Settings);
 
+        // Main Text
+        TextView mainpage_text = findViewById(R.id.mainpage_text);
+
+        // Load Background Image
         Glide.with(this)
                 .asGif()
                 .load(R.drawable.mainpage_background)
                 .centerCrop()
+                .override(imageView.getWidth(), imageView.getHeight())
                 .into(imageView);
         frameLayout.addView(imageView);
 
-        TextView mainpage_text = findViewById(R.id.mainpage_text);
+        // Bring UI elements to the front
         mainpage_text.bringToFront();
-        gameMode_Solo.bringToFront();
-        mini_jeux.bringToFront();
-        start.bringToFront();
-        back.bringToFront();
-        backButton.bringToFront();
+        iv_SpriteSelectionForBoard.bringToFront();
+        iv_MiniGames.bringToFront();
+        startBoard.bringToFront();
+        backButton_BoardSpriteSelection.bringToFront();
+        backButtonSettings.bringToFront();
+        iv_Settings.bringToFront();
 
-        // Bouton start
-        gameMode_Solo.setOnClickListener(v -> { // temporarely replace SpriteAcitivity with Board_MA
-            gameMode_Solo.setVisibility(View.GONE);
-            mini_jeux.setVisibility(View.GONE);
-            mainpage_text.setVisibility(View.GONE);
-            sprite.setVisibility(View.VISIBLE);
-            button.setVisibility(View.VISIBLE);
-            option.setVisibility(View.GONE);
-            settings.setVisibility(View.GONE);
+    }
 
-        });
-
-        // Chargement des images GIF
+    private void setBackgroundGif() {
+        // Load GIFs for characters
         Glide.with(this)
                 .asGif()
-                .load(R.drawable.player_blue_selection) // Remplacez par votre fichier GIF
+                .load(R.drawable.player_blue_selection)
                 .into(playerBlue);
+
         Glide.with(this)
                 .asGif()
-                .load(R.drawable.player_purple_selection) // Remplacez par votre fichier GIF
+                .load(R.drawable.player_purple_selection)
                 .into(playerPurple);
+
         Glide.with(this)
                 .asGif()
-                .load(R.drawable.player_red_selection) // Remplacez par votre fichier GIF
+                .load(R.drawable.player_red_selection)
                 .into(playerRed);
+    }
 
-        selectedCharacterText = findViewById(R.id.selected_character_text);
+    private void configureButtons() {
+        // Game Mode Selection
+        findViewById(R.id.iv_SpriteSelectionForBoard).setOnClickListener(v -> showSpriteSelection());
+        findViewById(R.id.start).setOnClickListener(v -> launchGame());
+        findViewById(R.id.iv_MiniGames).setOnClickListener(v -> showMiniGames());
+        findViewById(R.id.backButton_BoardSpriteSelection).setOnClickListener(v -> showMainMenu());
+        findViewById(R.id.backButtonMiniGames).setOnClickListener(v -> showMainMenu());
+        findViewById(R.id.iv_Settings).setOnClickListener(v -> showOptions());
+        findViewById(R.id.aboutButton).setOnClickListener(v -> showAboutDialog());
+        findViewById(R.id.backButtonSettings).setOnClickListener(v -> showMainMenu());
 
-        playerBlue.setOnClickListener(view -> selectCharacter("Bleu", playerBlue));
-        playerRed.setOnClickListener(view -> selectCharacter("Rouge", playerRed));
-        playerPurple.setOnClickListener(view -> selectCharacter("Violet", playerPurple));
+        // Mini Game Buttons
+        findViewById(R.id.run).setOnClickListener(v -> launchActivity(RunGame_MA.class));
+        findViewById(R.id.laby).setOnClickListener(v -> launchActivity(Labyrinthe_MA.class));
+        findViewById(R.id.taquin).setOnClickListener(v -> launchActivity(Taquin_MA.class));
+    }
 
-        // Lancement de la partie
-        start.setOnClickListener(v -> {
-            saveSelectedSprite(); // Enregistrer le sprite sélectionné
-            if (selection != null) {
-                intent = new Intent(this, Board_MA.class);
-                intent.putExtra("selection_key", selection); // Envoi de la variable
-                startActivity(intent);
-            }
-            else {
-                Toast.makeText(this, "Aucun sprite selectionne", Toast.LENGTH_SHORT).show();
-            }
-        });
+    private void configureCharacterSelection() {
+        playerBlue.setOnClickListener(v -> selectCharacter("Bleu", playerBlue));
+        playerRed.setOnClickListener(v -> selectCharacter("Rouge", playerRed));
+        playerPurple.setOnClickListener(v -> selectCharacter("Violet", playerPurple));
+    }
 
-        back.setOnClickListener(v -> {
-            gameMode_Solo.setVisibility(View.VISIBLE);
-            mini_jeux.setVisibility(View.VISIBLE);
-            mainpage_text.setVisibility(View.VISIBLE);
-            sprite.setVisibility(View.GONE);
-            button.setVisibility(View.GONE);
-            option.setVisibility(View.GONE);
-            settings.setVisibility(View.VISIBLE);
-        });
-
-        // Bouton Mini jeux
-        mini_jeux.setOnClickListener(v -> {
-            gameMode_Solo.setVisibility(View.GONE);
-            mini_jeux.setVisibility(View.GONE);
-            mainpage_text.setVisibility(View.GONE);
-            taquin.setVisibility(View.VISIBLE);
-            run.setVisibility(View.VISIBLE);
-            laby.setVisibility(View.VISIBLE);
-            backminijeux.setVisibility(View.VISIBLE);
-            settings.setVisibility(View.GONE);
-
-        });
-
-        backminijeux.setOnClickListener(v -> {
-            gameMode_Solo.setVisibility(View.VISIBLE);
-            mini_jeux.setVisibility(View.VISIBLE);
-            mainpage_text.setVisibility(View.VISIBLE);
-            sprite.setVisibility(View.GONE);
-            button.setVisibility(View.GONE);
-            option.setVisibility(View.GONE);
-            settings.setVisibility(View.VISIBLE);
-            taquin.setVisibility(View.GONE);
-            run.setVisibility(View.GONE);
-            laby.setVisibility(View.GONE);
-            backminijeux.setVisibility(View.GONE);
-        });
-
-        run.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, RunGame_MA.class);
-            startActivity(intent);
-        });
-
-        laby.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, Labyrinthe_MA.class);
-            startActivity(intent);
-
-        });
-
-        taquin.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, Taquin_MA.class);
-            startActivity(intent);
-        });
-
-        // Bouton option
-        settings.bringToFront();
-
-        settings.setOnClickListener(v -> {
-            gameMode_Solo.setVisibility(View.GONE);
-            mini_jeux.setVisibility(View.GONE);
-            mainpage_text.setVisibility(View.GONE);
-            sprite.setVisibility(View.GONE);
-            button.setVisibility(View.GONE);
-            option.setVisibility(View.VISIBLE);
-            settings.setVisibility(View.GONE);
-        });
-
-
-
-        // Initialiser le Spinner
+    private void initializeSpinner() {
         Spinner languageSpinner = findViewById(R.id.language);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.language_options, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         languageSpinner.setAdapter(adapter);
-
-        // Configurer les boutons pour le changement de thème
-
-
-        // Afficher un dialogue "À propos" lorsque le bouton est cliqué
-        aboutButton.setOnClickListener(v -> {
-            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-            builder.setTitle("À propos")
-                    .setMessage("PIXEL PARTY\n\nApplication développée par AMAURY GIELEN, ILYES RABAOUY, et KACPER WOJTOWICZ.\n\nVersion 1.0\n\nDescription de l'application : Jeu de plateforme familiale")
-                    .setPositiveButton("OK", null)
-                    .show();
-        });
-
-        // Définir l'écouteur d'événements pour le bouton retour
-        backButton.setOnClickListener(v -> {
-            //Intent intent = new Intent(OptionActivity.this, MainActivity.class);
-            //startActivity(intent);
-            gameMode_Solo.setVisibility(View.VISIBLE);
-            mini_jeux.setVisibility(View.VISIBLE);
-            mainpage_text.setVisibility(View.VISIBLE);
-            sprite.setVisibility(View.GONE);
-            button.setVisibility(View.GONE);
-            option.setVisibility(View.GONE);
-            settings.setVisibility(View.VISIBLE);
-        });
-
-        hideNavigationBar();
-
     }
 
     private void hideNavigationBar() {
         getWindow().getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+                        View.SYSTEM_UI_FLAG_FULLSCREEN |
+                        View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
         );
     }
-    private void saveSelectedSprite() {
-        if (selection != null) {
-            SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString("Sprite", selection); // Enregistrer le nom du sprite
-            editor.apply();
-        }
-    }
 
-    @SuppressLint("SetTextI18n")
     private void selectCharacter(String characterName, ImageView selectedCharacter) {
-        // Réinitialiser l'arrière-plan pour tous les personnages
+        // Reset Background
         playerBlue.setBackgroundColor(Color.TRANSPARENT);
         playerRed.setBackgroundColor(Color.TRANSPARENT);
         playerPurple.setBackgroundColor(Color.TRANSPARENT);
 
-        // Mettre en surbrillance le personnage sélectionné
-        ImageView animationBackground1 = findViewById(R.id.animation_background1);
-        ImageView animationBackground2 = findViewById(R.id.animation_background2);
-        ImageView animationBackground3 = findViewById(R.id.animation_background3);
-
+        // Highlight Selected Character
         if (selectedCharacter == playerBlue) {
-            animationBackground1.setVisibility(View.VISIBLE);
-            animationBackground2.setVisibility(View.GONE);
-            animationBackground3.setVisibility(View.GONE);
+            findViewById(R.id.animation_background1).setVisibility(View.VISIBLE);
+            findViewById(R.id.animation_background2).setVisibility(View.GONE);
+            findViewById(R.id.animation_background3).setVisibility(View.GONE);
+        } else if (selectedCharacter == playerRed) {
+            findViewById(R.id.animation_background1).setVisibility(View.GONE);
+            findViewById(R.id.animation_background2).setVisibility(View.VISIBLE);
+            findViewById(R.id.animation_background3).setVisibility(View.GONE);
+        } else if (selectedCharacter == playerPurple) {
+            findViewById(R.id.animation_background1).setVisibility(View.GONE);
+            findViewById(R.id.animation_background2).setVisibility(View.GONE);
+            findViewById(R.id.animation_background3).setVisibility(View.VISIBLE);
         }
 
-        if (selectedCharacter == playerRed) {
-            animationBackground1.setVisibility(View.GONE);
-            animationBackground2.setVisibility(View.VISIBLE);
-            animationBackground3.setVisibility(View.GONE);
-        }
-
-        if (selectedCharacter == playerPurple) {
-            animationBackground1.setVisibility(View.GONE);
-            animationBackground2.setVisibility(View.GONE);
-            animationBackground3.setVisibility(View.VISIBLE);
-        }
-
-        // Mettre à jour le texte du personnage sélectionné
+        // Update Selected Character
         selectedCharacterText.setText(characterName);
         selection = characterName;
+    }
+
+    private void saveSelectedSprite() {
+        if (selection != null) {
+            SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("Sprite", selection);
+            editor.apply();
+        }
+    }
+
+    private void showSpriteSelection() {
+        findViewById(R.id.sprite).setVisibility(View.VISIBLE);
+        findViewById(R.id.boardSpriteSelectionLayout).setVisibility(View.VISIBLE);
+        findViewById(R.id.optionFrame).setVisibility(View.GONE);
+        findViewById(R.id.iv_Settings).setVisibility(View.GONE);
+
+        // Disable Main Menu UI
+        disableMainMenuUI();
+    }
+
+    private void disableMainMenuUI (){
+        // Disable Main Menu UI
+        findViewById(R.id.iv_SpriteSelectionForBoard).setVisibility(View.GONE);
+        findViewById(R.id.iv_MiniGames).setVisibility(View.GONE);
+        findViewById(R.id.mainpage_text).setVisibility(View.GONE);
+        findViewById(R.id.iv_Settings).setVisibility(View.GONE);
+    }
+
+    private void showMiniGames() {
+        // Show Mini Games buttons
+        findViewById(R.id.taquin).setVisibility(View.VISIBLE);
+        findViewById(R.id.run).setVisibility(View.VISIBLE);
+        findViewById(R.id.laby).setVisibility(View.VISIBLE);
+        findViewById(R.id.backButtonMiniGames).setVisibility(View.VISIBLE);
+
+        // Disable Main Menu UI
+        disableMainMenuUI();
+    }
+
+    private void showMainMenu() {
+        // Enable Main Menu UI
+        findViewById(R.id.iv_SpriteSelectionForBoard).setVisibility(View.VISIBLE);
+        findViewById(R.id.iv_MiniGames).setVisibility(View.VISIBLE);
+        findViewById(R.id.mainpage_text).setVisibility(View.VISIBLE);
+        findViewById(R.id.iv_Settings).setVisibility(View.VISIBLE);
+
+        // Disable SpriteSelection for Board Menu
+        findViewById(R.id.sprite).setVisibility(View.GONE);
+        findViewById(R.id.boardSpriteSelectionLayout).setVisibility(View.GONE);
+        findViewById(R.id.optionFrame).setVisibility(View.GONE);
+
+        // Disbale Mini Game UI
+        findViewById(R.id.taquin).setVisibility(View.GONE);
+        findViewById(R.id.run).setVisibility(View.GONE);
+        findViewById(R.id.laby).setVisibility(View.GONE);
+        findViewById(R.id.backButtonMiniGames).setVisibility(View.GONE);
+
+        // Disable Settings UI
+        findViewById(R.id.theme).setVisibility(View.GONE);
+        findViewById(R.id.buttonSombre).setVisibility(View.GONE);
+        findViewById(R.id.buttonClair).setVisibility(View.GONE);
+
+    }
+
+    private void showOptions() {
+        findViewById(R.id.optionFrame).setVisibility(View.VISIBLE);
+        findViewById(R.id.languageLabel).setVisibility(View.VISIBLE);
+        findViewById(R.id.language).setVisibility(View.VISIBLE);
+        findViewById(R.id.theme).setVisibility(View.VISIBLE);
+        findViewById(R.id.buttonClair).setVisibility(View.VISIBLE);
+        findViewById(R.id.buttonSombre).setVisibility(View.VISIBLE);
+        findViewById(R.id.backButtonSettings).setVisibility(View.VISIBLE);
+
+        findViewById(R.id.iv_Settings).setVisibility(View.GONE);
+
+        //DIsable Main Menu UI
+        disableMainMenuUI();
+    }
+
+    private void showAboutDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("À propos")
+                .setMessage("PIXEL PARTY\n\nApplication développée par AMAURY GIELEN, ILYES RABAOUY, et KACPER WOJTOWICZ.\n\nVersion 1.0")
+                .setPositiveButton("OK", null)
+                .show();
+    }
+
+    private void launchGame() {
+        saveSelectedSprite();
+        if (selection != null) {
+            Intent intent = new Intent(this, Board_MA.class);
+            intent.putExtra("selection_key", selection);
+            Log.d("MainActivity", "selection: " + selection);
+            startActivity(intent);
+        } else {
+            Toast.makeText(this, "Aucun sprite sélectionné", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void launchActivity(Class<?> activityClass) {
+        Intent intent = new Intent(this, activityClass);
+        startActivity(intent);
     }
 }

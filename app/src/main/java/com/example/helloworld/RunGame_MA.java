@@ -16,7 +16,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import android.os.Handler;
-import android.widget.Toast;
 
 public class RunGame_MA extends AppCompatActivity {
 
@@ -46,7 +45,7 @@ public class RunGame_MA extends AppCompatActivity {
         Intent intent = getIntent();
         game_mode = intent.getStringExtra("game_mode");
 
-        ImageView imageSettings = findViewById(R.id.settings);
+        ImageView imageSettings = findViewById(R.id.iv_Settings);
         imageSettings.bringToFront();
 
         // Récupérer l'ImageView

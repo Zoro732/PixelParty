@@ -7,7 +7,7 @@
     tools:context=".MainActivity">
 
     <Button
-        android:id="@+id/backminijeux"
+        android:id="@+id/backButtonMiniGames"
         android:layout_width="150dp"
         android:layout_height="50dp"
         android:layout_marginStart="600dp"
@@ -98,7 +98,7 @@
             android:textSize="48sp" />
 
         <ImageView
-            android:id="@+id/gameMode_Solo"
+            android:id="@+id/iv_SpriteSelectionForBoard"
             android:layout_width="100dp"
             android:layout_height="50dp"
             android:layout_gravity="center_horizontal"
@@ -108,7 +108,7 @@
             android:layout_marginTop="275dp" />
 
         <ImageView
-            android:id="@+id/mini_jeux"
+            android:id="@+id/iv_MiniGames"
             android:layout_width="100dp"
             android:layout_height="50dp"
             android:layout_gravity="center_horizontal"
@@ -118,7 +118,7 @@
             android:layout_marginTop="275dp" />
 
         <ImageView
-            android:id="@+id/settings"
+            android:id="@+id/iv_Settings"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_gravity="end"
@@ -221,33 +221,29 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/button"
+            android:id="@+id/boardSpriteSelectionLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center"
             android:visibility="gone">
 
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-                <ImageView
-                    android:id="@+id/start"
-                    android:layout_width="100dp"
-                    android:layout_height="50dp"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginEnd="130dp"
-                    android:background="@drawable/play_button"
-                    android:layout_marginRight="130dp" />
+            <ImageView
+                android:id="@+id/start"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginEnd="130dp"
+                android:background="@drawable/play_button"
+                android:layout_marginRight="130dp" />
 
-                <ImageView
-                    android:id="@+id/back"
-                    android:layout_width="100dp"
-                    android:layout_height="50dp"
-                    android:layout_gravity="center_horizontal"
-                    android:background="@drawable/back_button"
-                    android:layout_marginLeft="120dp" />
-            </FrameLayout>
+            <ImageView
+                android:id="@+id/backButton_BoardSpriteSelection"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/back_button"
+                android:layout_marginLeft="120dp" />
 
         </LinearLayout>
 
@@ -319,7 +315,7 @@
         <!-- Remplacer l'ImageButton par un simple Button -->
 
         <ImageView
-            android:id="@+id/backbutton"
+            android:id="@+id/backButtonSettings"
             android:layout_width="100dp"
             android:layout_height="50dp"
             android:layout_marginStart="10dp"
