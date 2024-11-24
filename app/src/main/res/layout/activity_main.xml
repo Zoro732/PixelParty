@@ -105,7 +105,7 @@
             android:layout_marginEnd="130dp"
             android:background="@drawable/start_button"
             android:layout_marginRight="130dp"
-            android:layout_marginTop="275dp" />
+            android:layout_marginTop="205dp" />
 
         <ImageView
             android:id="@+id/iv_MiniGames"
@@ -115,7 +115,7 @@
             android:layout_marginStart="120dp"
             android:background="@drawable/more_button"
             android:layout_marginLeft="120dp"
-            android:layout_marginTop="275dp" />
+            android:layout_marginTop="205dp" />
 
         <ImageView
             android:id="@+id/iv_Settings"
@@ -229,7 +229,7 @@
             android:visibility="gone">
 
             <ImageView
-                android:id="@+id/start"
+                android:id="@+id/startBoard"
                 android:layout_width="100dp"
                 android:layout_height="50dp"
                 android:layout_gravity="center_horizontal"

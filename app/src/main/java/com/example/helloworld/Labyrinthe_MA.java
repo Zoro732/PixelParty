@@ -2,7 +2,6 @@ package com.example.helloworld;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -28,7 +27,8 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
     private TextView pauseText, timeText;
     private Button buttonResume, buttonRestart, buttonQuit;
     private String game_mode;
-    private boolean isGameFinished = false; // Ajoutez ce drapeau
+    private boolean isGameFinished = false;
+    private boolean doPlayerQuitGame = false;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -38,108 +38,112 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             hideNavigationBar();
         }
-        setContentView(R.layout.labyrinthe);
 
-        // Initialize labyrintheGameView here, outside the if block
+        setContentView(R.layout.labyrinthe);
         FrameLayout gameFrame = findViewById(R.id.gameFrame);
 
         Intent intent = getIntent();
         game_mode = intent.getStringExtra("game_mode");
 
-        if (intent.hasExtra("selection_key")) {
-            selection = intent.getStringExtra("selection_key");
-            labyrintheGameView = new Labyrinthe_GameView(this, selection); // You might need to provide a default value for 'selection' if it's not always available
+        selection = intent.getStringExtra("selection_key");
+        if (selection != null) {
+            labyrintheGameView = new Labyrinthe_GameView(this, selection);
             gameFrame.addView(labyrintheGameView);
-            if (game_mode != null) {
-                if (game_mode.equals("minigames")) { //Si on start l'activity depuis le minijeux
-                    Log.d("Labyrinthe_MA", "Starting Labyrinthe_GameView in onCreate for minigames");
-                    // Créer une instance de GameView et l'ajouter au FrameLayout
-                    ImageView imageSettings = findViewById(R.id.iv_Settings);
-                    imageSettings.bringToFront();
-
-                    // Récupérer l'ImageView
-                    buttonResume = findViewById(R.id.resume);
-                    buttonRestart = findViewById(R.id.restart);
-                    buttonQuit = findViewById(R.id.quit);
-
-                    pauseText = findViewById(R.id.gamePause);
-                    timeText = findViewById(R.id.timerIndicator);
-                    timeText.bringToFront();
-                    pauseText.bringToFront();
-
-                    // Définir un OnClickListener
-                    imageSettings.setOnClickListener(v -> {
-                        // Action à réaliser lors du clic
-                        if (labyrintheGameView != null) {
-                            labyrintheGameView.pauseGame();
-                        }
-                        pauseText.setText("Pause");
-                        buttonResume.setVisibility(View.VISIBLE);
-                        buttonRestart.setVisibility(View.VISIBLE);
-                        buttonQuit.setVisibility(View.VISIBLE);
-                        pauseText.setVisibility(View.VISIBLE);
-                    });
-
-                    buttonResume.setOnClickListener(v -> {
-                        if (labyrintheGameView != null) {
-                            labyrintheGameView.resumeGame();
-                        }
-                        buttonResume.setVisibility(View.GONE);
-                        buttonRestart.setVisibility(View.GONE);
-                        buttonQuit.setVisibility(View.GONE);
-                        pauseText.setVisibility(View.GONE);
-                    });
-                    buttonRestart.setOnClickListener(v -> {
-                        if (labyrintheGameView != null) {
-                            labyrintheGameView.restartGame();
-                        }
-                        buttonResume.setVisibility(View.GONE);
-                        buttonRestart.setVisibility(View.GONE);
-                        buttonQuit.setVisibility(View.GONE);
-                        pauseText.setVisibility(View.GONE);
-                        timeText.setVisibility(View.GONE);
-                    });
-                    buttonQuit.setOnClickListener(v -> {
-                        if (labyrintheGameView != null) {
-                            labyrintheGameView.quitGame();
-                        }
-                    });
-                } else {
-                    Log.d("Labyrinthe_MA", "Starting Labyrinthe_GameView in onCreate for board");
-                }
-            } else {
-                Log.e("Labyrinthe_MA", "game_mode is null in onCreate.");
-            }
-        } else {
-            Log.e("Labyrinthe_MA", "Labyrinthe_GameView is null in onCreate.");
         }
 
-        // Initialiser le gestionnaire de capteurs
+        if ("minigames".equals(game_mode)) {
+            setupMinigameMode();
+        }
+
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+    }
+
+    private void setupMinigameMode() {
+        Log.d("Labyrinthe_MA", "Starting Labyrinthe_GameView in onCreate for minigames");
+
+        ImageView imageSettings = findViewById(R.id.iv_Settings);
+        imageSettings.bringToFront();
+
+        buttonResume = findViewById(R.id.resume);
+        buttonRestart = findViewById(R.id.restart);
+        buttonQuit = findViewById(R.id.quit);
+        pauseText = findViewById(R.id.gamePause);
+        timeText = findViewById(R.id.timerIndicator);
+
+        setupPauseMenu(imageSettings);
+    }
+
+    private void setupPauseMenu(ImageView imageSettings) {
+        pauseText.bringToFront();
+        timeText.bringToFront();
+
+        imageSettings.setOnClickListener(v -> {
+            if (labyrintheGameView != null) {
+                labyrintheGameView.pauseGame();
+            }
+            showPauseMenu();
+        });
+
+        buttonResume.setOnClickListener(v -> resumeGame());
+        buttonRestart.setOnClickListener(v -> restartGame());
+        buttonQuit.setOnClickListener(v -> quitGame());
+    }
+
+    private void showPauseMenu() {
+        pauseText.setText("Pause");
+        buttonResume.setVisibility(View.VISIBLE);
+        buttonRestart.setVisibility(View.VISIBLE);
+        buttonQuit.setVisibility(View.VISIBLE);
+        pauseText.setVisibility(View.VISIBLE);
+    }
+
+    private void resumeGame() {
+        if (labyrintheGameView != null) {
+            labyrintheGameView.resumeGame();
+        }
+        hidePauseMenu();
+    }
+
+    private void restartGame() {
+        if (labyrintheGameView != null) {
+            labyrintheGameView.restartGame();
+        }
+        hidePauseMenu();
+        timeText.setVisibility(View.GONE);
+    }
+
+    private void quitGame() {
+        if (labyrintheGameView != null) {
+            labyrintheGameView.quitGame();
+        }
+    }
+
+    private void hidePauseMenu() {
+        buttonResume.setVisibility(View.GONE);
+        buttonRestart.setVisibility(View.GONE);
+        buttonQuit.setVisibility(View.GONE);
+        pauseText.setVisibility(View.GONE);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        // Enregistrer le listener du gyroscope
         if (gyroscope != null) {
             sensorManager.registerListener(this, gyroscope, SensorManager.SENSOR_DELAY_GAME);
         }
 
-        // Vérification que labyrintheGameView n'est pas null avant d'appeler resume()
         if (labyrintheGameView != null) {
             labyrintheGameView.resume();
-        } else {
-            Log.e("Labyrinthe_MA", "Labyrinthe_GameView is not initialized.");
         }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        // Arrêter le listener du gyroscope
-        sensorManager.unregisterListener(this);
+        if (sensorManager != null) {
+            sensorManager.unregisterListener(this);
+        }
         if (labyrintheGameView != null) {
             labyrintheGameView.pause();
         }
@@ -148,10 +152,14 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (sensorManager != null) {
+            sensorManager.unregisterListener(this);
+        }
         if (labyrintheGameView != null) {
             labyrintheGameView.quitGame();
         }
     }
+
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void hideNavigationBar() {
@@ -173,59 +181,70 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
         }
 
         if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
-            // Récupérer les valeurs du gyroscope
-            float x = event.values[0]; // Rotation autour de l'axe X
-            float y = event.values[1]; // Rotation autour de l'axe Y
-
-            // Déplacer la boule en fonction des valeurs du gyroscope
-            labyrintheGameView.moveBall(x, y); // Méthode à implémenter dans GameView
+            float x = event.values[0];
+            float y = event.values[1];
+            labyrintheGameView.moveBall(x, y);
         }
 
-        // Vérification si le jeu est gagné ou perdu
+        checkGameStatus();
+    }
+
+    private void checkGameStatus() {
         if (labyrintheGameView.isWin() && !isGameFinished) {
             isGameFinished = true;
-            if (game_mode != null) {
-                if (game_mode.equals("minigames")) {
-                    labyrintheGameView.pauseGame();
-                    timeText.setText("Made in " + labyrintheGameView.getRemainingTime() + "s");
-                    timeText.setVisibility(View.VISIBLE);
-                    buttonRestart.setVisibility(View.VISIBLE);
-                    buttonQuit.setVisibility(View.VISIBLE);
-                    pauseText.setVisibility(View.VISIBLE);
-                    pauseText.setText("You WIN !");
-
-                } else if (game_mode.equals("board")) {
-
-                    Log.d("Labyrinthe_MA", "Labyrinthe finished, returning to Board_MA");
-                    finish();
-                    labyrintheGameView.quitGame();
-                }
-            } else {
-                Log.d("Labyrinthe_MA", "game_mode is null in onSensorChanged.");
-            }
+            handleGameWin();
+        } else if (labyrintheGameView.isLoosed()) {
+            handleGameLoss();
         }
+    }
 
-        if (labyrintheGameView.isLoosed()) {
+    private void handleGameWin() {
+        if ("minigames".equals(game_mode)) {
             labyrintheGameView.pauseGame();
-            buttonRestart.setVisibility(View.VISIBLE);
-            buttonQuit.setVisibility(View.VISIBLE);
-            pauseText.setVisibility(View.VISIBLE);
-            pauseText.setText("Game over !");
+            timeText.setText("Made in " + labyrintheGameView.getRemainingTime() + "s");
+            timeText.setVisibility(View.VISIBLE);
+            showPauseMenu();
+            pauseText.setText("You WIN !");
+        } else if ("board".equals(game_mode)) {
+            Log.d("Labyrinthe_MA", "Labyrinthe finished, returning to Board_MA");
+            finish();
         }
+    }
+
+    private void handleGameLoss() {
+        labyrintheGameView.pauseGame();
+        showPauseMenu();
+        pauseText.setText("Game over !");
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        // Ne rien faire
+        // Do nothing
     }
 
     @Override
     public void finish() {
         Intent resultIntent = new Intent();
-        // Ajoutez des données si nécessaire
-        resultIntent.putExtra("score", String.valueOf(labyrintheGameView.getRemainingTime())); // Exemple : temps écoulé
+        resultIntent.putExtra("score", doPlayerQuitGame ? "quit" : String.valueOf(labyrintheGameView.getRemainingTime()));
+        Log.d("Labyrinthe_MA", "Finishing Labyrinthe_MA with score: " + resultIntent.getStringExtra("score"));
         setResult(RESULT_OK, resultIntent);
-        super.finish(); // Terminez l'Activity
+        super.finish();
     }
+
+    @Override
+    public void onBackPressed() {
+        onPause();
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Quitter le jeu")
+                .setMessage("Êtes-vous sûr de vouloir quitter ? Votre progression sera perdue.")
+                .setPositiveButton("Oui", (dialog, which) -> {
+                    doPlayerQuitGame = true;
+                    finish();
+                })
+                .setNegativeButton("Non", (dialog, which) -> dialog.dismiss())
+                .setCancelable(false)
+                .show();
+    }
+
 
 }

@@ -1,8 +1,5 @@
 package com.example.helloworld;
 
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
@@ -15,307 +12,316 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+
 public class Board_MA extends AppCompatActivity {
 
+    // Constants for request codes
     private static final int LABY_REQUEST_CODE = 1;
     private static final int RUN_REQUEST_CODE = 2;
     private static final int TAQUIN_REQUEST_CODE = 3;
-    private static final int SHOP_REQUEST_CODE = 4;
-    private static final int MINI_BOSS_REQUEST_CODE = 5;
 
-    private Board_BoardView boardBoardView; // Déclaration de la vue BoardView
+    // UI Elements
+    private Board_BoardView boardBoardView;
     private TextView scoreMessage;
+    private TextView textView_DicePlusOne;
+    private TextView starsNumber;
     private Button continueButton;
     private Button playButton;
-    private Button dice;
-
-    public int currentPlayerCaseNumber;
-
-    private Handler playerMovementHandler = new Handler(Looper.getMainLooper());
-
-    public boolean doPlayerUsePlusOneItem = false;
+    private Button diceButton;
     private Button plusOneToDiceButton;
-    private TextView textView_DicePlusOne;
 
+    // Game state variables
+    private int currentPlayerCaseNumber;
+    private boolean doPlayerUsePlusOneItem = false;
+
+    // Handler for player movement
+    private final Handler playerMovementHandler = new Handler(Looper.getMainLooper());
+
+    // Sprite selection
+    private String spriteSelection;
+
+    // New round
+    private boolean newRound = false;
+
+    // Store stars number
+    private int starsNumberValue = 0;
+
+    // Check if player win previous game to increment star number
+    private boolean doPlayerWinPreviousGame = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Hide the navigation bar if the Android version is compatible
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            hideNavigationBar();  // Masquer la barre de navigation
+            hideNavigationBar();
         }
 
         setContentView(R.layout.board);
+        // Initialize UI elements
+        initializeUI();
+        // Handle data passed from the previous activity
+        handleIntentData();
+        // Setup listeners for UI components
+        setupListeners();
+        // Start monitoring player movement
+        playerMovementHandler.post(playerMovementRunnable);
+    }
+
+    /**
+     * Initialize UI components and link them to layout elements.
+     */
+    private void initializeUI() {
         boardBoardView = findViewById(R.id.boardView);
-
-
-        boardBoardView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                Intent intent = getIntent();
-                if (intent != null) {
-                    String selection = intent.getStringExtra("selection_key");
-                    Log.d("Board_MA", "Received selection: " + selection + "setting player sprite");
-                    boardBoardView.setPlayerSpriteSelection(selection);
-                    Log.d("Board_MA", "Received selection: " + selection + "player sprite set");
-                }
-                if (getPlayerCurrentCaseActionFromBoardView() != 0) {
-                    playButton.setEnabled(true);
-                    //dice.setEnabled(true);
-                } else {
-                    dice.setEnabled(true);
-                }
-            }
-        });
-
-
-        // Initialisation des items du layout
         scoreMessage = findViewById(R.id.scoreText);
+        textView_DicePlusOne = findViewById(R.id.textView_DicePlusOne);
+        starsNumber = findViewById(R.id.starsNumber);
         continueButton = findViewById(R.id.continueButton);
         playButton = findViewById(R.id.play);
-        playButton.setEnabled(false);
-
-        dice = findViewById(R.id.dice);
-
+        diceButton = findViewById(R.id.dice);
         plusOneToDiceButton = findViewById(R.id.plusOneButton);
-        textView_DicePlusOne = findViewById(R.id.textView_DicePlusOne);
 
+        textView_DicePlusOne.bringToFront();
 
-        // Initialisation du TextView pour le numéro de tour
+        playButton.setEnabled(false); // Disabled by default
+    }
 
-        dice.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (dice.isEnabled()) {
-                    boardBoardView.startDiceRoll();
-                    plusOneToDiceButton.setVisibility(View.VISIBLE);
+    /**
+     * Handle the intent data passed from the previous activity.
+     */
+    private void handleIntentData() {
+        Intent intent = getIntent();
+        if (intent != null) {
+            spriteSelection = intent.getStringExtra("selection_key");
+            Log.d("Board_MA", "Received spriteSelection: " + spriteSelection + ", setting player sprite.");
+            boardBoardView.setPlayerSpriteSelection(spriteSelection);
+        }
+    }
+
+    /**
+     * Set up listeners for UI components like buttons and inventory management.
+     */
+    private void setupListeners() {
+        diceButton.setOnClickListener(v -> {
+            if (diceButton.isEnabled()) {
+                boardBoardView.startDiceRoll();
+                plusOneToDiceButton.setVisibility(View.VISIBLE);
+                if (newRound && !boardBoardView.getIsPlayerMoving()){
+                    newRound = false;
                 }
             }
         });
 
-        playButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startMiniGame();
-            }
+        playButton.setOnClickListener(v -> startMiniGame());
+
+        plusOneToDiceButton.setOnClickListener(v -> {
+            Toast.makeText(Board_MA.this, "Item Used: Dice +1", Toast.LENGTH_SHORT).show();
+            plusOneToDiceButton.setEnabled(false);
+            doPlayerUsePlusOneItem = true;
+            boardBoardView.setItemAction(1);
         });
 
-        playerMovementHandler.post(playerMovementRunnable);
+        setupInventoryManagement();
+    }
 
-        //Inventory management
-
-        // Gestion de l'inventaire
+    /**
+     * Setup inventory management animations and button actions.
+     */
+    private void setupInventoryManagement() {
         Button inventoryButton = findViewById(R.id.inventory);
         View inventoryWindow = findViewById(R.id.inventoryWindow);
         Button closeInventoryButton = findViewById(R.id.closeInventoryButton);
 
-
-        plusOneToDiceButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(Board_MA.this, "Item Used : Dice +1", Toast.LENGTH_SHORT).show();
-                plusOneToDiceButton.setEnabled(false);
-                doPlayerUsePlusOneItem = true;
-                boardBoardView.setItemAction(1);
-            }
-        });
-
-
-        // Animation pour ouvrir l'inventaire
         inventoryButton.setOnClickListener(v -> {
             inventoryWindow.setVisibility(View.VISIBLE);
             inventoryWindow.animate()
                     .translationX(10)
-                    .setDuration(200) // Durée de l'animation
+                    .setDuration(200)
                     .start();
         });
 
-        // Animation pour fermer l'inventaire
         closeInventoryButton.setOnClickListener(v -> {
             inventoryWindow.animate()
                     .translationX(0)
-                    .setDuration(200) // Durée de l'animation
-                    .withEndAction(() -> inventoryWindow.setVisibility(View.GONE)) // Cache la vue après l'animation
+                    .setDuration(200)
+                    .withEndAction(() -> inventoryWindow.setVisibility(View.GONE))
                     .start();
         });
-
     }
 
-    private Runnable playerMovementRunnable = new Runnable() {
-
+    /**
+     * Runnable to manage player movement and UI updates.
+     */
+    private final Runnable playerMovementRunnable = new Runnable() {
         @Override
         public void run() {
-            if (!boardBoardView.getIsPlayerMoving() && getPlayerCurrentCaseActionFromBoardView() == 0) {
-                dice.setEnabled(true);
-                boardBoardView.setPlayerFinishedMoving(false); // Reset the flag
-                textView_DicePlusOne.setVisibility(View.GONE);
-            } else if (!boardBoardView.getIsPlayerMoving() && getPlayerCurrentCaseActionFromBoardView() != 0) {
-                playButton.setEnabled(true);
-                dice.setEnabled(false);
-                boardBoardView.setPlayerFinishedMoving(false);
-                textView_DicePlusOne.setVisibility(View.GONE);
-            } else if (boardBoardView.getIsPlayerMoving()) {
-                dice.setEnabled(false);
-            }
-            if (boardBoardView.isDiceRolling()) {
-                if (doPlayerUsePlusOneItem) {
-                    textView_DicePlusOne.setVisibility(View.VISIBLE);
-                    Log.d("Board_MA", "Dice is rolling with +1");
-                }
-                Log.d("Board_MA", "Dice is rolling");
+            if (!boardBoardView.getIsPlayerMoving()) {
+                handlePlayerIdleState();
             } else {
-                doPlayerUsePlusOneItem = false;
+                diceButton.setEnabled(false);
             }
-            playerMovementHandler.postDelayed(this, 100); // Check every 100 milliseconds
+
+            if (boardBoardView.isDiceRolling()) {
+                handleDiceRollingState();
+            }
+
+            playerMovementHandler.postDelayed(this, 100);
         }
     };
 
+    /**
+     * Handle player idle state and enable/disable buttons accordingly.
+     */
+    private void handlePlayerIdleState() {
+        if (!newRound) {
+            if (getPlayerCurrentCaseActionFromBoardView() == 0) {
+                diceButton.setEnabled(true);
+                playButton.setEnabled(false);
+            } else {
+                diceButton.setEnabled(false);
+                playButton.setEnabled(true);
+            }
 
-    // Méthode appelée pour démarrer le mini-jeu
+            boardBoardView.setPlayerFinishedMoving(false);
+        } else {
+            diceButton.setEnabled(true);
+            playButton.setEnabled(false);
+        }
+
+    }
+
+    /**
+     * Handle dice rolling state.
+     */
+    private void handleDiceRollingState() {
+        if (doPlayerUsePlusOneItem) {
+            textView_DicePlusOne.setVisibility(View.VISIBLE);
+            Log.d("Board_MA", "Dice is rolling with +1");
+        }
+        playButton.setEnabled(false);
+        Log.d("Board_MA", "Dice is rolling");
+    }
+
+    /**
+     * Start a mini-game based on the player's current case action.
+     */
     private void startMiniGame() {
-        Log.d("Board_MA", "Starting startMiniGame");
-        if (getPlayerCurrentCaseActionFromBoardView() == 1) {
+        Log.d("Board_MA", "Starting mini-game.");
+        Intent intent = null;
+        int requestCode = -1;
 
-            Intent intent = new Intent(Board_MA.this, Labyrinthe_MA.class);
+        switch (getPlayerCurrentCaseActionFromBoardView()) {
+            case 1:
+                intent = new Intent(this, Labyrinthe_MA.class);
+                requestCode = LABY_REQUEST_CODE;
+                break;
+            case 2:
+                intent = new Intent(this, RunGame_MA.class);
+                requestCode = RUN_REQUEST_CODE;
+                break;
+            case 3:
+                intent = new Intent(this, Taquin_MA.class);
+                requestCode = TAQUIN_REQUEST_CODE;
+                break;
+        }
+
+        if (intent != null) {
             intent.putExtra("game_mode", "board");
-            intent.putExtra("selection_key", "Bleu");
-            Log.d("Board_MA", "Starting Labyrinthe_MA");
-            startActivityForResult(intent, LABY_REQUEST_CODE);
-
-        } else if (getPlayerCurrentCaseActionFromBoardView() == 2) {
-
-            Intent intent = new Intent(Board_MA.this, RunGame_MA.class);
-            intent.putExtra("game_mode", "board");
-            Log.d("Board_MA", "Starting Rngame");
-            startActivityForResult(intent, RUN_REQUEST_CODE);
-
-        } else if (getPlayerCurrentCaseActionFromBoardView() == 3) {
-
-            Intent intent = new Intent(Board_MA.this, Taquin_MA.class);
-            intent.putExtra("game_mode", "board");
-            Log.d("Board_MA", "Starting TAquin");
-            startActivityForResult(intent, TAQUIN_REQUEST_CODE);
+            intent.putExtra("selection_key", spriteSelection);
+            Log.d("Board_MA", "Starting game with request code: " + requestCode);
+            startActivityForResult(intent, requestCode);
         }
     }
 
-    // Gestion du retour du mini-jeu
+    /**
+     * Handle results from mini-games.
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == LABY_REQUEST_CODE) {
-            if (resultCode == Activity.RESULT_OK) {
-                String result = data.getStringExtra("score");
-                Log.d("Board_MA", "Score received from MiniGame: " + result);
-                scoreMessage.setText("Labyrinthe Made in " + result + "s");
-                scoreMessage.setVisibility(View.VISIBLE);
-                continueButton.setVisibility(View.VISIBLE);
-                playButton.setEnabled(false);
-                dice.setEnabled(false);
-
-                continueButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        scoreMessage.setVisibility(View.GONE);
-                        continueButton.setVisibility(View.GONE);
-                        dice.setEnabled(true);
-                    }
-                });
-            }
-            if (resultCode == Activity.RESULT_CANCELED) {
-                // Code si aucun résultat
-            }
+        if (resultCode == Activity.RESULT_OK && data != null) {
+            String result = data.getStringExtra("score");
+            handleMiniGameResult(requestCode, result);
+            Log.d("Board_MA", "Result Intent from Labyrinthe_MA: " + data.toString());
+            Log.d("Board_MA", "Received result from mini-game: " + result);
         }
-        if (requestCode == RUN_REQUEST_CODE) {
-            if (resultCode == Activity.RESULT_OK) {
-                String result = data.getStringExtra("score");
-                Log.d("Board_MA", "Score received from RunGame: " + result);
-                scoreMessage.setText("Rungame finished with " + result + " coins");
-                scoreMessage.setVisibility(View.VISIBLE);
-                continueButton.setVisibility(View.VISIBLE);
-                playButton.setEnabled(false);
-                dice.setEnabled(false);
+    }
 
-                continueButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        scoreMessage.setVisibility(View.GONE);
-                        continueButton.setVisibility(View.GONE);
-                        dice.setEnabled(true);
-                    }
-                });
-
-            }
+    private void handleMiniGameResult(int requestCode, String result) {
+        switch (requestCode) {
+            case LABY_REQUEST_CODE:
+                scoreMessage.setText(result.equals("quit") ? "Labyrinthe Failed" : "Labyrinthe finished in " + result + "s");
+                break;
+            case RUN_REQUEST_CODE:
+                scoreMessage.setText("RunGame finished with " + result + " coins");
+                break;
+            case TAQUIN_REQUEST_CODE:
+                scoreMessage.setText(result.equals("quit") ? "Taquin Failed" : "Taquin finished in " + result + "s");
+                break;
         }
-        if (requestCode == TAQUIN_REQUEST_CODE) {
-            if (resultCode == Activity.RESULT_OK) {
-                String result = data.getStringExtra("score");
-                Log.d("Board_MA", "Score received from TAquin: " + result);
-                if(result.equals("-1")) {
-                    scoreMessage.setText("Taquin Failed");
-                } else {
-                    scoreMessage.setText("Taquin finished in " + result + "s");
-
-                }
-                scoreMessage.setVisibility(View.VISIBLE);
-                continueButton.setVisibility(View.VISIBLE);
-                playButton.setEnabled(false);
-                dice.setEnabled(false);
-
-                continueButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        scoreMessage.setVisibility(View.GONE);
-                        continueButton.setVisibility(View.GONE);
-                        dice.setEnabled(true);
-                    }
-                });
-
-            } else {
-                Log.d("Board_MA","result code invalid for taquin");
-            }
-        } else {
-            Log.d("Board_MA","request code invalid for taquin");
+        Log.d("Board_MA", "Received result from mini-game: " + result);
+        if (!result.equals("quit")) {
+            Log.d("Board_MA", "Incrementing stars number");
+            doPlayerWinPreviousGame = true;
         }
 
+        scoreMessage.setVisibility(View.VISIBLE);
+        continueButton.setVisibility(View.VISIBLE);
+        playButton.setEnabled(false);
+        diceButton.setEnabled(false);
+
+        continueButton.setOnClickListener(v -> {
+            newRound = true;
+            scoreMessage.setVisibility(View.GONE);
+            continueButton.setVisibility(View.GONE);
+            diceButton.setEnabled(true);
+            doPlayerUsePlusOneItem = false;
+            textView_DicePlusOne.setVisibility(View.GONE);
+
+            if (doPlayerWinPreviousGame) {
+                starsNumberValue++;
+                starsNumber.setText(String.valueOf(starsNumberValue));
+                doPlayerWinPreviousGame = false;
+            }
+
+        });
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void hideNavigationBar() {
         getWindow().getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+                        View.SYSTEM_UI_FLAG_FULLSCREEN |
+                        View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
         );
     }
 
-    // Méthode pour obtenir la case sur laquelle le joueur se trouve (exemple hypothétique)
     private int getPlayerCurrentCaseActionFromBoardView() {
-        return boardBoardView.getCurrentCaseAction(); // Méthode fictive pour obtenir la case actuelle
+        return boardBoardView.getCurrentCaseAction();
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         currentPlayerCaseNumber = boardBoardView.getPlayerCaseNumber();
-        outState.putInt("playerCaseNumber", currentPlayerCaseNumber); // Sauvegarde
-        Log.d("Board_MA", "Saving player case number = " + currentPlayerCaseNumber);
+        outState.putInt("playerCaseNumber", currentPlayerCaseNumber);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        if (savedInstanceState != null) {
-            Log.d("Board_MA", "in beging of onRestoreInstanceState");
-            if (boardBoardView == null) {
-                Log.d("Board_MA", "boardBoardView is null");
-            }
+        if (boardBoardView != null) {
             boardBoardView.setPlayerMovingAnimationToTargetCase(false);
             currentPlayerCaseNumber = savedInstanceState.getInt("playerCaseNumber");
             boardBoardView.setPlayerCaseNumber(currentPlayerCaseNumber);
-            Log.d("Board_MA", "Retrieving player case number = " + currentPlayerCaseNumber);
+        } else {
+            Log.d("Board_MA", "boardBoardView is null");
         }
+
+        Log.d("Board_MA", "End of onrestore");
     }
 
     @Override
@@ -324,5 +330,20 @@ public class Board_MA extends AppCompatActivity {
         playerMovementHandler.removeCallbacks(playerMovementRunnable);
     }
 
+    @Override
+    public void onBackPressed() {
+        onPause();
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Quitter le jeu")
+                .setMessage("Êtes-vous sûr de vouloir quitter ? Votre progression sera perdue.")
+                .setPositiveButton("Oui", (dialog, which) -> {
+                    Log.d("Board_MA", "User chose to quit the game.");
+                    finish(); // Appelle finish() pour gérer la fermeture
+                })
+                .setNegativeButton("Non", (dialog, which) -> {
+                    dialog.dismiss(); // Ferme la boîte de dialogue sans quitter
+                })
+                .setCancelable(false) // Empêche la fermeture de la boîte de dialogue en appuyant à l'extérieur
+                .show();
+    }
 }
-

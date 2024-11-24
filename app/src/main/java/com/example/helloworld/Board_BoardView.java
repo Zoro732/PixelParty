@@ -97,6 +97,7 @@ public class Board_BoardView extends View {
             Log.d("Board_BoardView","playerSprite is null");
         }
         Log.d("Board_BoardView", "END Received selection in setPlayerSpriteSelection: " + playerSprite);
+
         boardPlayer = new Board_Player(0, currentPlayerBitmap);
 
     }

@@ -88,10 +88,12 @@
         android:layout_width="0dp"
         app:layout_constraintWidth_percent="0.3"
         android:layout_height="match_parent"
-        android:background="#E6E6E6"
+        android:background="#C0E6E6E6"
+
         android:visibility="gone"
         android:layout_gravity="start"
-        android:elevation="8dp">
+        android:elevation="8dp"
+        tools:ignore="MissingConstraints">
 
         <TextView
             android:id="@+id/inventoryTitle"
@@ -163,4 +165,29 @@
         android:layout_marginLeft="70dp"
         android:layout_marginTop="120dp"/>
 
+    <TextView
+        android:id="@+id/starsNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="150dp"
+        android:layout_marginBottom="100dp"
+        android:fontFamily="@font/press2start"
+        android:text="0"
+        android:textColor="@color/white"
+        android:gravity="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/iv_Star"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginBottom="10dp"
+        android:src="@drawable/star"
+        app:layout_constraintBottom_toBottomOf="@id/starsNumber"
+        app:layout_constraintStart_toEndOf="@id/starsNumber"
+        app:layout_constraintTop_toTopOf="@id/starsNumber" />
 </androidx.constraintlayout.widget.ConstraintLayout>

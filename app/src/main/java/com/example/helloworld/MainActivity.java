@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         ImageView iv_MiniGames = findViewById(R.id.iv_MiniGames);
         ImageView backButtonSettings = findViewById(R.id.backButtonSettings);
         ImageView backButton_BoardSpriteSelection = findViewById(R.id.backButton_BoardSpriteSelection);
-        ImageView startBoard = findViewById(R.id.start);
+        ImageView startBoard = findViewById(R.id.startBoard);
         ImageView iv_Settings = findViewById(R.id.iv_Settings);
 
         // Main Text
@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
     private void configureButtons() {
         // Game Mode Selection
         findViewById(R.id.iv_SpriteSelectionForBoard).setOnClickListener(v -> showSpriteSelection());
-        findViewById(R.id.start).setOnClickListener(v -> launchGame());
+        findViewById(R.id.startBoard).setOnClickListener(v -> launchBoard());
         findViewById(R.id.iv_MiniGames).setOnClickListener(v -> showMiniGames());
         findViewById(R.id.backButton_BoardSpriteSelection).setOnClickListener(v -> showMainMenu());
         findViewById(R.id.backButtonMiniGames).setOnClickListener(v -> showMainMenu());
@@ -259,7 +259,7 @@ public class MainActivity extends AppCompatActivity {
                 .show();
     }
 
-    private void launchGame() {
+    private void launchBoard() {
         saveSelectedSprite();
         if (selection != null) {
             Intent intent = new Intent(this, Board_MA.class);

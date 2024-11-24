@@ -42,6 +42,8 @@ public class Taquin_MA extends AppCompatActivity {
 
     private boolean isLoose = false;
 
+    private boolean doPlayerQuitGame = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -303,7 +305,6 @@ public class Taquin_MA extends AppCompatActivity {
     private void onCountdownFinished() {
         showGameEndDialog("Temps écoulé ! Vous avez perdu.");
         isLoose = true;
-        timerValue = -1;
         finish();
     }
 
@@ -398,8 +399,8 @@ public class Taquin_MA extends AppCompatActivity {
         Log.d("Taquin_MA", "beging of finish called: score= " + timerValue);
         Intent resultIntent = new Intent();
         // Si l'utilisateur quitte explicitement
-        if (timerValue == -1) {
-            resultIntent.putExtra("score", String.valueOf(timerValue));
+        if (doPlayerQuitGame || isLoose) {
+            resultIntent.putExtra("score", "quit");
         } else {
             resultIntent.putExtra("score", String.valueOf(defaultTimerValue - timerValue));
         }
@@ -448,7 +449,7 @@ public class Taquin_MA extends AppCompatActivity {
                 .setMessage("Êtes-vous sûr de vouloir quitter ? Votre progression sera perdue.")
                 .setPositiveButton("Oui", (dialog, which) -> {
                     Log.d("Taquin_MA", "L'utilisateur a confirmé de quitter.");
-                    timerValue = -1;
+                    doPlayerQuitGame = true;
                     finish(); // Appelle finish() pour gérer la fermeture
                 })
                 .setNegativeButton("Non", (dialog, which) -> {

@@ -32,7 +32,7 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
     private float speedX = 0; // Vitesse sur l'axe X
     private float speedY = 0; // Vitesse sur l'axe Y
     private final float friction = 0.98f; // Coefficient de friction pour ralentir la boule
-    private final float accelerationFactor = 0.3f; // Facteur d'accélération pour le gyroscope
+    private final float accelerationFactor = 1f; // Facteur d'accélération pour le gyroscope
 
     private final Paint paint;
     // Attributs pour la largeur et la hauteur de l'écran
@@ -467,10 +467,11 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
         }
 
         // Quitter l'application proprement
-        android.os.Process.killProcess(android.os.Process.myPid());
     }
 
     public int getRemainingTime() {
         return defaultTimerValue - timerValue;
     }
+
+
 }
