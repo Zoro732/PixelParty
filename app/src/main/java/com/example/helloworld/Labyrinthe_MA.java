@@ -44,9 +44,8 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
 
         Intent intent = getIntent();
         game_mode = intent.getStringExtra("game_mode");
-
         selection = intent.getStringExtra("selection_key");
-        if (selection != null) {
+        if (intent != null) {
             labyrintheGameView = new Labyrinthe_GameView(this, selection);
             gameFrame.addView(labyrintheGameView);
         }
@@ -70,6 +69,8 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
         buttonQuit = findViewById(R.id.quit);
         pauseText = findViewById(R.id.gamePause);
         timeText = findViewById(R.id.timerIndicator);
+
+        timeText.setVisibility(View.GONE);
 
         setupPauseMenu(imageSettings);
     }
@@ -201,6 +202,7 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
     private void handleGameWin() {
         if ("minigames".equals(game_mode)) {
             labyrintheGameView.pauseGame();
+            timeText.setVisibility(View.VISIBLE);
             timeText.setText("Made in " + labyrintheGameView.getRemainingTime() + "s");
             timeText.setVisibility(View.VISIBLE);
             showPauseMenu();

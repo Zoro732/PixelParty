@@ -20,7 +20,6 @@ public class RunGame_Obstacle {
         this.image = image; // Store the image
         // Déterminer si l'obstacle est sautable en fonction du bitmap
         this.isJumpable = Arrays.asList(vehicles).contains(image); // Check if image is in vehicles array
-
     }
 
     public void update() {
@@ -62,13 +61,16 @@ public class RunGame_Obstacle {
         return y;
     }
 
-
-    public void reset(int screenWidth, int laneX) {
+    public void reset(int laneX) {
         // Positionner l'obstacle juste au-dessus de l'écran
         this.y = -100; // Assure que l'obstacle redémarre juste au-dessus de l'écran
         this.x = laneX; // Positionner dans une voie aléatoire
 
         // Réinitialiser la vitesse ou tout autre attribut, si nécessaire
         this.speed = (int) RunGame_GameView.obstacleSpeed/* vitesse de base, si applicable */;
+    }
+
+    public int getHeight() {
+        return image.getHeight(); // Assuming 'image' is the Bitmap of the obstacle
     }
 }

@@ -95,14 +95,19 @@ public class RunGame_MA extends AppCompatActivity {
                     // Vérifie si le joueur est mort
                     if (gameView.isDead()) {
                         // Le joueur est mort, gère la fin du jeu
-                        if (game_mode.equals("board")) {
-                            Log.d("RunGame_MA", "game_mode.equals(\"board\")" + game_mode.equals("board"));
-                            finish();
+                        if (game_mode != null) {
+                            if (game_mode.equals("board")) {
+                                Log.d("RunGame_MA", "game_mode.equals(\"board\")" + game_mode.equals("board"));
+                                finish();
+                            }
+                            if (game_mode.equals("minigames")) {
+                                Log.d("RunGame_MA", "gamemode" + game_mode.equals("minigames"));
+                            }
+                            isGameOver = true;
+                        } else {
+                            Log.d("RunGame_MA", "game_mode == null");
                         }
-                        if (game_mode.equals("minigames")) {
-                            Log.d("RunGame_MA", "gamemode" + game_mode.equals("minigames"));
-                        }
-                        isGameOver = true;
+
                     } else {
                         // Sinon, vérifier à nouveau dans un certain délai
                         handler.postDelayed(this, 1000); // Vérifier toutes les secondes

@@ -59,7 +59,7 @@ public class RunGame_Player {
     public void update() {
         if (isJumping) {
             y += (int) jumpSpeed;
-            float gravity = 2;
+            float gravity = 1;
             jumpSpeed += gravity;
             sizeMultiplier =4;
             currentSprite = jumpSpriteSheet.getSprite(3, currentSpriteIndex);
@@ -75,7 +75,7 @@ public class RunGame_Player {
         // Update sprite animation
         frameCounter++;
         // Number of frames to display each sprite
-        int framesPerSprite = 2;
+        int framesPerSprite = 4;
         if (frameCounter >= framesPerSprite) {
             frameCounter = 0;
             if (isJumping) {

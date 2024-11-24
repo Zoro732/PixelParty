@@ -13,6 +13,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.util.Log;
+import android.view.Choreographer;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 
@@ -24,7 +25,6 @@ import java.util.List;
 
 @SuppressLint("ViewConstructor")
 public class RunGame_GameView extends SurfaceView implements Runnable {
-    private Thread gameThread;
     private boolean isPlaying = true;
     private final int screenWidth, screenHeight;
     private final Paint paint;
@@ -32,17 +32,19 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
     static int laneWidth;
     private final List<RunGame_Coin> runGameCoinPool = new ArrayList<>();
     private int score = 0; // Score de pièces collectées
-    static float obstacleSpeed = 30;
+    static float obstacleSpeed = 15;
     private float startX = 0; // Initialisation de startX
     private float startY = 0; // Initialisation de startY
-    private int obstacleSpacing = 1000; // Initial spacing
-    private long lastObstacleTime = 0; // Time of last obstacle creation
-    private final List<RunGame_Obstacle> runGameObstaclePool = new ArrayList<>();
-    private final Bitmap[] vehicles, trucks;
+ final List<RunGame_Obstacle> runGameObstaclePool = new ArrayList<>();
+    private final Bitmap[] vehicles;
     private final Bitmap coins;
     private long lastSpeedIncreaseTime = System.currentTimeMillis(); // Initialisation du temps pour l'augmentation de vitesse
     private Canvas canvas = new Canvas();
     private boolean isDead = false;
+
+    // Ajoutez ce tableau pour suivre le nombre d'obstacles consécutifs par voie
+    private int[] consecutiveObstacles = new int[3]; // 0 = voie 1, 1 = voie 2, 2 = voie 3
+
 
     public RunGame_GameView(Context context, int screenWidth, int screenHeight) {
         super(context);
@@ -64,11 +66,6 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
         vehicles[1] = resizeBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.car2), 100);
         vehicles[2] = resizeBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.car3), 100);
 
-        // Charger les images des camions
-        trucks = new Bitmap[3];
-        trucks[0] = rotateBitmap(resizeBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.truck1), 100), 180);
-        trucks[1] = rotateBitmap(resizeBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.truck2), 100), 180);
-        trucks[2] = rotateBitmap(resizeBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.truck3), 100), 180);
 
         generateObstacles();
 
@@ -76,6 +73,18 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
         coins = BitmapFactory.decodeResource(getResources(), R.drawable.coin);
         generateCoins();
     }
+
+    private boolean isCoinOverlappingWithObstacle(RunGame_Coin coin) {
+        RectF coinRect = coin.getRect();
+        for (RunGame_Obstacle obstacle : runGameObstaclePool) {
+            RectF obstacleRect = obstacle.getRect();
+            if (RectF.intersects(coinRect, obstacleRect)) {
+                return true; // La pièce chevauche un obstacle
+            }
+        }
+        return false; // Aucune intersection
+    }
+
 
     private Bitmap resizeBitmap(Bitmap originalBitmap, int newWidth) {
         int originalWidth = originalBitmap.getWidth();
@@ -95,9 +104,20 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
         List<Integer> availableLanes = new ArrayList<>(Arrays.asList(0, 1, 2));
         int laneIndex = availableLanes.remove((int) (Math.random() * availableLanes.size()));
         int laneX = (laneIndex * laneWidth) + (laneWidth / 2) - 50;  // Calcul de la position X de la voie
+
         // Créer une nouvelle pièce
-        return new RunGame_Coin(laneX, -100, coins);
+        RunGame_Coin newCoin = new RunGame_Coin(laneX, -100, coins);
+
+        // Vérifier si la pièce chevauche un obstacle, et si c'est le cas, générer une nouvelle pièce
+        while (isCoinOverlappingWithObstacle(newCoin)) {
+            laneIndex = availableLanes.remove((int) (Math.random() * availableLanes.size()));
+            laneX = (laneIndex * laneWidth) + (laneWidth / 2) - 50;
+            newCoin = new RunGame_Coin(laneX, -100, coins);
+        }
+
+        return newCoin;
     }
+
 
     private void generateCoins() {
         int distanceBetweenCoins = 400;
@@ -120,17 +140,64 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
 
 
 
+
+
     private RunGame_Obstacle createObstacle() {
         List<Integer> availableLanes = new ArrayList<>(Arrays.asList(0, 1, 2));
-        int laneIndex = availableLanes.remove((int) (Math.random() * availableLanes.size()));
+        int laneIndex = -1;
+
+        // Essayer de choisir une voie qui ne contient pas plus de 2 obstacles consécutifs
+        for (int i = 0; i < 3; i++) {
+            // Si une voie a moins de 3 obstacles consécutifs, elle est disponible
+            if (consecutiveObstacles[i] < 3) {
+                laneIndex = i;
+                break;
+            }
+        }
+
+        if (laneIndex == -1) {
+            // Si toutes les voies ont 3 obstacles consécutifs, nous les réinitialisons pour éviter de bloquer la génération
+            Arrays.fill(consecutiveObstacles, 0);
+            laneIndex = availableLanes.get((int) (Math.random() * availableLanes.size()));
+        }
+
         int laneX = (laneIndex * laneWidth) + (laneWidth / 2) - 50;
 
-        // Randomly select either a car or a truck
-        Bitmap[] obstacleImages = Math.random() < 0.5 ? vehicles : trucks;
+        // Sélectionner aléatoirement une voiture ou un camion comme obstacle
+        Bitmap[] obstacleImages = vehicles;
         Bitmap randomImage = obstacleImages[(int) (Math.random() * obstacleImages.length)];
 
-        return new RunGame_Obstacle(laneX, -100, randomImage, vehicles);
+        RunGame_Obstacle newObstacle = new RunGame_Obstacle(laneX, -100, randomImage, vehicles);
+
+        // Mettre à jour le nombre d'obstacles consécutifs pour cette voie
+        consecutiveObstacles[laneIndex]++;
+
+        return newObstacle;
     }
+
+    // Lors de la réinitialisation d'un obstacle hors écran, vous devrez décrémenter le nombre d'obstacles consécutifs
+    private void resetObstacle(RunGame_Obstacle obstacle) {
+        int laneIndex = -1;
+        int laneX = (laneIndex * laneWidth) + (laneWidth / 2) - 50;  // Calcul de la position X de la voie
+
+
+        // Trouver la voie de l'obstacle
+        for (int i = 0; i < vehicles.length; i++) {
+            if (obstacle.getImage() == vehicles[i]) {
+                laneIndex = i;
+                break;
+            }
+        }
+
+        // Réinitialiser le compteur d'obstacles consécutifs
+        if (laneIndex != -1) {
+            consecutiveObstacles[laneIndex]--;
+        }
+
+        // Réinitialiser la position de l'obstacle
+        obstacle.reset(laneX);  // Méthode pour réinitialiser l'obstacle sans le recréer
+    }
+
 
     private void generateObstacles() {
         int numObstacles = 6; // Nombre aléatoire d'obstacles
@@ -143,8 +210,9 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
             newRunGameObstacles.add(runGameObstacle);
 
             // Générer un espacement aléatoire pour chaque obstacle
-            int spacing = 401 + (int) (Math.random() * 301);
-            currentY -= spacing;
+            int spacing = 501 + (int) (Math.random() * 301);
+            currentY -= 1000;
+
         }
 
         // Ajouter tous les nouveaux obstacles générés à la pool
@@ -157,12 +225,19 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
 
     @Override
     public void run() {
-        while (isPlaying) { // Continue running only if playing or just paused
-            update(); // Update game state only when not paused
-            draw();
-            sleep();  // Control frame rate
-        }
+        Choreographer.getInstance().postFrameCallback(new Choreographer.FrameCallback() {
+            @Override
+            public void doFrame(long frameTimeNanos) {
+                if (isPlaying) {
+                    update(); // Mise à jour des objets du jeu
+                    draw();   // Dessiner le jeu
+                    Choreographer.getInstance().postFrameCallback(this); // Planifier le prochain frame
+                }
+            }
+        });
     }
+
+
 
     public void quitGame() {
         runGameObstaclePool.clear();
@@ -196,10 +271,12 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
             obstacleSpeed += (float) score / 7;
             lastSpeedIncreaseTime = currentTime;
         }
+        Log.d("RunGame_GameView", "Obstacle speed: " + obstacleSpeed);
 
-        // Variables de stockage temporaires pour éviter les recalculs dans les boucles
-        int newLaneIndex;
-        int newLaneX;
+        if (obstacleSpeed > 40) {
+            obstacleSpeed = 40;
+        }
+
         RectF tempRect;
 
         List<Integer> availableLanes = new ArrayList<>(Arrays.asList(0, 1, 2));
@@ -214,7 +291,7 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
 
             // Si l'obstacle est hors écran, réutiliser en réinitialisant sa position
             if (obstacle.isOffScreen(screenHeight)) {
-                obstacle.reset(screenWidth,laneX);  // Méthode pour réinitialiser l'obstacle sans le recréer
+                obstacle.reset(laneX);  // Méthode pour réinitialiser l'obstacle sans le recréer
             }
 
             // Détection des collisions
@@ -229,24 +306,20 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
                 }
             }
         }
-        Log.d("DEBUG","rungamecoinpool size " + runGameCoinPool.size());
-        // Mise à jour des pièces et collecte
+        // Mettre à jour les pièces
         for (int i = runGameCoinPool.size() - 1; i >= 0; i--) {
             RunGame_Coin coin = runGameCoinPool.get(i);
             coin.update();
 
-            // Réutilisation des pièces hors écran
+            // Si la pièce sort de l'écran, réutiliser en haut
             if (coin.isOffScreen(screenHeight)) {
-                coin.reset(screenWidth);  // Réinitialiser la position de la pièce sans recréer
+                resetCoin(coin);
             }
 
-            // Détection de collecte de pièces
-            tempRect = coin.getRect();
-            if (checkOverlapping(playerRect, tempRect)) {
+            // Si le joueur collecte une pièce, la réinitialiser et augmenter le score
+            if (checkOverlapping(runGamePlayer.getRectF(), coin.getRect())) {
                 score++;
-                newLaneIndex = (int) (Math.random() * 3);
-                newLaneX = (newLaneIndex * laneWidth) + (laneWidth / 2) - 50;
-                coin.reset(newLaneX); // Réinitialiser dans une nouvelle position de voie
+                resetCoin(coin);
             }
         }
     }
@@ -294,6 +367,14 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
         }
     }
 
+    public void resetCoin(RunGame_Coin coin) {
+        int laneIndex = (int) (Math.random() * 3); // Choisir une voie aléatoire
+        int laneX = (laneIndex * laneWidth) + (laneWidth / 2) - coin.getWidth() / 2; // Position dans la voie
+        coin.reset(laneX); // Réinitialiser la position de la pièce
+        coin.setY(-100); // Repositionner en haut de l'écran
+    }
+
+
     private void drawObstacles() {
         for (RunGame_Obstacle runGameObstacle : runGameObstaclePool) {
             if (runGameObstacle.getImage() != null && !runGameObstacle.getImage().isRecycled()) {
@@ -305,6 +386,8 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
     private void drawCoins() {
         for (RunGame_Coin runGameCoin : runGameCoinPool) {
             runGameCoin.draw(canvas, paint);
+            //canvas.drawBitmap(runGameCoin.getImage(), runGameCoin.getX(), runGameCoin.getY(), paint);
+
         }
     }
 
@@ -348,13 +431,13 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
         isPlaying = false;
         runGameCoinPool.clear(); // Supprimer toutes les pièces
         runGameObstaclePool.clear();
-        obstacleSpeed = 30;
+        obstacleSpeed = 20;
         draw();
     }
 
     private void sleep() {
         try {
-            Thread.sleep(16); // Environ 60 FPS
+            Thread.sleep(10); // Environ 60 FPS
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -362,17 +445,11 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
 
     public void resume() {
         isPlaying = true;
-        gameThread = new Thread(this);
-        gameThread.start();
+        run();
     }
 
     public void pause() {
-        try {
-            isPlaying = false;
-            gameThread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        isPlaying = false;
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -435,14 +512,13 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
         runGamePlayer.resetPosition(); // Reset player position
         runGameCoinPool.clear(); // Clear coins
         runGameObstaclePool.clear(); // Clear obstacles
-        obstacleSpeed = 30; // Reset obstacle speed
+        obstacleSpeed = 20; // Reset obstacle speed
 
         generateObstacles(); // Generate new obstacles
         generateCoins(); // Generate new coins
 
         isPlaying = true;
-        gameThread = new Thread(this);
-        gameThread.start();
+        run();
     }
 
     public boolean isDead() {

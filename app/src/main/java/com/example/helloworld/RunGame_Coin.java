@@ -65,5 +65,19 @@ public class RunGame_Coin {
     public void setY(int currentY) {
         y = currentY;
     }
+
+    public float getX() {
+        return x;
+    }
+    public float getY() {
+        return y;
+    }
+    public Bitmap getImage() {
+        return coinSpriteSheet.getSprite(0, currentCoinIndex);
+    }
+
+    public int getWidth() {
+        return currentCoinImage.getWidth();
+    }
 }
 

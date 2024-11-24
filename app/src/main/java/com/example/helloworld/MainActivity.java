@@ -267,12 +267,14 @@ public class MainActivity extends AppCompatActivity {
             Log.d("MainActivity", "selection: " + selection);
             startActivity(intent);
         } else {
-            Toast.makeText(this, "Aucun sprite sélectionné", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Aucun personnage sélectionné", Toast.LENGTH_SHORT).show();
         }
     }
 
     private void launchActivity(Class<?> activityClass) {
         Intent intent = new Intent(this, activityClass);
+        intent.putExtra("selection_key", "Bleu");
+        intent.putExtra("game_mode", "minigames");
         startActivity(intent);
     }
 }
