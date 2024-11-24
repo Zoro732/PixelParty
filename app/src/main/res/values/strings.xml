@@ -15,6 +15,12 @@
     <string name="clair">LIGHT</string>
     <string name="langue">Language :</string>
     <string name="pixel_party">Pixel Party</string>
+    <string name="selected_character_none">Select your character</string>
+    <string name="resume">Resume</string>
+    <string name="restart">Restart</string>
+    <string name="quit">Quit</string>
+    <string name="pause">Pause</string>
+    <string name="time">Time</string>
 
     <!-- Ajout du tableau de langues -->
     <string-array name="language_options">

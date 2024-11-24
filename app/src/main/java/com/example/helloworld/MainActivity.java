@@ -168,6 +168,7 @@ public class MainActivity extends AppCompatActivity {
         laby.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, Labyrinthe_MA.class);
             startActivity(intent);
+
         });
 
         taquin.setOnClickListener(v -> {
@@ -273,7 +274,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Mettre à jour le texte du personnage sélectionné
-        selectedCharacterText.setText("Selected Character: " + characterName);
+        selectedCharacterText.setText(characterName);
         selection = characterName;
     }
 }
