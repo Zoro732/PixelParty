@@ -32,7 +32,7 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
     private float speedX = 0; // Vitesse sur l'axe X
     private float speedY = 0; // Vitesse sur l'axe Y
     private final float friction = 0.98f; // Coefficient de friction pour ralentir la boule
-    private final float accelerationFactor = 1f; // Facteur d'accélération pour le gyroscope
+    private final float accelerationFactor = 0.4f; // Facteur d'accélération pour le gyroscope
 
     private final Paint paint;
     // Attributs pour la largeur et la hauteur de l'écran
@@ -199,7 +199,6 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
                     }
                     startTimer(timerValue);
                     // Vous pouvez ajouter ici un code pour gérer la fin du jeu si nécessaire
-                    Toast.makeText(getContext(), "Temps écoulé !", Toast.LENGTH_SHORT).show();
                     try {
                         Thread.sleep(100); // Délai de 100 millisecondes
                     } catch (InterruptedException e) {
@@ -396,11 +395,8 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
 
         // Vérifier si la distance est inférieure ou égale à la somme des rayons
         if (distance <= ballRadius + goalRadius && !goalReached) {
-            // Collision détectée
-            ballX = DefaultUserPosition[0];
-            ballY = DefaultUserPosition[1];
-
             win = true;
+
             try {
                 Thread.sleep(100); // Délai de 100 millisecondes
             } catch (InterruptedException e) {
@@ -420,8 +416,10 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
         // Réinitialiser les positions et autres paramètres du jeu
         ballX = DefaultUserPosition[0];
         ballY = DefaultUserPosition[1];
+
         win = false;
         loose = false;
+
         invalidate();  // Redessine l'écran pour redémarrer le jeu
         // Redémarrer d'autres éléments nécessaires comme le joueur, les objectifs, etc.
         timerValue = defaultTimerValue;
@@ -466,7 +464,6 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
             vibrator.cancel();
         }
 
-        // Quitter l'application proprement
         System.exit(0);
     }
 

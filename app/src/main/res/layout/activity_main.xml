@@ -33,7 +33,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginEnd="450dp"
         android:layout_marginRight="450dp"
-        android:background="@drawable/rounded_button"
+        android:background="@drawable/button_background"
         android:text="@string/labyrinth"
         android:fontFamily="@font/press2start"
         android:textSize="12sp"

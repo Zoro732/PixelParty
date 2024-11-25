@@ -87,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
         backButton_BoardSpriteSelection.bringToFront();
         backButtonSettings.bringToFront();
         iv_Settings.bringToFront();
+        findViewById(R.id.iv_Settings).bringToFront();
 
     }
 

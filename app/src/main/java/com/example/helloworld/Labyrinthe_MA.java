@@ -26,6 +26,7 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
     private String selection;
     private TextView pauseText, timeText;
     private Button buttonResume, buttonRestart, buttonQuit;
+    private ImageView iv_Settings;
     private String game_mode;
     private boolean isGameFinished = false;
     private boolean doPlayerQuitGame = false;
@@ -41,6 +42,8 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
 
         setContentView(R.layout.labyrinthe);
         FrameLayout gameFrame = findViewById(R.id.gameFrame);
+
+        iv_Settings = findViewById(R.id.iv_Settings);
 
         Intent intent = getIntent();
         game_mode = intent.getStringExtra("game_mode");
@@ -109,6 +112,8 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
     private void restartGame() {
         if (labyrintheGameView != null) {
             labyrintheGameView.restartGame();
+            isGameFinished = false;
+            iv_Settings.setVisibility(View.VISIBLE);
         }
         hidePauseMenu();
         timeText.setVisibility(View.GONE);
@@ -202,11 +207,18 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
     private void handleGameWin() {
         if ("minigames".equals(game_mode)) {
             labyrintheGameView.pauseGame();
+
+            pauseText.setVisibility(View.VISIBLE);
+            pauseText.setText("You WIN !");
+
             timeText.setVisibility(View.VISIBLE);
             timeText.setText("Made in " + labyrintheGameView.getRemainingTime() + "s");
-            timeText.setVisibility(View.VISIBLE);
-            showPauseMenu();
-            pauseText.setText("You WIN !");
+
+            iv_Settings.setVisibility(View.GONE);
+            buttonRestart.setVisibility(View.VISIBLE);
+            buttonQuit.setVisibility(View.VISIBLE);
+
+
         } else if ("board".equals(game_mode)) {
             Log.d("Labyrinthe_MA", "Labyrinthe finished, returning to Board_MA");
             finish();
