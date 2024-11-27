@@ -2,7 +2,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/green">
+    android:background="@drawable/grass">
 
     <!-- Zone de score (en haut à gauche, décalé pour laisser la place au bouton settings) -->
 
@@ -19,7 +19,6 @@
         android:layout_centerHorizontal="true"
         android:fontFamily="@font/press2start"
         android:layout_margin="16dp"/>
-
 
     <ImageView
         android:id="@+id/settings"
@@ -48,41 +47,25 @@
 
     <FrameLayout
         android:id="@+id/frameLayout"
-        android:layout_width="714dp"
-        android:layout_height="304dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_below="@id/tv_score"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_marginTop="26dp"
-        android:layout_marginEnd="4dp"
-        android:layout_marginRight="4dp">
+        android:layout_marginTop="39dp"
+        android:layout_marginEnd="38dp"
+        android:layout_marginRight="38dp">
 
         <!-- Taupe 1 -->
         <ImageButton
             android:id="@+id/mole1"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="147dp"
+            android:layout_height="87dp"
             android:layout_gravity="center"
             android:background="@drawable/mole"
             android:visibility="invisible" />
 
-        <!-- Taupe 2 -->
-        <ImageButton
-            android:id="@+id/mole2"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_gravity="center"
-            android:background="@drawable/mole"
-            android:visibility="invisible" />
 
-        <!-- Taupe 3 -->
-        <ImageButton
-            android:id="@+id/mole3"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_gravity="center"
-            android:background="@drawable/mole"
-            android:visibility="invisible" />
     </FrameLayout>
 
     <LinearLayout
@@ -131,12 +114,10 @@
         android:id="@+id/tv_countdown"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Début dans"
         android:textSize="60sp"
         android:textColor="@android:color/black"
         android:visibility="gone"
         android:layout_centerInParent="true"
         android:fontFamily="@font/press2start"/>
-
 
 </RelativeLayout>

@@ -1,8 +1,10 @@
 package com.example.helloworld;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Vibrator;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.Window;
@@ -16,21 +18,21 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
-    private TextView tvScore;
-    private TextView tvTime;
-    private TextView tvCountdown;
-    private int score = 0;
-    private int speed = 1500;
-    private int taupesActives = 1;
+    private TextView tvScore, tvTime, tvCountdown;
+    private int score = 0, speed = 1500, taupesActives = 1, gameDuration = 30;
     private final int MAX_TAUPES = 3;
+    private long startTime;
+    private boolean isPaused = false, isGameOver = false;
+
     private Handler handler = new Handler();
     private Random random = new Random();
     private ImageButton[] moles;
     private int screenWidth, screenHeight;
-    private int gameDuration = 30;
-    private long startTime;
-    private boolean isPaused = false;
-    private boolean isGameOver = false;
+
+    private Vibrator vibrator;
+
+    // Ajout d'une variable pour suivre les taupes qui sont déjà "touchées"
+    private boolean[] moleTouched;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,8 +41,16 @@ public class MainActivity extends AppCompatActivity {
 
         hideSystemUI();
 
-        // Initialiser le TextView pour le compte à rebours
+        // Initialisation des vues
         tvCountdown = findViewById(R.id.tv_countdown);
+        tvScore = findViewById(R.id.tv_score);
+        tvTime = findViewById(R.id.tv_time);
+
+        moles = new ImageButton[] {
+                findViewById(R.id.mole1)
+        };
+
+        moleTouched = new boolean[moles.length]; // Initialiser l'état des taupes
 
         // Récupération des dimensions de l'écran
         DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -48,23 +58,24 @@ public class MainActivity extends AppCompatActivity {
         screenWidth = displayMetrics.widthPixels;
         screenHeight = displayMetrics.heightPixels;
 
-        tvScore = findViewById(R.id.tv_score);
-        tvTime = findViewById(R.id.tv_time);
-        moles = new ImageButton[] {
-                findViewById(R.id.mole1),
-                findViewById(R.id.mole2),
-                findViewById(R.id.mole3)
-        };
-
+        // Bouton paramètres
         ImageView settingsButton = findViewById(R.id.settings);
         settingsButton.setOnClickListener(v -> showPausePopup());
+        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
-        for (ImageButton mole : moles) {
-            mole.setOnClickListener(v -> {
-                if (!isPaused) {
+        for (int i = 0; i < moles.length; i++) {
+            int finalI = i;  // Pour utiliser dans le listener
+            moles[i].setOnClickListener(v -> {
+                if (!isPaused && !isGameOver && !moleTouched[finalI]) {
                     score++;
                     tvScore.setText("Score: " + score);
-                    v.setVisibility(View.INVISIBLE);
+
+                    moleTouched[finalI] = true; // Marquer la taupe comme touchée
+                    moles[finalI].setBackgroundResource(R.drawable.mole_hit);
+
+                    vibrator.vibrate(100);
+
+                    // Augmenter la vitesse du jeu
                     increaseSpeed();
                 }
             });
@@ -73,20 +84,21 @@ public class MainActivity extends AppCompatActivity {
         startCountdown();
     }
 
-    // Méthode pour démarrer le compte à rebours
     private void startCountdown() {
         tvCountdown.setVisibility(View.VISIBLE);
-        handler.postDelayed(() -> tvCountdown.setText("3"), 1000);
-        handler.postDelayed(() -> tvCountdown.setText("2"), 2000);
-        handler.postDelayed(() -> tvCountdown.setText("1"), 3000);
-        handler.postDelayed(() -> tvCountdown.setText("30sec, GO!"), 4000);
-
-        // Démarrer le jeu après "GO!"
-        handler.postDelayed(this::startGame, 5000);
+        handler.postDelayed(() -> tvCountdown.setText("Début dans"), 1000);
+        handler.postDelayed(() -> tvCountdown.setText("3"), 2000);
+        handler.postDelayed(() -> tvCountdown.setText("2"), 3000);
+        handler.postDelayed(() -> tvCountdown.setText("1"), 4000);
+        handler.postDelayed(() -> tvCountdown.setText("GO!"), 5000);
+        tvCountdown.setText("");
+        handler.postDelayed(() -> {
+            tvCountdown.setVisibility(View.INVISIBLE);
+            startGame();
+        }, 6000);
     }
 
     private void startGame() {
-        tvCountdown.setVisibility(View.INVISIBLE);  // Masquer le compte à rebours
         startTime = System.currentTimeMillis();
         handler.postDelayed(gameRunnable, 1000);
     }
@@ -101,46 +113,70 @@ public class MainActivity extends AppCompatActivity {
                 tvTime.setText(secondsRemaining + "s");
 
                 if (remainingTime <= 0) {
-
-                    isGameOver = true; // Marquer la fin du jeu
-                    showGameOverPopup(); // Afficher le popup de fin de jeu
+                    isGameOver = true;
+                    showGameOverPopup();
                     return;
                 }
-
+                increaseActiveMoles(elapsedTime);
                 showMoleOneByOne();
             }
 
             if (!isGameOver) {
-                handler.postDelayed(this, 1000);
+                handler.postDelayed(this, 1700);
             }
         }
     };
 
-    private void showMoleOneByOne() {
-        if (isPaused || isGameOver) {
-            return; // Empêche l'apparition de taupes pendant la pause ou après la fin du jeu
-        }
+    private void increaseActiveMoles(long elapsedTime) {
+        // Augmente une taupe toutes les 10 secondes, avec un maximum de MAX_TAUPES
+        int newActiveMoles = 1 + (int) (elapsedTime / 10000); // 1 taupe supplémentaire toutes les 10s
+        taupesActives = Math.min(newActiveMoles, MAX_TAUPES);
+    }
 
+    private void showMoleOneByOne() {
+        findViewById(R.id.mole1).setBackgroundResource(R.drawable.mole);
+        if (isPaused || isGameOver) return;
+
+        // Sélectionner une taupe aléatoire
         int index = random.nextInt(moles.length);
 
-        int randomX = random.nextInt(screenWidth - moles[index].getWidth());
-        int randomY = random.nextInt(screenHeight - moles[index].getHeight() - 50); // 50 pour un léger espace de marge
+        // Vérifier si la taupe a déjà été touchée
+        if (moleTouched[index]) {
+            showMoleOneByOne(); // Si elle a déjà été touchée, recommencer
+            return;
+        }
 
+        // Récupérer les dimensions de la taupe (si elles sont disponibles)
+        int moleWidth = moles[index].getWidth();
+        int moleHeight = moles[index].getHeight();
+
+        // Si les dimensions ne sont pas encore calculées, utiliser des valeurs par défaut
+        if (moleWidth == 0 || moleHeight == 0) {
+            moleWidth = 150; // Largeur par défaut
+            moleHeight = 150; // Hauteur par défaut
+        }
+
+        // Calculer des positions X et Y en restant dans les limites de l'écran
+        int maxX = screenWidth - moleWidth - 100;  // Limiter pour que la taupe reste entièrement visible
+        int maxY = screenHeight - moleHeight - 200; // Ajuster pour éviter une superposition avec la barre inférieure
+        int randomX = random.nextInt(Math.max(1, maxX));
+        int randomY = random.nextInt(Math.max(1, maxY));
+
+        // Positionner la taupe
         moles[index].setX(randomX);
         moles[index].setY(randomY);
         moles[index].setVisibility(View.VISIBLE);
 
+        // Rendre la taupe invisible après un délai (vitesse du jeu)
         handler.postDelayed(() -> {
             moles[index].setVisibility(View.INVISIBLE);
+            moleTouched[index] = false; // La taupe est maintenant disponible pour être cliquée à nouveau
         }, speed);
     }
 
     private void increaseSpeed() {
-        if (speed > 500) {
-            speed -= 75;
-        } else if (speed > 300) {
-            speed -= 25;
-        }
+        if (speed > 500) speed -= 75;
+        else if (speed > 300) speed -= 25;
     }
 
     private void hideSystemUI() {
@@ -156,9 +192,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        if (hasFocus) {
-            hideSystemUI();
-        }
+        if (hasFocus) hideSystemUI();
     }
 
     private void showPausePopup() {
@@ -168,13 +202,12 @@ public class MainActivity extends AppCompatActivity {
         pauseDialog.setContentView(R.layout.dialog_pause);
         pauseDialog.setCancelable(false);
 
-        // Accéder aux éléments de la vue du dialogue
         Button btnResume = pauseDialog.findViewById(R.id.btn_resume);
         Button btnRestart = pauseDialog.findViewById(R.id.btn_restart);
         Button btnQuit = pauseDialog.findViewById(R.id.btn_quit);
 
         btnResume.setOnClickListener(v -> {
-            isPaused = false; // Reprendre le jeu
+            isPaused = false;
             pauseDialog.dismiss();
         });
 
@@ -189,22 +222,19 @@ public class MainActivity extends AppCompatActivity {
             finish();
         });
 
-        // Ajuster la taille de la fenêtre du dialogue
         Window window = pauseDialog.getWindow();
         if (window != null) {
-            window.setLayout(1500, 650);  // Largeur 1500px, hauteur 500px
+            window.setLayout(1500, 650);
         }
 
         pauseDialog.show();
     }
 
     private void showGameOverPopup() {
-        // Créer et afficher le popup de fin de jeu
         Dialog gameOverDialog = new Dialog(this);
         gameOverDialog.setContentView(R.layout.dialog_game_over);
         gameOverDialog.setCancelable(false);
 
-        // Accéder aux éléments de la vue du dialogue
         TextView tvFinalScore = gameOverDialog.findViewById(R.id.tv_final_score);
         Button btnRestart = gameOverDialog.findViewById(R.id.btn_restart);
         Button btnQuit = gameOverDialog.findViewById(R.id.btn_quit);
@@ -221,59 +251,40 @@ public class MainActivity extends AppCompatActivity {
             finish();
         });
 
-        // Ajuster la taille de la fenêtre du dialogue
         Window window = gameOverDialog.getWindow();
         if (window != null) {
-            window.setLayout(1500, 650);  // Largeur 1500px, hauteur 500px
+            window.setLayout(1500, 650);
         }
 
         gameOverDialog.show();
     }
 
     private void restartGame() {
-        // Réinitialiser le score et les variables de jeu
+        // Annuler toutes les tâches en cours
+        handler.removeCallbacksAndMessages(null);
+
+        // Réinitialiser les variables de jeu
         score = 0;
         speed = 1500;
-        taupesActives = 1;
-        tvScore.setText("Score: " + score);
-
-        // Masquer les taupes visibles
-        for (ImageButton mole : moles) {
-            mole.setVisibility(View.INVISIBLE);
-        }
-
-        // Annuler toutes les actions en cours liées aux taupes
-        handler.removeCallbacks(gameRunnable);  // Annuler le Runnable d'apparition des taupes
-
-        // Réinitialiser le compte à rebours
-        tvCountdown.setVisibility(View.VISIBLE);
-        tvCountdown.setText("3");
-
-        // Réinitialiser le temps de jeu
-        startTime = System.currentTimeMillis();
-
-        // Réinitialiser le compte à rebours
-        handler.postDelayed(() -> {
-            tvCountdown.setText("2");
-        }, 1000);
-
-        handler.postDelayed(() -> {
-            tvCountdown.setText("1");
-        }, 2000);
-
-        handler.postDelayed(() -> {
-            tvCountdown.setText("GO!");
-        }, 3000);
-
-        // Démarrer le jeu après "GO!"
-        handler.postDelayed(this::startGame, 4000);
-
-        // Marquer que le jeu est réinitialisé
         isGameOver = false;
         isPaused = false;
+        tvScore.setText("Score: " + score);
+        tvTime.setText(gameDuration + "s");
 
-        // Démarrer le jeu après "GO!"
-        handler.postDelayed(gameRunnable, 4000);
+        // Masquer toutes les taupes immédiatement
+        hideAllMoles();
+
+        // Réinitialiser les états de taupes
+        moleTouched = new boolean[moles.length];
+
+        // Redémarrer le compte à rebours
+        startCountdown();
     }
 
+    private void hideAllMoles() {
+        for (ImageButton mole : moles) {
+            mole.setVisibility(View.INVISIBLE); // Masquer immédiatement
+            handler.removeCallbacksAndMessages(mole); // Supprimer les tâches spécifiques à cette taupe
+        }
+    }
 }
