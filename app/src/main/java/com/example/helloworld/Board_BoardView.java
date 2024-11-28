@@ -268,26 +268,24 @@ public class Board_BoardView extends View {
         int top = y * cellSize;
         int bottom = top + cellSize;
         int right = left + cellSize;
-        int tileValue = gameBoardCase.getValue();
 
-        // Dessiner la couleur de la case en fonction de sa valeur
-        if (tileValue == 1) {
-            paint.setColor(Color.parseColor("#8B4513")); // terre
-        } else {
-            paint.setColor(Color.parseColor("#228B22")); // herbe
-        }
+        // Définir les paramètres de la peinture pour les bordures
+        paint.setStyle(Paint.Style.STROKE); // Dessiner uniquement les contours
+        paint.setStrokeWidth(10); // Épaisseur des contours
+        paint.setColor(Color.WHITE); // Couleur des bordures
 
-        // Dessiner la case
+        // Dessiner les contours de la case
         canvas.drawRect(left, top, right, bottom, paint);
 
         // Afficher le texte si nécessaire (uniquement pour les cases valides)
         if (gameBoardCase.getValue() == 1) {
             paint.setTypeface(font);
+            paint.setStyle(Paint.Style.FILL); // Revenir au style de remplissage pour le texte
 
             // Définir la couleur du texte en fonction de l'action
             switch (gameBoardCase.getAction()) {
                 case 1:
-                    paint.setColor(Color.BLUE);
+                    paint.setColor(Color.YELLOW);
                     break;
                 case 2:
                     paint.setColor(Color.RED);
@@ -311,6 +309,7 @@ public class Board_BoardView extends View {
             canvas.drawText(String.valueOf(gameBoardCase.getCaseNumber()), textX, textY, paint);
         }
     }
+
 
 
     public void startDiceRoll() {

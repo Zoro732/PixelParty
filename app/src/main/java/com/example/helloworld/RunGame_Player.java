@@ -134,6 +134,10 @@ public class RunGame_Player {
         y = screenHeight - 200;
     }
 
+    public int getHeight(){
+        return currentSprite.getHeight();
+    }
+
     public boolean isJumping() {
         return isJumping;
     }

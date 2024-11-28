@@ -7,7 +7,7 @@
 
     <!-- Image en arrière-plan -->
     <ImageView
-        android:id="@+id/backgroundImage"
+        android:id="@+id/ivBackgroundImage"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:src="@drawable/paysage"
@@ -30,21 +30,21 @@
 
             <!-- Titre au-dessus de la grille de jeu -->
             <TextView
-                android:id="@+id/title_solution"
+                android:id="@+id/tvSolution"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="top|center"
                 android:layout_marginTop="30dp"
                 android:gravity="center"
                 android:paddingBottom="10dp"
-                android:text="Votre JEU :"
+                android:text="Your Game :"
                 android:textColor="@color/black"
                 android:textSize="18sp"
                 android:fontFamily="@font/press2start"/>
 
             <!-- Grille de jeu -->
             <GridLayout
-                android:id="@+id/gridLayout"
+                android:id="@+id/glGame"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:columnCount="3"
@@ -55,19 +55,19 @@
                 android:layout_marginTop="60dp">
 
                 <!-- Tuiles de la grille de jeu -->
-                <ImageView android:id="@+id/tile_1" style="@style/TileStyle" />
-                <ImageView android:id="@+id/tile_2" style="@style/TileStyle" />
-                <ImageView android:id="@+id/tile_3" style="@style/TileStyle" />
-                <ImageView android:id="@+id/tile_4" style="@style/TileStyle" />
-                <ImageView android:id="@+id/tile_5" style="@style/TileStyle" />
-                <ImageView android:id="@+id/tile_6" style="@style/TileStyle" />
-                <ImageView android:id="@+id/tile_7" style="@style/TileStyle" />
-                <ImageView android:id="@+id/tile_8" style="@style/TileStyle" />
-                <ImageView android:id="@+id/tile_9" style="@style/TileStyle" />
+                <ImageView android:id="@+id/ivTile_1" style="@style/TileStyle" />
+                <ImageView android:id="@+id/ivTile_2" style="@style/TileStyle" />
+                <ImageView android:id="@+id/ivTile_3" style="@style/TileStyle" />
+                <ImageView android:id="@+id/ivTile_4" style="@style/TileStyle" />
+                <ImageView android:id="@+id/ivTile_5" style="@style/TileStyle" />
+                <ImageView android:id="@+id/ivTile_6" style="@style/TileStyle" />
+                <ImageView android:id="@+id/ivTile_7" style="@style/TileStyle" />
+                <ImageView android:id="@+id/ivTile_8" style="@style/TileStyle" />
+                <ImageView android:id="@+id/ivTile_9" style="@style/TileStyle" />
             </GridLayout>
 
             <ImageView
-                android:id="@+id/iv_Settings"
+                android:id="@+id/ivSettings"
                 android:layout_width="43dp"
                 android:layout_height="49dp"
                 android:layout_gravity="top|left"
@@ -76,7 +76,7 @@
 
         <!-- Grille de la solution à droite -->
         <TextView
-            android:id="@+id/timer"
+            android:id="@+id/tvTimer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -96,11 +96,11 @@
 
             <!-- Titre au-dessus de la grille de solution -->
             <TextView
-                android:id="@+id/title_game"
+                android:id="@+id/tvGoal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="Solution :"
+                android:text="Goal :"
                 android:textSize="18sp"
                 android:textColor="@color/black"
                 android:layout_gravity="top|center"
@@ -110,7 +110,7 @@
 
             <!-- Grille de solution -->
             <GridLayout
-                android:id="@+id/solutionGrid"
+                android:id="@+id/glSolution"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:columnCount="3"
@@ -136,44 +136,48 @@
 
     <!-- Vue de pause pour les boutons "Resume", "Restart", et "Quit" -->
     <LinearLayout
-        android:id="@+id/pauseMenu"
+        android:id="@+id/llPauseMenu"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
+        android:background="#CD100000"
         android:orientation="vertical"
-        android:background="#CC000000"
         android:visibility="gone">
 
         <TextView
-            android:id="@+id/gamePause"
+            android:id="@+id/tvGamePause"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Pause"
             android:textColor="@color/white"
+            android:fontFamily="@font/press2start"
             android:textSize="36sp"
             android:layout_marginBottom="40dp" />
 
         <Button
-            android:id="@+id/resume"
+            android:id="@+id/btnResume"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Resume"
+            android:textColor="@color/white"
             android:fontFamily="@font/press2start"
             android:layout_marginBottom="20dp" />
 
         <Button
-            android:id="@+id/restart"
+            android:id="@+id/btnRestart"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Restart"
+            android:textColor="@color/white"
             android:fontFamily="@font/press2start"
             android:layout_marginBottom="20dp" />
 
         <Button
-            android:id="@+id/quit"
+            android:id="@+id/btnQuit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Quit"
+            android:textColor="@color/white"
             android:fontFamily="@font/press2start" />
     </LinearLayout>
 

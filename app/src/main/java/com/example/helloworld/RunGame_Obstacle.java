@@ -12,6 +12,7 @@ public class RunGame_Obstacle {
     private final boolean isJumpable;
     private final Bitmap image;
     private int speed;
+    private boolean hasPlayedSound = false;  // Variable pour suivre si le son a été joué
 
     // Constructeur
     public RunGame_Obstacle(int x, int y, Bitmap image, Bitmap[] vehicles) {
@@ -73,4 +74,5 @@ public class RunGame_Obstacle {
     public int getHeight() {
         return image.getHeight(); // Assuming 'image' is the Bitmap of the obstacle
     }
+
 }

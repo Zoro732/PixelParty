@@ -7,12 +7,10 @@
     <string name="labyrinth">Labyrinth</string>
     <string name="run">Run</string>
     <string name="taquin">Taquin</string>
-    <string name="blue">blue</string>
-    <string name="red">red</string>
-    <string name="purple">purple</string>
+    <string name="blue">Blue</string>
+    <string name="red">Red</string>
+    <string name="purple">Purple</string>
     <string name="th_me">Theme :</string>
-    <string name="sombre">DARK</string>
-    <string name="clair">LIGHT</string>
     <string name="langue">Language :</string>
     <string name="pixel_party">Pixel Party</string>
     <string name="selected_character_none">Select your character</string>
@@ -21,10 +19,19 @@
     <string name="quit">Quit</string>
     <string name="pause">Pause</string>
     <string name="time">Time</string>
+    <string name="dice">Dice</string>
+    <string name="new_game">New Game</string>
+    <string name="mini_games">Mini Games</string>
+    <string name="play">Play</string>
+    <string name="back">Back</string>
+    <string name="about">About</string>
+
 
     <!-- Ajout du tableau de langues -->
     <string-array name="language_options">
         <item>Français</item>
         <item>Anglais</item>
     </string-array>
+
+
 </resources>

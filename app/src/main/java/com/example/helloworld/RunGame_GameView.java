@@ -9,9 +9,9 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
+import android.media.MediaPlayer;
 import android.util.Log;
 import android.view.Choreographer;
 import android.view.MotionEvent;
@@ -32,10 +32,11 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
     static int laneWidth;
     private final List<RunGame_Coin> runGameCoinPool = new ArrayList<>();
     private int score = 0; // Score de pièces collectées
-    static float obstacleSpeed = 15;
+    static final float defaultObstacleSpeed = 15;
+    static float obstacleSpeed = defaultObstacleSpeed;
     private float startX = 0; // Initialisation de startX
     private float startY = 0; // Initialisation de startY
- final List<RunGame_Obstacle> runGameObstaclePool = new ArrayList<>();
+    final List<RunGame_Obstacle> runGameObstaclePool = new ArrayList<>();
     private final Bitmap[] vehicles;
     private final Bitmap coins;
     private long lastSpeedIncreaseTime = System.currentTimeMillis(); // Initialisation du temps pour l'augmentation de vitesse
@@ -45,6 +46,7 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
     // Ajoutez ce tableau pour suivre le nombre d'obstacles consécutifs par voie
     private int[] consecutiveObstacles = new int[3]; // 0 = voie 1, 1 = voie 2, 2 = voie 3
 
+    private MediaPlayer mediaPlayerCoin;
 
     public RunGame_GameView(Context context, int screenWidth, int screenHeight) {
         super(context);
@@ -66,12 +68,14 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
         vehicles[1] = resizeBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.car2), 100);
         vehicles[2] = resizeBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.car3), 100);
 
-
         generateObstacles();
 
         // Charger les images des pièces
         coins = BitmapFactory.decodeResource(getResources(), R.drawable.coin);
         generateCoins();
+
+        mediaPlayerCoin = MediaPlayer.create(getContext(), R.raw.coin);
+        mediaPlayerCoin.setVolume(0.3f, 0.3f);
     }
 
     private boolean isCoinOverlappingWithObstacle(RunGame_Coin coin) {
@@ -137,9 +141,6 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
         // Ajouter tous les nouveaux obstacles générés à la pool
         runGameCoinPool.addAll(newRunGameCoin);
     }
-
-
-
 
 
     private RunGame_Obstacle createObstacle() {
@@ -238,7 +239,6 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
     }
 
 
-
     public void quitGame() {
         runGameObstaclePool.clear();
         runGameCoinPool.clear();
@@ -271,7 +271,6 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
             obstacleSpeed += (float) score / 7;
             lastSpeedIncreaseTime = currentTime;
         }
-        Log.d("RunGame_GameView", "Obstacle speed: " + obstacleSpeed);
 
         if (obstacleSpeed > 40) {
             obstacleSpeed = 40;
@@ -292,6 +291,7 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
             // Si l'obstacle est hors écran, réutiliser en réinitialisant sa position
             if (obstacle.isOffScreen(screenHeight)) {
                 obstacle.reset(laneX);  // Méthode pour réinitialiser l'obstacle sans le recréer
+
             }
 
             // Détection des collisions
@@ -301,7 +301,6 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
                     // Ignore collision
                 } else {
                     isDead = true;
-                    endGame();
                     return;
                 }
             }
@@ -319,12 +318,15 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
             // Si le joueur collecte une pièce, la réinitialiser et augmenter le score
             if (checkOverlapping(runGamePlayer.getRectF(), coin.getRect())) {
                 score++;
+
+                mediaPlayerCoin.start();
                 resetCoin(coin);
             }
         }
     }
 
-    public int getScore(){
+
+    public int getScore() {
         return score;
     }
 
@@ -358,8 +360,6 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
                 drawObstacles();
                 drawCoins();
                 runGamePlayer.draw(canvas, paint);
-            } else if (isDead) {
-                drawGameOver(canvas); // Appel à l'écran de fin
             }
             drawScore(); // Afficher le score, peu importe l'état du jeu
 
@@ -399,49 +399,6 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
         canvas.drawText("Score: " + score, (float) screenWidth / 2, 100, paint);
     }
 
-    private void drawGameOver(Canvas canvas) {
-
-        paint.setColor(Color.argb(150, 0, 0, 0));
-        canvas.drawRect(0, 0, screenWidth, screenHeight, paint);
-        paint.setColor(Color.RED);
-        paint.setTextSize(100);
-        paint.setTextAlign(Paint.Align.CENTER);
-        canvas.drawText("Game Over", (float) screenWidth / 2, (float) screenHeight / 3, paint);
-
-        // Afficher le score
-        paint.setColor(Color.WHITE);
-        paint.setTextSize(50);
-        canvas.drawText("Score: " + score, (float) screenWidth / 2, (float) screenHeight / 2 + 50, paint); // Affichage du score
-
-        // Bouton Rejouer
-        paint.setColor(Color.BLUE);
-        int buttonWidth = 400;
-        int buttonHeight = 150;
-        int buttonX = screenWidth / 2 - buttonWidth / 2;
-        int buttonY = screenHeight / 2 + 100; // Positionner le bouton en dessous du score
-        canvas.drawRect(buttonX, buttonY, buttonX + buttonWidth, buttonY + buttonHeight, paint);
-
-        // Texte "Rejouer"
-        paint.setColor(Color.WHITE);
-        paint.setTextSize(50);
-        canvas.drawText("Rejouer", (float) screenWidth / 2, buttonY + (float) buttonHeight / 2 + 20, paint);
-    }
-
-    void endGame() {
-        isPlaying = false;
-        runGameCoinPool.clear(); // Supprimer toutes les pièces
-        runGameObstaclePool.clear();
-        obstacleSpeed = 20;
-        draw();
-    }
-
-    private void sleep() {
-        try {
-            Thread.sleep(10); // Environ 60 FPS
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
 
     public void resume() {
         isPlaying = true;
@@ -450,6 +407,7 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
 
     public void pause() {
         isPlaying = false;
+        invalidate();  // Redessine l'écran pour afficher le menu de pause
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -507,12 +465,13 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
     }
 
     void restartGame() {
+        Log.d("RunGame_MA", "Restart Game");
         score = 0;
         isDead = false;
         runGamePlayer.resetPosition(); // Reset player position
         runGameCoinPool.clear(); // Clear coins
         runGameObstaclePool.clear(); // Clear obstacles
-        obstacleSpeed = 20; // Reset obstacle speed
+        obstacleSpeed = defaultObstacleSpeed; // Reset obstacle speed
 
         generateObstacles(); // Generate new obstacles
         generateCoins(); // Generate new coins
@@ -521,7 +480,8 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
         run();
     }
 
-    public boolean isDead() {
+    public boolean getIsDead() {
         return isDead;
     }
+
 }

@@ -2,6 +2,7 @@ package com.example.helloworld;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +10,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,12 +26,14 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
     private SensorManager sensorManager;
     private Sensor gyroscope;
     private String selection;
-    private TextView pauseText, timeText;
-    private Button buttonResume, buttonRestart, buttonQuit;
-    private ImageView iv_Settings;
+    private TextView tvGamePause, tvTimerIndicator;
+    private Button btnResume, btnRestart, btnQuit;
+    private ImageView ivSettings;
     private String game_mode;
     private boolean isGameFinished = false;
     private boolean doPlayerQuitGame = false;
+
+    private MediaPlayer maintheme;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -41,9 +45,9 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
         }
 
         setContentView(R.layout.labyrinthe);
-        FrameLayout gameFrame = findViewById(R.id.gameFrame);
+        FrameLayout gameFrame = findViewById(R.id.flMainPage);
 
-        iv_Settings = findViewById(R.id.iv_Settings);
+        ivSettings = findViewById(R.id.ivSettings);
 
         Intent intent = getIntent();
         game_mode = intent.getStringExtra("game_mode");
@@ -57,49 +61,90 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
             setupMinigameMode();
         }
 
+        setButtonBackground();
+
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+
+        maintheme = MediaPlayer.create(this,R.raw.labyrinththeme);
+        maintheme.setVolume(0.5f,0.5f);
+        maintheme.setLooping(true);
+        maintheme.start();
+    }
+
+    private void setButtonBackground() {
+        btnResume = findViewById(R.id.btnResume);
+        btnRestart = findViewById(R.id.btnRestart);
+        btnQuit = findViewById(R.id.btnQuit);
+
+        btnResume.setBackgroundResource(R.drawable.button_background_img);
+        btnRestart.setBackgroundResource(R.drawable.button_background_img);
+        btnQuit.setBackgroundResource(R.drawable.button_background_img);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            btnResume.setBackgroundTintList(null);
+            btnRestart.setBackgroundTintList(null);
+            btnQuit.setBackgroundTintList(null);
+        }
     }
 
     private void setupMinigameMode() {
-        Log.d("Labyrinthe_MA", "Starting Labyrinthe_GameView in onCreate for minigames");
 
-        ImageView imageSettings = findViewById(R.id.iv_Settings);
-        imageSettings.bringToFront();
+        ivSettings.bringToFront();
+        btnResume = findViewById(R.id.btnResume);
+        btnRestart = findViewById(R.id.btnRestart);
+        btnQuit = findViewById(R.id.btnQuit);
+        tvGamePause = findViewById(R.id.tvGamePause);
+        tvTimerIndicator = findViewById(R.id.tvTimerIndicator);
 
-        buttonResume = findViewById(R.id.resume);
-        buttonRestart = findViewById(R.id.restart);
-        buttonQuit = findViewById(R.id.quit);
-        pauseText = findViewById(R.id.gamePause);
-        timeText = findViewById(R.id.timerIndicator);
+        tvTimerIndicator.setVisibility(View.GONE);
 
-        timeText.setVisibility(View.GONE);
-
-        setupPauseMenu(imageSettings);
+        setupPauseMenu(ivSettings);
     }
 
     private void setupPauseMenu(ImageView imageSettings) {
-        pauseText.bringToFront();
-        timeText.bringToFront();
+        tvGamePause.bringToFront();
+        tvTimerIndicator.bringToFront();
 
         imageSettings.setOnClickListener(v -> {
             if (labyrintheGameView != null) {
                 labyrintheGameView.pauseGame();
+                playSoundEffect(R.raw.pause);
             }
+            maintheme.pause();
             showPauseMenu();
         });
 
-        buttonResume.setOnClickListener(v -> resumeGame());
-        buttonRestart.setOnClickListener(v -> restartGame());
-        buttonQuit.setOnClickListener(v -> quitGame());
+        btnResume.setOnClickListener(v -> {
+            resumeGame();
+            maintheme.start();
+            playSoundEffect(R.raw.clik);
+        });
+
+        btnRestart.setOnClickListener(v -> {
+            restartGame();
+            maintheme.seekTo(0);
+            maintheme.start();
+            playSoundEffect(R.raw.clik);
+        });
+
+        btnQuit.setOnClickListener(v -> {
+            quitGame();
+            playSoundEffect(R.raw.clik);
+        });
+    }
+
+    private void playSoundEffect(int soundResourceId) {
+        MediaPlayer mediaPlayer = MediaPlayer.create(this, soundResourceId);
+        mediaPlayer.start();
     }
 
     private void showPauseMenu() {
-        pauseText.setText("Pause");
-        buttonResume.setVisibility(View.VISIBLE);
-        buttonRestart.setVisibility(View.VISIBLE);
-        buttonQuit.setVisibility(View.VISIBLE);
-        pauseText.setVisibility(View.VISIBLE);
+        tvGamePause.setText("Pause");
+        btnResume.setVisibility(View.VISIBLE);
+        btnRestart.setVisibility(View.VISIBLE);
+        btnQuit.setVisibility(View.VISIBLE);
+        tvGamePause.setVisibility(View.VISIBLE);
     }
 
     private void resumeGame() {
@@ -113,10 +158,10 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
         if (labyrintheGameView != null) {
             labyrintheGameView.restartGame();
             isGameFinished = false;
-            iv_Settings.setVisibility(View.VISIBLE);
+            ivSettings.setVisibility(View.VISIBLE);
         }
         hidePauseMenu();
-        timeText.setVisibility(View.GONE);
+        tvTimerIndicator.setVisibility(View.GONE);
     }
 
     private void quitGame() {
@@ -126,15 +171,16 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
     }
 
     private void hidePauseMenu() {
-        buttonResume.setVisibility(View.GONE);
-        buttonRestart.setVisibility(View.GONE);
-        buttonQuit.setVisibility(View.GONE);
-        pauseText.setVisibility(View.GONE);
+        btnResume.setVisibility(View.GONE);
+        btnRestart.setVisibility(View.GONE);
+        btnQuit.setVisibility(View.GONE);
+        tvGamePause.setVisibility(View.GONE);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        maintheme.start();
         if (gyroscope != null) {
             sensorManager.registerListener(this, gyroscope, SensorManager.SENSOR_DELAY_GAME);
         }
@@ -147,6 +193,7 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
     @Override
     protected void onPause() {
         super.onPause();
+        maintheme.pause();
         if (sensorManager != null) {
             sensorManager.unregisterListener(this);
         }
@@ -208,27 +255,33 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
         if ("minigames".equals(game_mode)) {
             labyrintheGameView.pauseGame();
 
-            pauseText.setVisibility(View.VISIBLE);
-            pauseText.setText("You WIN !");
+            tvGamePause.setVisibility(View.VISIBLE);
+            tvGamePause.setText("You WIN !");
 
-            timeText.setVisibility(View.VISIBLE);
-            timeText.setText("Made in " + labyrintheGameView.getRemainingTime() + "s");
+            tvTimerIndicator.setVisibility(View.VISIBLE);
+            tvTimerIndicator.setText("Made in " + labyrintheGameView.getRemainingTime() + "s");
 
-            iv_Settings.setVisibility(View.GONE);
-            buttonRestart.setVisibility(View.VISIBLE);
-            buttonQuit.setVisibility(View.VISIBLE);
+            ivSettings.setVisibility(View.GONE);
+            btnRestart.setVisibility(View.VISIBLE);
+            btnQuit.setVisibility(View.VISIBLE);
+            playSoundEffect(R.raw.win);
+            maintheme.pause();
+
 
 
         } else if ("board".equals(game_mode)) {
             Log.d("Labyrinthe_MA", "Labyrinthe finished, returning to Board_MA");
             finish();
+            labyrintheGameView.quitGame();
         }
     }
 
     private void handleGameLoss() {
         labyrintheGameView.pauseGame();
         showPauseMenu();
-        pauseText.setText("Game over !");
+        btnResume.setVisibility(View.GONE);
+        tvGamePause.setText("Game over !");
+        //playSoundEffect(R.raw.loose);
     }
 
     @Override

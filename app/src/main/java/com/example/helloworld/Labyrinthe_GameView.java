@@ -2,22 +2,20 @@ package com.example.helloworld;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.media.MediaPlayer;
 import android.os.CountDownTimer;
 import android.os.Vibrator;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.LayoutInflater;
+import android.view.Choreographer;
 import android.view.SurfaceView;
-import android.view.View;
-import android.widget.TextView;
-import android.widget.Toast;
+
 
 import androidx.core.content.res.ResourcesCompat;
 
@@ -25,14 +23,13 @@ import java.util.Random;
 
 public class Labyrinthe_GameView extends SurfaceView implements Runnable {
 
-    private Thread gameThread;
     private boolean isPlaying;
     private float ballX, ballY;  // Position initiale de la boule
     private final float ballRadius = 60; // Rayon de la boule
     private float speedX = 0; // Vitesse sur l'axe X
     private float speedY = 0; // Vitesse sur l'axe Y
     private final float friction = 0.98f; // Coefficient de friction pour ralentir la boule
-    private final float accelerationFactor = 0.4f; // Facteur d'accélération pour le gyroscope
+    private final float accelerationFactor = 1f; // Facteur d'accélération pour le gyroscope
 
     private final Paint paint;
     // Attributs pour la largeur et la hauteur de l'écran
@@ -97,6 +94,8 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
 
     public boolean win = false;
     private boolean loose = false;
+
+    private MediaPlayer mediaPlayer;
 
     public Labyrinthe_GameView(Context context, String selection) {
         super(context);
@@ -191,6 +190,10 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
 
                     isTimerRunning = false;
                     loose = true;
+
+                    mediaPlayer = MediaPlayer.create(getContext(),R.raw.loose);
+                    mediaPlayer.start();
+
                     long[] pattern = {0, 200, 100, 300}; // 0ms avant de commencer, 200ms de vibration, 100ms de pause, 200ms de vibration
 
                     // Appliquer le motif de vibration
@@ -297,18 +300,25 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
 
     public void resume() {
         isPlaying = true;
-        gameThread = new Thread(this);
-        gameThread.start();
+        Choreographer.getInstance().postFrameCallback(frameCallback);
         resumeGame();
     }
 
-    public void pause() {
-        try {
-            isPlaying = false;
-            gameThread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+    private Choreographer.FrameCallback frameCallback = new Choreographer.FrameCallback() {
+        @Override
+        public void doFrame(long frameTimeNanos) {
+            if (isPlaying && !isPaused) {
+                update();
+                draw();
+            }
+            if (isPlaying) { // Reschedule only if still playing
+                Choreographer.getInstance().postFrameCallback(this);
+            }
         }
+    };
+    public void pause() {
+        isPlaying = false;
+        Choreographer.getInstance().removeFrameCallback(frameCallback);
     }
 
     public void moveBall(float x, float y) {
@@ -412,6 +422,8 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
         }
     }
 
+
+
     void restartGame() {
         // Réinitialiser les positions et autres paramètres du jeu
         ballX = DefaultUserPosition[0];
@@ -444,27 +456,18 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
     }
 
     void quitGame() {
-        // Arrêter les threads
-        try {
-            isPlaying = false; // Arrêter la boucle du jeu
-            if (gameThread != null) {
-                gameThread.join(500); // Attendre jusqu'à 500ms pour que le thread se termine
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        isPlaying = false;
+        Choreographer.getInstance().removeFrameCallback(frameCallback); // Stop the game loop
 
-        // Annuler le CountDownTimer
-        if (countDownTimer != null) {
-            countDownTimer.cancel();
+        // Perform cleanup tasks on the main thread here
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+            mediaPlayer = null;
         }
-
-        // Libérer les autres ressources
         if (vibrator != null) {
             vibrator.cancel();
         }
-
-        System.exit(0);
+        ((Activity) getContext()).finish();
     }
 
     public int getRemainingTime() {

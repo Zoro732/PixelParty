@@ -2,6 +2,7 @@ package com.example.helloworld;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -9,6 +10,7 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -87,6 +89,12 @@ public class Board_MA extends AppCompatActivity {
         textView_DicePlusOne.bringToFront();
 
         playButton.setEnabled(false); // Disabled by default
+        diceButton.setBackgroundResource(R.drawable.button_background_img);
+        playButton.setBackgroundResource(R.drawable.button_background_img);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            diceButton.setBackgroundTintList(null); // Désactiver la teinte
+            playButton.setBackgroundTintList(null); // Désactiver la teinte
+        }
     }
 
     /**
@@ -109,6 +117,9 @@ public class Board_MA extends AppCompatActivity {
             if (diceButton.isEnabled()) {
                 boardBoardView.startDiceRoll();
                 plusOneToDiceButton.setVisibility(View.VISIBLE);
+
+                diceButton.setTextColor(Color.WHITE);
+
                 if (newRound && !boardBoardView.getIsPlayerMoving()){
                     newRound = false;
                 }
@@ -162,13 +173,14 @@ public class Board_MA extends AppCompatActivity {
                 handlePlayerIdleState();
             } else {
                 diceButton.setEnabled(false);
+                diceButton.setTextColor(Color.GRAY);
             }
 
             if (boardBoardView.isDiceRolling()) {
                 handleDiceRollingState();
             }
 
-            playerMovementHandler.postDelayed(this, 100);
+            playerMovementHandler.postDelayed(this, 10);
         }
     };
 
@@ -182,6 +194,7 @@ public class Board_MA extends AppCompatActivity {
                 playButton.setEnabled(false);
             } else {
                 diceButton.setEnabled(false);
+                diceButton.setTextColor(Color.GRAY);
                 playButton.setEnabled(true);
             }
 

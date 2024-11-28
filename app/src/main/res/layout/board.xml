@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/constraintLayout"
+    android:background="@drawable/sky_background_board"
     tools:context=".Board_MA">
 
     <!-- ScrollView pour permettre le défilement -->
@@ -32,7 +33,8 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:layout_marginRight="16dp"
-        android:text="dés"
+        android:text="@string/dice"
+        android:textColor="@color/white"
         android:fontFamily="@font/press2start"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -45,6 +47,8 @@
         android:layout_marginStart="16dp"
         android:layout_marginBottom="16dp"
         android:text="play"
+        android:textColor="@color/white"
+
         android:fontFamily="@font/press2start"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

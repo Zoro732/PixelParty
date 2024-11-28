@@ -9,7 +9,7 @@
 
 
     <FrameLayout
-        android:id="@+id/gameFrame"
+        android:id="@+id/flMainPage"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:layout_editor_absoluteX="0dp"
@@ -17,36 +17,39 @@
 
 
         <Button
-            android:id="@+id/resume"
+            android:id="@+id/btnResume"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:fontFamily="@font/press2start"
             android:text="@string/resume"
+            android:textColor="@color/white"
             android:visibility="gone" />
 
         <Button
-            android:id="@+id/restart"
+            android:id="@+id/btnRestart"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="60dp"
             android:fontFamily="@font/press2start"
             android:text="@string/restart"
+            android:textColor="@color/white"
             android:visibility="gone" />
 
         <Button
-            android:id="@+id/quit"
+            android:id="@+id/btnQuit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="120dp"
             android:fontFamily="@font/press2start"
             android:text="@string/quit"
+            android:textColor="@color/white"
             android:visibility="gone" />
 
         <TextView
-            android:id="@+id/gamePause"
+            android:id="@+id/tvGamePause"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -58,7 +61,7 @@
             android:layout_marginBottom="60dp"/>
 
         <ImageView
-            android:id="@+id/iv_Settings"
+            android:id="@+id/ivSettings"
             android:layout_width="49dp"
             android:layout_height="58dp"
             android:layout_marginStart="20dp"
@@ -68,7 +71,7 @@
             android:layout_marginLeft="20dp"/>
 
         <TextView
-            android:id="@+id/timerIndicator"
+            android:id="@+id/tvTimerIndicator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -78,8 +81,6 @@
             android:textSize="30sp"
             android:visibility="visible"
             android:layout_marginTop="15dp"/>
-
-
     </FrameLayout>
 
 
