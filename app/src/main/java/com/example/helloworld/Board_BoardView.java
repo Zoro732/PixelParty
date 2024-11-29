@@ -36,16 +36,16 @@ public class Board_BoardView extends View {
     };
 
     private int numberOfMapCase = -1;
-//    public static int[][] mapAction = {
-//            {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // 1 = Laby, 2 = Run, 3 = Taquin, Shop = 4 & MiniBoss = 5
-//            {0, 0, 0, 3, 0, 0, 2, 0, 0, 0, 0, 0, 0},
-//            {0, 0, 0, 0, 0, 0, 0, 1, 3, 0, 0, 3, 0},
-//            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-//            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-//            {0, 0, 0, 0, 0, 1, 0, 3, 0, 1, 0, 2, 0},
-//            {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0},
-//            {0, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-//    };
+    public static int[][] mapAction = {
+            {0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // 1 = Laby, 2 = Run, 3 = Taquin, Shop = 4 & MiniBoss = 5
+            {0, 0, 0, 3, 0, 2, 2, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 1, 3, 2, 0, 3, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3},
+            {0, 0, 0, 0, 0, 1, 1, 3, 0, 1, 2, 2, 0},
+            {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    };
 
     // FOR DEBUG OF COURSE
 
@@ -61,17 +61,17 @@ public class Board_BoardView extends View {
 //            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 //    };
 
-// FOR DEBUG OF COURSE
-    public static int[][] mapAction = {
-            {0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    };
+    // FOR DEBUG OF COURSE
+//    public static int[][] mapAction = {
+//            {0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+//            {0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0},
+//            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+//            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+//            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+//            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+//            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+//            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+//    };
     public static final int numRows = map.length;
     public static final int numColumns = map[0].length;
     public static int cellSize = 100; // Taille de chaque cellule
@@ -107,7 +107,7 @@ public class Board_BoardView extends View {
                 }
             }
         }
-        Log.d("Board_BoardView", "numberOfMapCase = "+ numberOfMapCase);
+        Log.d("Board_BoardView", "numberOfMapCase = " + numberOfMapCase);
         init();
     }
 
@@ -116,10 +116,10 @@ public class Board_BoardView extends View {
         this.itemAction = ItemAction;
     }
 
-    public void setPlayerSpriteSelection (String selection){
+    public void setPlayerSpriteSelection(String selection) {
         this.playerSprite = selection;
         if (playerSprite != null) {
-            switch (playerSprite){
+            switch (playerSprite) {
                 case "Red":
                     currentPlayerBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.player_move_red);
                     break;
@@ -132,12 +132,12 @@ public class Board_BoardView extends View {
             }
 
         } else {
-            Log.d("Board_BoardView","playerSprite is null");
+            Log.d("Board_BoardView", "playerSprite is null");
         }
         boardPlayer = new Board_Player(0, currentPlayerBitmap);
     }
 
-    public String getPlayerSpriteSelection(){
+    public String getPlayerSpriteSelection() {
         return this.playerSprite;
     }
 
@@ -348,7 +348,6 @@ public class Board_BoardView extends View {
     }
 
 
-
     public void startDiceRoll() {
         isRolling = true;
         new Thread(() -> {
@@ -403,6 +402,7 @@ public class Board_BoardView extends View {
             boardPlayer.setCaseNumber(targetCaseNumber); // Move player
         }
     }
+
     public void onPlayerMovementFinished() {
         isPlayerFinishedMoving = true;
     }

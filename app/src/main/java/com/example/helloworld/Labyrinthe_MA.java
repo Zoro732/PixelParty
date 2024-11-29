@@ -269,8 +269,9 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
 
         } else if ("board".equals(game_mode)) {
             Log.d("Labyrinthe_MA", "Labyrinthe finished, returning to Board_MA");
-            labyrintheGameView.quitGame();
             finish();
+            labyrintheGameView.quitGame();
+
         }
     }
 
