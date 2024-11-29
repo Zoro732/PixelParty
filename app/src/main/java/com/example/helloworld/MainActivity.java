@@ -57,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialisation du MediaPlayer pour les sons
         mediaPlayer = MediaPlayer.create(this, R.raw.hurtmob);
-        startGameSound = MediaPlayer.create(this, R.raw.startgame);
         winSound = MediaPlayer.create(this, R.raw.win); // Charger le son de victoire
 
         // Récupération des dimensions de l'écran
