@@ -2,6 +2,7 @@ package com.example.helloworld;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
@@ -30,8 +31,8 @@ public class MainActivity extends AppCompatActivity {
     private int screenWidth, screenHeight;
 
     private Vibrator vibrator;
+    private MediaPlayer mediaPlayer; // MediaPlayer pour le son
 
-    // Ajout d'une variable pour suivre les taupes qui sont déjà "touchées"
     private boolean[] moleTouched;
 
     @Override
@@ -46,11 +47,14 @@ public class MainActivity extends AppCompatActivity {
         tvScore = findViewById(R.id.tv_score);
         tvTime = findViewById(R.id.tv_time);
 
-        moles = new ImageButton[] {
+        moles = new ImageButton[]{
                 findViewById(R.id.mole1)
         };
 
-        moleTouched = new boolean[moles.length]; // Initialiser l'état des taupes
+        moleTouched = new boolean[moles.length];
+
+        // Initialisation du MediaPlayer
+        mediaPlayer = MediaPlayer.create(this, R.raw.hurtmob);
 
         // Récupération des dimensions de l'écran
         DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -64,16 +68,21 @@ public class MainActivity extends AppCompatActivity {
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
         for (int i = 0; i < moles.length; i++) {
-            int finalI = i;  // Pour utiliser dans le listener
+            int finalI = i;
             moles[i].setOnClickListener(v -> {
                 if (!isPaused && !isGameOver && !moleTouched[finalI]) {
                     score++;
                     tvScore.setText("Score: " + score);
 
-                    moleTouched[finalI] = true; // Marquer la taupe comme touchée
+                    moleTouched[finalI] = true;
                     moles[finalI].setBackgroundResource(R.drawable.mole_hit);
 
                     vibrator.vibrate(100);
+
+                    // Jouer le son
+                    if (mediaPlayer != null) {
+                        mediaPlayer.start();
+                    }
 
                     // Augmenter la vitesse du jeu
                     increaseSpeed();
@@ -128,8 +137,7 @@ public class MainActivity extends AppCompatActivity {
     };
 
     private void increaseActiveMoles(long elapsedTime) {
-        // Augmente une taupe toutes les 10 secondes, avec un maximum de MAX_TAUPES
-        int newActiveMoles = 1 + (int) (elapsedTime / 10000); // 1 taupe supplémentaire toutes les 10s
+        int newActiveMoles = 1 + (int) (elapsedTime / 10000);
         taupesActives = Math.min(newActiveMoles, MAX_TAUPES);
     }
 
@@ -137,40 +145,33 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.mole1).setBackgroundResource(R.drawable.mole);
         if (isPaused || isGameOver) return;
 
-        // Sélectionner une taupe aléatoire
         int index = random.nextInt(moles.length);
 
-        // Vérifier si la taupe a déjà été touchée
         if (moleTouched[index]) {
-            showMoleOneByOne(); // Si elle a déjà été touchée, recommencer
+            showMoleOneByOne();
             return;
         }
 
-        // Récupérer les dimensions de la taupe (si elles sont disponibles)
         int moleWidth = moles[index].getWidth();
         int moleHeight = moles[index].getHeight();
 
-        // Si les dimensions ne sont pas encore calculées, utiliser des valeurs par défaut
         if (moleWidth == 0 || moleHeight == 0) {
-            moleWidth = 150; // Largeur par défaut
-            moleHeight = 150; // Hauteur par défaut
+            moleWidth = 150;
+            moleHeight = 150;
         }
 
-        // Calculer des positions X et Y en restant dans les limites de l'écran
-        int maxX = screenWidth - moleWidth - 100;  // Limiter pour que la taupe reste entièrement visible
-        int maxY = screenHeight - moleHeight - 200; // Ajuster pour éviter une superposition avec la barre inférieure
+        int maxX = screenWidth - moleWidth - 100;
+        int maxY = screenHeight - moleHeight - 200;
         int randomX = random.nextInt(Math.max(1, maxX));
         int randomY = random.nextInt(Math.max(1, maxY));
 
-        // Positionner la taupe
         moles[index].setX(randomX);
         moles[index].setY(randomY);
         moles[index].setVisibility(View.VISIBLE);
 
-        // Rendre la taupe invisible après un délai (vitesse du jeu)
         handler.postDelayed(() -> {
             moles[index].setVisibility(View.INVISIBLE);
-            moleTouched[index] = false; // La taupe est maintenant disponible pour être cliquée à nouveau
+            moleTouched[index] = false;
         }, speed);
     }
 
@@ -260,10 +261,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void restartGame() {
-        // Annuler toutes les tâches en cours
         handler.removeCallbacksAndMessages(null);
 
-        // Réinitialiser les variables de jeu
         score = 0;
         speed = 1500;
         isGameOver = false;
@@ -271,20 +270,25 @@ public class MainActivity extends AppCompatActivity {
         tvScore.setText("Score: " + score);
         tvTime.setText(gameDuration + "s");
 
-        // Masquer toutes les taupes immédiatement
         hideAllMoles();
-
-        // Réinitialiser les états de taupes
         moleTouched = new boolean[moles.length];
 
-        // Redémarrer le compte à rebours
         startCountdown();
     }
 
     private void hideAllMoles() {
         for (ImageButton mole : moles) {
-            mole.setVisibility(View.INVISIBLE); // Masquer immédiatement
-            handler.removeCallbacksAndMessages(mole); // Supprimer les tâches spécifiques à cette taupe
+            mole.setVisibility(View.INVISIBLE);
+            handler.removeCallbacksAndMessages(mole);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+            mediaPlayer = null;
         }
     }
 }
