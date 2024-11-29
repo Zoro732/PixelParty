@@ -111,15 +111,6 @@ public class MainActivity extends AppCompatActivity {
         }, 6000);
     }
 
-    private void startGame() {
-        // Jouer le son de démarrage
-        if (startGameSound != null) {
-            startGameSound.start();
-        }
-
-        startTime = System.currentTimeMillis();
-        handler.postDelayed(gameRunnable, 1000);
-    }
 
     private final Runnable gameRunnable = new Runnable() {
         @Override
@@ -276,14 +267,32 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void restartGame() {
-        handler.removeCallbacksAndMessages(null);
+        handler.removeCallbacksAndMessages(null); // Arrêter toutes les tâches en cours
 
+        // Réinitialiser les variables
         score = 0;
         speed = 1500;
+        taupesActives = 1;
         isGameOver = false;
         isPaused = false;
+        moleTouched = new boolean[moles.length]; // Réinitialiser les taupes touchées
         tvScore.setText("Score: 0");
+        tvTime.setText(gameDuration + "s");
 
+        // Réinitialiser les taupes
+        for (ImageButton mole : moles) {
+            mole.setVisibility(View.INVISIBLE);
+            mole.setBackgroundResource(R.drawable.mole);  // Remettre l'état initial des taupes
+        }
+
+        // Démarrer le jeu
         startGame();
     }
+
+    private void startGame() {
+        // Réinitialiser le temps et démarrer le jeu
+        startTime = System.currentTimeMillis();
+        handler.postDelayed(gameRunnable, 1000);  // Redémarrer la boucle de jeu
+    }
+
 }
