@@ -3,6 +3,7 @@ package com.example.helloworld;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,7 +11,6 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,13 +26,9 @@ public class Board_MA extends AppCompatActivity {
 
     // UI Elements
     private Board_BoardView boardBoardView;
-    private TextView scoreMessage;
-    private TextView textView_DicePlusOne;
-    private TextView starsNumber;
-    private Button continueButton;
-    private Button playButton;
-    private Button diceButton;
-    private Button plusOneToDiceButton;
+    private TextView tvScore, tvPlusOneToDice, tvStarsNumber;
+    private Button btnContinue, btnPlay, btnDice, btnPlusOne, btnInventory, btnCloseInventory;
+
 
     // Game state variables
     private int currentPlayerCaseNumber;
@@ -78,23 +74,39 @@ public class Board_MA extends AppCompatActivity {
      */
     private void initializeUI() {
         boardBoardView = findViewById(R.id.boardView);
-        scoreMessage = findViewById(R.id.scoreText);
-        textView_DicePlusOne = findViewById(R.id.textView_DicePlusOne);
-        starsNumber = findViewById(R.id.starsNumber);
-        continueButton = findViewById(R.id.continueButton);
-        playButton = findViewById(R.id.play);
-        diceButton = findViewById(R.id.dice);
-        plusOneToDiceButton = findViewById(R.id.plusOneButton);
+        tvScore = findViewById(R.id.tvScore);
+        tvPlusOneToDice = findViewById(R.id.tvPlusOneToDice);
+        tvStarsNumber = findViewById(R.id.tvStarsNumber);
+        btnContinue = findViewById(R.id.btnContinue);
+        btnPlay = findViewById(R.id.btnPlay);
+        btnDice = findViewById(R.id.btnDice);
+        btnPlusOne = findViewById(R.id.btnPlusOne);
+        btnInventory = findViewById(R.id.btnInventory);
+        btnCloseInventory = findViewById(R.id.btnCloseInventory);
 
-        textView_DicePlusOne.bringToFront();
+        tvPlusOneToDice.bringToFront();
 
-        playButton.setEnabled(false); // Disabled by default
-        diceButton.setBackgroundResource(R.drawable.button_background_img);
-        playButton.setBackgroundResource(R.drawable.button_background_img);
+        btnPlay.setEnabled(false); // Disabled by default
+        btnDice.setBackgroundResource(R.drawable.button_background_img);
+        btnPlay.setBackgroundResource(R.drawable.button_background_img);
+        btnInventory.setBackgroundResource(R.drawable.button_background_img);
+        btnContinue.setBackgroundResource(R.drawable.button_background_img);
+        btnPlusOne.setBackgroundResource(R.drawable.button_background_img);
+        btnCloseInventory.setBackgroundResource(R.drawable.button_background_img);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            diceButton.setBackgroundTintList(null); // Désactiver la teinte
-            playButton.setBackgroundTintList(null); // Désactiver la teinte
+            btnDice.setBackgroundTintList(null); // Désactiver la teinte
+            btnPlay.setBackgroundTintList(null); // Désactiver la teinte
+            btnInventory.setBackgroundTintList(null); // Désactiver la teinte
+            btnContinue.setBackgroundTintList(null); // Désactiver la teinte
+            btnPlusOne.setBackgroundTintList(null); // Désactiver la teinte
+            btnCloseInventory.setBackgroundTintList(null); // Désactiver la teinte
         }
+    }
+
+    private void playSoundEffect(int soundResourceId) {
+        MediaPlayer mediaPlayer = MediaPlayer.create(this, soundResourceId);
+        mediaPlayer.start();
     }
 
     /**
@@ -113,24 +125,31 @@ public class Board_MA extends AppCompatActivity {
      * Set up listeners for UI components like buttons and inventory management.
      */
     private void setupListeners() {
-        diceButton.setOnClickListener(v -> {
-            if (diceButton.isEnabled()) {
+        btnDice.setOnClickListener(v -> {
+            if (btnDice.isEnabled()) {
+                playSoundEffect(R.raw.clik);
                 boardBoardView.startDiceRoll();
-                plusOneToDiceButton.setVisibility(View.VISIBLE);
+                btnPlusOne.setVisibility(View.VISIBLE);
 
-                diceButton.setTextColor(Color.WHITE);
+                btnDice.setTextColor(Color.WHITE);
 
-                if (newRound && !boardBoardView.getIsPlayerMoving()){
+                if (newRound && !boardBoardView.getIsPlayerMoving()) {
                     newRound = false;
                 }
             }
         });
 
-        playButton.setOnClickListener(v -> startMiniGame());
+        btnPlay.setOnClickListener(v -> {
+            startMiniGame();
+            playSoundEffect(R.raw.clik);
 
-        plusOneToDiceButton.setOnClickListener(v -> {
+        });
+
+        btnPlusOne.setOnClickListener(v -> {
+            playSoundEffect(R.raw.itemuse);
             Toast.makeText(Board_MA.this, "Item Used: Dice +1", Toast.LENGTH_SHORT).show();
-            plusOneToDiceButton.setEnabled(false);
+            btnPlusOne.setEnabled(false);
+            btnPlusOne.setTextColor(Color.GRAY);
             doPlayerUsePlusOneItem = true;
             boardBoardView.setItemAction(1);
         });
@@ -142,11 +161,12 @@ public class Board_MA extends AppCompatActivity {
      * Setup inventory management animations and button actions.
      */
     private void setupInventoryManagement() {
-        Button inventoryButton = findViewById(R.id.inventory);
+        btnInventory = findViewById(R.id.btnInventory);
         View inventoryWindow = findViewById(R.id.inventoryWindow);
-        Button closeInventoryButton = findViewById(R.id.closeInventoryButton);
+        btnCloseInventory = findViewById(R.id.btnCloseInventory);
 
-        inventoryButton.setOnClickListener(v -> {
+        btnInventory.setOnClickListener(v -> {
+            playSoundEffect(R.raw.clik);
             inventoryWindow.setVisibility(View.VISIBLE);
             inventoryWindow.animate()
                     .translationX(10)
@@ -154,7 +174,8 @@ public class Board_MA extends AppCompatActivity {
                     .start();
         });
 
-        closeInventoryButton.setOnClickListener(v -> {
+        btnCloseInventory.setOnClickListener(v -> {
+            playSoundEffect(R.raw.clik);
             inventoryWindow.animate()
                     .translationX(0)
                     .setDuration(200)
@@ -171,9 +192,9 @@ public class Board_MA extends AppCompatActivity {
         public void run() {
             if (!boardBoardView.getIsPlayerMoving()) {
                 handlePlayerIdleState();
-            } else {
-                diceButton.setEnabled(false);
-                diceButton.setTextColor(Color.GRAY);
+            } else if (!newRound) {
+                btnDice.setEnabled(false);
+                btnDice.setTextColor(Color.GRAY);
             }
 
             if (boardBoardView.isDiceRolling()) {
@@ -190,18 +211,20 @@ public class Board_MA extends AppCompatActivity {
     private void handlePlayerIdleState() {
         if (!newRound) {
             if (getPlayerCurrentCaseActionFromBoardView() == 0) {
-                diceButton.setEnabled(true);
-                playButton.setEnabled(false);
+                btnDice.setEnabled(true);
+                btnPlay.setEnabled(false);
+                btnDice.setTextColor(Color.WHITE);
             } else {
-                diceButton.setEnabled(false);
-                diceButton.setTextColor(Color.GRAY);
-                playButton.setEnabled(true);
+                btnDice.setEnabled(false);
+                btnDice.setTextColor(Color.GRAY);
+                btnPlay.setEnabled(true);
+                btnPlay.setTextColor(Color.WHITE);
             }
 
             boardBoardView.setPlayerFinishedMoving(false);
         } else {
-            diceButton.setEnabled(true);
-            playButton.setEnabled(false);
+            btnDice.setEnabled(true);
+            btnPlay.setEnabled(false);
         }
 
     }
@@ -211,11 +234,12 @@ public class Board_MA extends AppCompatActivity {
      */
     private void handleDiceRollingState() {
         if (doPlayerUsePlusOneItem) {
-            textView_DicePlusOne.setVisibility(View.VISIBLE);
+            tvPlusOneToDice.setVisibility(View.VISIBLE);
             Log.d("Board_MA", "Dice is rolling with +1");
+        } else {
+            btnPlusOne.setTextColor(Color.WHITE);
         }
-        playButton.setEnabled(false);
-        Log.d("Board_MA", "Dice is rolling");
+        btnPlay.setEnabled(false);
     }
 
     /**
@@ -245,7 +269,24 @@ public class Board_MA extends AppCompatActivity {
             intent.putExtra("game_mode", "board");
             intent.putExtra("selection_key", spriteSelection);
             Log.d("Board_MA", "Starting game with request code: " + requestCode);
-            startActivityForResult(intent, requestCode);
+            if (requestCode == RUN_REQUEST_CODE) {
+                int finalRequestCode = requestCode;
+                Intent finalIntent = intent;
+                new androidx.appcompat.app.AlertDialog.Builder(this)
+                        .setTitle("RunGame")
+                        .setMessage("To Win --> Score >= 50\n (the game may be laggy at the begeinning)")
+                        .setPositiveButton("Okay !", (dialog, which) -> {
+                            // Action à effectuer si le joueur commence
+                            dialog.dismiss();
+                            startActivityForResult(finalIntent, finalRequestCode);
+
+                        })
+                        .setCancelable(false) // Empêche de fermer le dialog en dehors des boutons
+                        .show();
+            } else {
+                startActivityForResult(intent, requestCode);
+
+            }
         }
     }
 
@@ -266,14 +307,19 @@ public class Board_MA extends AppCompatActivity {
     private void handleMiniGameResult(int requestCode, String result) {
         switch (requestCode) {
             case LABY_REQUEST_CODE:
-                scoreMessage.setText(result.equals("quit") ? "Labyrinthe Failed" : "Labyrinthe finished in " + result + "s");
+                tvScore.setText(result.equals("quit") ? "Labyrinthe Failed!" : "Labyrinthe finished in " + result + "s");
                 break;
             case RUN_REQUEST_CODE:
-                scoreMessage.setText("RunGame finished with " + result + " coins");
+                tvScore.setText(result.equals("quit") ? "RunGame Failed!" : "RunGame finished with " + result + " coins");
                 break;
             case TAQUIN_REQUEST_CODE:
-                scoreMessage.setText(result.equals("quit") ? "Taquin Failed" : "Taquin finished in " + result + "s");
+                tvScore.setText(result.equals("quit") ? "Taquin Failed!" : "Taquin finished in " + result + "s");
                 break;
+        }
+        if (result.equals("quit")) {
+            playSoundEffect(R.raw.lose);
+        } else {
+            playSoundEffect(R.raw.win);
         }
         Log.d("Board_MA", "Received result from mini-game: " + result);
         if (!result.equals("quit")) {
@@ -281,22 +327,25 @@ public class Board_MA extends AppCompatActivity {
             doPlayerWinPreviousGame = true;
         }
 
-        scoreMessage.setVisibility(View.VISIBLE);
-        continueButton.setVisibility(View.VISIBLE);
-        playButton.setEnabled(false);
-        diceButton.setEnabled(false);
+        tvScore.setVisibility(View.VISIBLE);
+        btnContinue.setVisibility(View.VISIBLE);
+        btnPlay.setEnabled(false);
 
-        continueButton.setOnClickListener(v -> {
+        btnContinue.setOnClickListener(v -> {
+            playSoundEffect(R.raw.clik);
             newRound = true;
-            scoreMessage.setVisibility(View.GONE);
-            continueButton.setVisibility(View.GONE);
-            diceButton.setEnabled(true);
+            tvScore.setVisibility(View.GONE);
+            btnContinue.setVisibility(View.GONE);
+            btnDice.setEnabled(true);
             doPlayerUsePlusOneItem = false;
-            textView_DicePlusOne.setVisibility(View.GONE);
+            tvPlusOneToDice.setVisibility(View.GONE);
+            btnDice.setTextColor(Color.WHITE);
+            btnPlay.setEnabled(false);
+            btnPlay.setTextColor(Color.GRAY);
 
             if (doPlayerWinPreviousGame) {
                 starsNumberValue++;
-                starsNumber.setText(String.valueOf(starsNumberValue));
+                tvStarsNumber.setText(String.valueOf(starsNumberValue));
                 doPlayerWinPreviousGame = false;
             }
 
@@ -347,13 +396,12 @@ public class Board_MA extends AppCompatActivity {
     public void onBackPressed() {
         onPause();
         new androidx.appcompat.app.AlertDialog.Builder(this)
-                .setTitle("Quitter le jeu")
-                .setMessage("Êtes-vous sûr de vouloir quitter ? Votre progression sera perdue.")
-                .setPositiveButton("Oui", (dialog, which) -> {
-                    Log.d("Board_MA", "User chose to quit the game.");
+                .setTitle("Quit ?")
+                .setMessage("Are you sure you want to quit? Your progress will be lost")
+                .setPositiveButton("Yes", (dialog, which) -> {
                     finish(); // Appelle finish() pour gérer la fermeture
                 })
-                .setNegativeButton("Non", (dialog, which) -> {
+                .setNegativeButton("No", (dialog, which) -> {
                     dialog.dismiss(); // Ferme la boîte de dialogue sans quitter
                 })
                 .setCancelable(false) // Empêche la fermeture de la boîte de dialogue en appuyant à l'extérieur

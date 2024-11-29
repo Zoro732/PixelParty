@@ -25,17 +25,6 @@
             android:screenOrientation="sensorLandscape"
             android:launchMode="singleTop">
         </activity>
-
-        <activity android:name=".OptionActivity"
-            android:screenOrientation="sensorLandscape">
-        </activity>
-        <activity android:name=".MiniGames_MA"
-            android:screenOrientation="sensorLandscape">
-        </activity>
-
-        <activity android:name=".SpriteActivity"
-            android:screenOrientation="sensorLandscape">
-        </activity>
         <activity android:name=".Labyrinthe_MA"
             android:screenOrientation="sensorLandscape">
         </activity>

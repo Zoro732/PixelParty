@@ -2,7 +2,6 @@ package com.example.helloworld;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -32,12 +31,19 @@ public class RunGame_MA extends AppCompatActivity {
     private MediaPlayer mainTheme;
 
     private Handler handler;
+    private FrameLayout flMainPage;
+
+    private boolean doPlayerQuitGame = false;
+
+    public int scoreToWinForBoard = 50;
 
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Afficher un AlertDialog dès le lancement de l'Activity
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             hideNavigationBar();
         }
@@ -58,11 +64,21 @@ public class RunGame_MA extends AppCompatActivity {
         mainTheme.setLooping(true);
         mainTheme.start();
 
+
         Intent intent = getIntent();
         game_mode = intent.getStringExtra("game_mode");
 
+
+        flMainPage = findViewById(R.id.flMainPage);
+
         ivSettings = findViewById(R.id.ivSettings);
         ivSettings.bringToFront();
+
+        if (game_mode != null) {
+            if (game_mode.equals("board")) {
+                ivSettings.setVisibility(View.GONE);
+            }
+        }
 
         // Récupérer l'ImageView
         btnResume = findViewById(R.id.btnResume);
@@ -87,7 +103,7 @@ public class RunGame_MA extends AppCompatActivity {
             if (mainTheme != null && mainTheme.isPlaying()) {
                 mainTheme.pause();
             }
-            findViewById(R.id.flMainPage).setBackgroundColor(ContextCompat.getColor(this,R.color.transparentBlack));
+            flMainPage.setBackgroundColor(Color.RED);
         });
 
         btnResume.setOnClickListener(v -> {
@@ -98,7 +114,7 @@ public class RunGame_MA extends AppCompatActivity {
             btnQuit.setVisibility(View.GONE);
             tvPauseText.setVisibility(View.GONE);
             mainTheme.start();
-            findViewById(R.id.flMainPage).setBackgroundColor(Color.TRANSPARENT);
+            flMainPage.setBackgroundColor(Color.TRANSPARENT);
 
         });
 
@@ -123,8 +139,10 @@ public class RunGame_MA extends AppCompatActivity {
             playSoundEffect(R.raw.clik);
         });
 
+
         // Lancer la boucle de jeu
         startGameLoop();
+
 
     }
 
@@ -154,7 +172,7 @@ public class RunGame_MA extends AppCompatActivity {
                                 tvPauseText.setText("Game Over");
                                 tvPauseText.setGravity(Gravity.CENTER);
                                 mainTheme.pause();
-                                playSoundEffect(R.raw.loose);
+                                playSoundEffect(R.raw.lose);
                             }
                             isGameOver = true;
                         }
@@ -198,7 +216,11 @@ public class RunGame_MA extends AppCompatActivity {
     public void finish() {
         Intent resultIntent = new Intent();
         // Ajoutez des données si nécessaire
-        resultIntent.putExtra("score", String.valueOf(gameView.getScore()));
+        if (gameView.getScore() >= scoreToWinForBoard) {
+            resultIntent.putExtra("score", String.valueOf(gameView.getScore()));
+        } else if (doPlayerQuitGame || gameView.getScore() < scoreToWinForBoard) {
+            resultIntent.putExtra("score", "quit");
+        }
         setResult(RESULT_OK, resultIntent);
         super.finish(); // Terminez l'Activity
     }
@@ -250,6 +272,21 @@ public class RunGame_MA extends AppCompatActivity {
                         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
         );
+    }
+
+    @Override
+    public void onBackPressed() {
+        onPause();
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Quit ?")
+                .setMessage("Are you sure you want to quit? Your progress will be lost.")
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    doPlayerQuitGame = true;
+                    finish();
+                })
+                .setNegativeButton("No", (dialog, which) -> dialog.dismiss())
+                .setCancelable(false)
+                .show();
     }
 
 }

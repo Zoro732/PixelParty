@@ -40,6 +40,7 @@ public class Board_Player {
     }
 
     public void update() {
+
         // Gérer l'animation du sprite
         frameCounter++;
         int framesPerSprite = 1; // Changez ce nombre pour ajuster la vitesse d'animation
@@ -56,7 +57,6 @@ public class Board_Player {
             float distance = (float) Math.sqrt(dx * dx + dy * dy);
 
             if (distance > moveSpeed && enablePlayerMovingAnimation) {
-                Log.d("Board_Player","In update() enablePlayerMovingAnimation = " + enablePlayerMovingAnimation);
                 // Calculer le déplacement en normalisant la direction
                 x += dx / distance * moveSpeed;
                 y += dy / distance * moveSpeed;
@@ -90,6 +90,8 @@ public class Board_Player {
     }
 
     public void setCaseNumber(int targetCaseNumber) {
+
+
         // Find the path to the target tile
         List<Board_Case> path = findPathToTarget(targetCaseNumber);
 
@@ -155,6 +157,33 @@ public class Board_Player {
 
         return adjacentTiles;
     }
+    public void moveToLastAccessibleTileIfScoreExceeds(int score) {
+        if (currentPath != null && currentPathIndex < currentPath.size()) {
+            // Nombre de cases restantes
+            int remainingTiles = currentPath.size() - currentPathIndex;
+
+            if (score >= remainingTiles) {
+                // Avancer directement à la dernière case accessible
+                Board_Case lastTile = currentPath.get(currentPath.size() - 1);
+                targetX = lastTile.getX() * Board_BoardView.cellSize + Board_BoardView.cellSize / 2;
+                targetY = lastTile.getY() * Board_BoardView.cellSize + Board_BoardView.cellSize / 2;
+
+                // Mettre à jour la position et la case actuelle
+                x = targetX;
+                y = targetY;
+                caseNumber = lastTile.getCaseNumber();
+
+                // Arrêter le mouvement et vider le chemin
+                isMoving = false;
+                currentPath = null;
+                currentPathIndex = 0;
+
+                Log.d("Player", "Moved directly to the last accessible tile due to score: " + score);
+            }
+        }
+    }
+
+
 
     private List<Board_Case> reconstructPath(Board_Case targetTile, Map<Board_Case, Board_Case> parentMap) {
         List<Board_Case> path = new ArrayList<>();

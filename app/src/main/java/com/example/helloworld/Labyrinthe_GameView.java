@@ -40,31 +40,31 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
     private static final int GRID_COLS = 15;// Nombre de colonnes
     private static final int GRID_ROWS = 9; // Nombre de lignes
     private final float goalRadius = 45; // Rayon du point d'arrivée
-    private final int[][] map = {
-            {0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-            {0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0},
-            {1, 0, 0, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1},
-            {1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1},
-            {1, 1, 0, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1},
-            {1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1},
-            {1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1},
-            {1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0},
-            {1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1},
-            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-    };
-
-//   private final int[][] map = { // FOR DEBUG
-//            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-//            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-//            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-//            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-//            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-//            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-//            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-//            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-//            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-//            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+//    private final int[][] map = {
+//            {0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+//            {0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0},
+//            {1, 0, 0, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1},
+//            {1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1},
+//            {1, 1, 0, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1},
+//            {1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1},
+//            {1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1},
+//            {1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0},
+//            {1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1},
+//            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
 //    };
+
+    private final int[][] map = { // FOR DEBUG
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    };
 
     private final float tileSize_W;
     private final float tileSize_H;
@@ -97,10 +97,12 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
 
     private MediaPlayer mediaPlayer;
 
+    private boolean hasVibratedForWin = false;
+
     public Labyrinthe_GameView(Context context, String selection) {
         super(context);
         vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-
+        hasVibratedForWin = false;
         // Obtenir les dimensions de l'écran
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
         screenWidth = displayMetrics.widthPixels; // Largeur de l'écran
@@ -170,7 +172,7 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
 
     private int[] calculateArrivalPoint(int xMultiplier, int yMultiplier) {
         int x = (int) ((int) (tileSize_W * xMultiplier) + goalRadius);
-        int y = (int) ((int) (tileSize_H * yMultiplier) + goalRadius+10);
+        int y = (int) ((int) (tileSize_H * yMultiplier) + goalRadius + 10);
         return new int[]{x, y};
     }
 
@@ -182,7 +184,6 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
                     timerValue = (int) (millisUntilFinished / 1000);
                     invalidate(); // Force redraw//
                 }
-
                 public void onFinish() {
                     ballX = DefaultUserPosition[0];
                     ballY = DefaultUserPosition[1];
@@ -191,22 +192,12 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
                     isTimerRunning = false;
                     loose = true;
 
-                    mediaPlayer = MediaPlayer.create(getContext(),R.raw.loose);
+                    mediaPlayer = MediaPlayer.create(getContext(), R.raw.lose);
                     mediaPlayer.start();
 
-                    long[] pattern = {0, 200, 100, 300}; // 0ms avant de commencer, 200ms de vibration, 100ms de pause, 200ms de vibration
-
-                    // Appliquer le motif de vibration
-                    if (vibrator != null) {
-                        vibrator.vibrate(pattern, -1); // -1 pour ne pas répéter le motif
-                    }
                     startTimer(timerValue);
                     // Vous pouvez ajouter ici un code pour gérer la fin du jeu si nécessaire
-                    try {
-                        Thread.sleep(100); // Délai de 100 millisecondes
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+
                 }
             }.start();
         }
@@ -286,6 +277,7 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
     public boolean isWin() {
         return win;
     }
+
     public boolean isLoosed() {
         return loose;
     }
@@ -316,6 +308,7 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
             }
         }
     };
+
     public void pause() {
         isPlaying = false;
         Choreographer.getInstance().removeFrameCallback(frameCallback);
@@ -406,23 +399,15 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
         // Vérifier si la distance est inférieure ou égale à la somme des rayons
         if (distance <= ballRadius + goalRadius && !goalReached) {
             win = true;
-
-            try {
-                Thread.sleep(100); // Délai de 100 millisecondes
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
             long[] pattern = {0, 300, 100, 100}; // 0ms avant de commencer, 200ms de vibration, 100ms de pause, 200ms de vibration
 
             // Appliquer le motif de vibration
             if (vibrator != null) {
                 vibrator.vibrate(pattern, -1); // -1 pour ne pas répéter le motif
+                hasVibratedForWin = true;
             }
         }
     }
-
-
 
     void restartGame() {
         // Réinitialiser les positions et autres paramètres du jeu
@@ -458,7 +443,8 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
     void quitGame() {
         isPlaying = false;
         Choreographer.getInstance().removeFrameCallback(frameCallback); // Stop the game loop
-
+        isTimerRunning = false; // Reset timer running flag
+        countDownTimer.cancel();
         // Perform cleanup tasks on the main thread here
         if (mediaPlayer != null) {
             mediaPlayer.release();

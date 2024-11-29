@@ -27,7 +27,7 @@
     </ScrollView>
 
     <Button
-        android:id="@+id/dice"
+        android:id="@+id/btnDice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
@@ -40,22 +40,21 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
-        android:id="@+id/play"
+        android:id="@+id/btnPlay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
-        android:layout_marginBottom="16dp"
-        android:text="play"
-        android:textColor="@color/white"
-
+        android:layout_marginBottom="40dp"
+        android:text="Play"
+        android:textColor="#808080"
         android:fontFamily="@font/press2start"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <!-- Score affiché temporairement -->
     <TextView
-        android:id="@+id/scoreText"
+        android:id="@+id/tvScore"
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:fontFamily="@font/press2start"
@@ -63,7 +62,7 @@
         android:textColor="@color/black"
         android:gravity="center"
         android:visibility="gone"
-        android:background="@color/white"
+        android:background="#CDFFFFFF"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -72,12 +71,12 @@
 
     <!-- Bouton pour continuer -->
     <Button
-        android:id="@+id/continueButton"
-        android:layout_width="200dp"
-        android:layout_height="50dp"
+        android:id="@+id/btnContinue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:textSize="15sp"
         android:fontFamily="@font/press2start"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:text="Continue"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -111,18 +110,20 @@
             android:textStyle="bold" />
 
         <Button
-            android:id="@+id/closeInventoryButton"
+            android:id="@+id/btnCloseInventory"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
             android:layout_margin="16dp"
-            android:textColor="@color/black"
-            android:text="X" />
+            android:textSize="10sp"
+            android:textColor="@color/white"
+            android:fontFamily="@font/press2start"
+            android:text="Close" />
 
         <Button
-            android:id="@+id/plusOneButton"
+            android:id="@+id/btnPlusOne"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
@@ -130,7 +131,7 @@
             android:textSize="10dp"
             android:layout_marginStart="10dp"
             android:layout_marginTop="100dp"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:fontFamily="@font/press2start">
         </Button>
 
@@ -139,13 +140,13 @@
 
     <!-- Bouton pour ouvrir l'inventaire -->
     <Button
-        android:id="@+id/inventory"
+        android:id="@+id/btnInventory"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginBottom="150dp"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:text="Inventory"
         android:textSize="10dp"
         android:fontFamily="@font/press2start"
@@ -153,7 +154,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/textView_DicePlusOne"
+        android:id="@+id/tvPlusOneToDice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/press2start"
@@ -170,7 +171,7 @@
         android:layout_marginTop="120dp"/>
 
     <TextView
-        android:id="@+id/starsNumber"
+        android:id="@+id/tvStarsNumber"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
@@ -191,7 +192,7 @@
         android:layout_marginStart="10dp"
         android:layout_marginBottom="10dp"
         android:src="@drawable/star"
-        app:layout_constraintBottom_toBottomOf="@id/starsNumber"
-        app:layout_constraintStart_toEndOf="@id/starsNumber"
-        app:layout_constraintTop_toTopOf="@id/starsNumber" />
+        app:layout_constraintBottom_toBottomOf="@id/tvStarsNumber"
+        app:layout_constraintStart_toEndOf="@id/tvStarsNumber"
+        app:layout_constraintTop_toTopOf="@id/tvStarsNumber" />
 </androidx.constraintlayout.widget.ConstraintLayout>

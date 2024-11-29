@@ -31,7 +31,8 @@ public class Taquin_MA extends AppCompatActivity {
 
     private TextView tvTimer, tvPause;
     private Button btnResume, btnRestart, btnQuit;
-    private int timerValue = 120;
+    private int defaultTimerValue = 120;
+    private int timerValue = defaultTimerValue;
     private Handler timerHandler = new Handler();
     private boolean isTimerRunning = false;
     private boolean isLoose = false;
@@ -43,6 +44,8 @@ public class Taquin_MA extends AppCompatActivity {
 
     private LinearLayout llPauseMenu;
     private ImageView ivSettings;
+
+    private GridLayout glGame;
 
     // Lifecycle : Création
     @Override
@@ -77,7 +80,7 @@ public class Taquin_MA extends AppCompatActivity {
         if (doPlayerQuitGame || isLoose) {
             resultIntent.putExtra("score", "quit");
         } else {
-            resultIntent.putExtra("score", String.valueOf(timerValue));
+            resultIntent.putExtra("score", String.valueOf(defaultTimerValue - timerValue));
         }
         setResult(RESULT_OK, resultIntent);
         super.finish();
@@ -102,11 +105,11 @@ public class Taquin_MA extends AppCompatActivity {
         hideNavigationBar();
 
         // Initialisation des éléments UI
-        GridLayout gridLayout = findViewById(R.id.glGame);
+        glGame = findViewById(R.id.glGame);
         GridLayout solutionGrid = findViewById(R.id.glSolution);
         tvTimer = findViewById(R.id.tvTimer);
 
-        initializeTiles(gridLayout, tiles);
+        initializeTiles(glGame, tiles);
         initializeSolutionTiles(solutionGrid);
         shuffleTiles();
 
@@ -132,7 +135,7 @@ public class Taquin_MA extends AppCompatActivity {
         tvPause = findViewById(R.id.tvGamePause);
         ivSettings = findViewById(R.id.ivSettings);
 
-        GridLayout glGame = findViewById(R.id.glGame); // Get the GridLayout
+        glGame = findViewById(R.id.glGame); // Get the GridLayout
 
         btnResume.setOnClickListener(v -> {
             llPauseMenu.setVisibility(View.GONE);
@@ -314,9 +317,20 @@ public class Taquin_MA extends AppCompatActivity {
     }
 
     private void onGameWon() {
+        if (game_mode.equals("board")) {
+            stopCountdownTimer();
+            finish();
+        } else {
+            llPauseMenu.setVisibility(View.VISIBLE);
+            btnResume.setVisibility(View.GONE);
+            stopCountdownTimer();
+            glGame.setEnabled(false); // Disable interaction
+            mainTheme.pause();
+            playSoundEffect(R.raw.win);
+            tvPause.setText("You won! in " + (defaultTimerValue - timerValue) + " seconds");
+        }
         Log.d("Taquin_MA", "Game won!");
-        stopCountdownTimer();
-        finish();
+
     }
 
     // Divers
@@ -350,5 +364,20 @@ public class Taquin_MA extends AppCompatActivity {
 
     private void restartGame() {
         recreate();
+    }
+
+    @Override
+    public void onBackPressed() {
+        onPause();
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Quit ?")
+                .setMessage("Are you sure you want to quit? Your progress will be lost")
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    doPlayerQuitGame = true;
+                    finish();
+                })
+                .setNegativeButton("No", (dialog, which) -> dialog.dismiss())
+                .setCancelable(false)
+                .show();
     }
 }

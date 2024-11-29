@@ -75,7 +75,7 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
         generateCoins();
 
         mediaPlayerCoin = MediaPlayer.create(getContext(), R.raw.coin);
-        mediaPlayerCoin.setVolume(0.3f, 0.3f);
+        mediaPlayerCoin.setVolume(0.1f, 0.1f);
     }
 
     private boolean isCoinOverlappingWithObstacle(RunGame_Coin coin) {

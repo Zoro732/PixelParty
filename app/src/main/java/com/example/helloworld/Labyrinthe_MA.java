@@ -267,12 +267,10 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
             playSoundEffect(R.raw.win);
             maintheme.pause();
 
-
-
         } else if ("board".equals(game_mode)) {
             Log.d("Labyrinthe_MA", "Labyrinthe finished, returning to Board_MA");
-            finish();
             labyrintheGameView.quitGame();
+            finish();
         }
     }
 
@@ -281,7 +279,6 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
         showPauseMenu();
         btnResume.setVisibility(View.GONE);
         tvGamePause.setText("Game over !");
-        //playSoundEffect(R.raw.loose);
     }
 
     @Override
@@ -302,13 +299,13 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
     public void onBackPressed() {
         onPause();
         new androidx.appcompat.app.AlertDialog.Builder(this)
-                .setTitle("Quitter le jeu")
-                .setMessage("Êtes-vous sûr de vouloir quitter ? Votre progression sera perdue.")
-                .setPositiveButton("Oui", (dialog, which) -> {
+                .setTitle("Quit ?")
+                .setMessage("Are you sure you want to quit? Your progress will be lost")
+                .setPositiveButton("Yes", (dialog, which) -> {
                     doPlayerQuitGame = true;
                     finish();
                 })
-                .setNegativeButton("Non", (dialog, which) -> dialog.dismiss())
+                .setNegativeButton("No", (dialog, which) -> dialog.dismiss())
                 .setCancelable(false)
                 .show();
     }

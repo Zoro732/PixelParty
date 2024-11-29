@@ -354,7 +354,7 @@ public class MainActivity extends AppCompatActivity {
     private void showAboutDialog() {
         new AlertDialog.Builder(this)
                 .setTitle("About")
-                .setMessage("PIXEL PARTY\n\nApplication developped by AMAURY GIELEN, ILYES RABAOUY, et KACPER WOJTOWICZ.\n\nVersion 4.0")
+                .setMessage("PIXEL PARTY\n\nApplication developped by AMAURY GIELEN, ILYES RABAOUY, & KACPER WOJTOWICZ.\n\nVersion 5.0")
                 .setPositiveButton("OK", null)
                 .show();
 
