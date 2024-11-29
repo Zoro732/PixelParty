@@ -32,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
 
     private Vibrator vibrator;
     private MediaPlayer mediaPlayer; // MediaPlayer pour le son
+    private MediaPlayer startGameSound; // MediaPlayer pour le son de démarrage
+    private MediaPlayer winSound; // MediaPlayer pour le son de victoire
 
     private boolean[] moleTouched;
 
@@ -40,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        hideSystemUI();
+        hideSystemUI();  // Appel à la méthode pour masquer les éléments de l'interface système.
 
         // Initialisation des vues
         tvCountdown = findViewById(R.id.tv_countdown);
@@ -53,8 +55,10 @@ public class MainActivity extends AppCompatActivity {
 
         moleTouched = new boolean[moles.length];
 
-        // Initialisation du MediaPlayer
+        // Initialisation du MediaPlayer pour les sons
         mediaPlayer = MediaPlayer.create(this, R.raw.hurtmob);
+        startGameSound = MediaPlayer.create(this, R.raw.startgame);
+        winSound = MediaPlayer.create(this, R.raw.win); // Charger le son de victoire
 
         // Récupération des dimensions de l'écran
         DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -108,6 +112,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startGame() {
+        // Jouer le son de démarrage
+        if (startGameSound != null) {
+            startGameSound.start();
+        }
+
         startTime = System.currentTimeMillis();
         handler.postDelayed(gameRunnable, 1000);
     }
@@ -196,6 +205,7 @@ public class MainActivity extends AppCompatActivity {
         if (hasFocus) hideSystemUI();
     }
 
+    // Méthodes pour gérer la pause et la fin de jeu...
     private void showPausePopup() {
         isPaused = true;
 
@@ -232,6 +242,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showGameOverPopup() {
+        // Jouer le son de victoire lorsqu'on atteint la fin du jeu
+        if (winSound != null) {
+            winSound.start(); // Joue le son de victoire
+        }
+
         Dialog gameOverDialog = new Dialog(this);
         gameOverDialog.setContentView(R.layout.dialog_game_over);
         gameOverDialog.setCancelable(false);
@@ -267,28 +282,8 @@ public class MainActivity extends AppCompatActivity {
         speed = 1500;
         isGameOver = false;
         isPaused = false;
-        tvScore.setText("Score: " + score);
-        tvTime.setText(gameDuration + "s");
+        tvScore.setText("Score: 0");
 
-        hideAllMoles();
-        moleTouched = new boolean[moles.length];
-
-        startCountdown();
-    }
-
-    private void hideAllMoles() {
-        for (ImageButton mole : moles) {
-            mole.setVisibility(View.INVISIBLE);
-            handler.removeCallbacksAndMessages(mole);
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (mediaPlayer != null) {
-            mediaPlayer.release();
-            mediaPlayer = null;
-        }
+        startGame();
     }
 }
