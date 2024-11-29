@@ -15,7 +15,7 @@
 
         <!-- Définition de l'activité principale -->
         <activity
-            android:name=".MainActivity"
+            android:name=".Mole_MA"
             android:screenOrientation="sensorLandscape"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
 

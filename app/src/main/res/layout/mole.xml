@@ -44,7 +44,6 @@
     <!-- Zone pour les taupes -->
 
     <!-- Vue de pause pour les boutons "Resume", "Restart", et "Quit" -->
-
     <FrameLayout
         android:id="@+id/frameLayout"
         android:layout_width="match_parent"
@@ -65,50 +64,72 @@
             android:background="@drawable/mole"
             android:visibility="invisible" />
 
+        <!-- Taupe 1 -->
+        <ImageButton
+            android:id="@+id/mole2"
+            android:layout_width="147dp"
+            android:layout_height="87dp"
+            android:layout_gravity="center"
+            android:background="@drawable/mole"
+            android:visibility="invisible" />
+
+        <!-- Taupe 1 -->
+        <ImageButton
+            android:id="@+id/mole3"
+            android:layout_width="147dp"
+            android:layout_height="87dp"
+            android:layout_gravity="center"
+            android:background="@drawable/mole"
+            android:visibility="invisible" />
+
 
 
 
     </FrameLayout>
 
     <LinearLayout
-        android:id="@+id/pauseMenu"
+        android:id="@+id/llPauseMenu"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
+        android:background="#CD100000"
         android:orientation="vertical"
-        android:background="#CC000000"
         android:visibility="gone">
 
         <TextView
-            android:id="@+id/gamePause"
+            android:id="@+id/tvGamePause"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Pause"
             android:textColor="@color/white"
+            android:fontFamily="@font/press2start"
             android:textSize="36sp"
             android:layout_marginBottom="40dp" />
 
         <Button
-            android:id="@+id/resume"
+            android:id="@+id/btnResume"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Resume"
+            android:textColor="@color/white"
             android:fontFamily="@font/press2start"
             android:layout_marginBottom="20dp" />
 
         <Button
-            android:id="@+id/restart"
+            android:id="@+id/btnRestart"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Restart"
+            android:textColor="@color/white"
             android:fontFamily="@font/press2start"
             android:layout_marginBottom="20dp" />
 
         <Button
-            android:id="@+id/quit"
+            android:id="@+id/btnQuit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Quit"
+            android:textColor="@color/white"
             android:fontFamily="@font/press2start" />
     </LinearLayout>
 
