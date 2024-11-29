@@ -16,15 +16,13 @@ public class Board_Player {
     private int caseNumber;  // Le numéro de la case où se trouve le joueur
     private float x;  // Coordonnée x du joueur (en pixels, type float pour une animation fluide)
     private float y;  // Coordonnée y du joueur (en pixels)
-    private SpriteSheet spriteSheet; // Feuille de sprites pour l'animation du joueur
+    private final SpriteSheet spriteSheet; // Feuille de sprites pour l'animation du joueur
     private Bitmap currentSprite; // Sprite actuel du joueur
     private int currentSpriteIndex = 0; // Index de l'animation
     private int frameCounter = 0; // Compteur de frames pour l'animation
-    private final int radius = 50; // Rayon du joueur
     private float targetX; // Coordonnée cible en x (en pixels)
     private float targetY; // Coordonnée cible en y (en pixels)
     public boolean isMoving = false; // Indique si le joueur est en mouvement
-    private final float moveSpeed = 30f; // Vitesse de déplacement en pixels par frame
     private List<Board_Case> currentPath; // The current path the player is following
     private int currentPathIndex; // The index of the next tile in the path
 
@@ -40,7 +38,6 @@ public class Board_Player {
     }
 
     public void update() {
-
         // Gérer l'animation du sprite
         frameCounter++;
         int framesPerSprite = 1; // Changez ce nombre pour ajuster la vitesse d'animation
@@ -56,6 +53,8 @@ public class Board_Player {
             float dy = targetY - y;
             float distance = (float) Math.sqrt(dx * dx + dy * dy);
 
+            // Vitesse de déplacement en pixels par frame
+            float moveSpeed = 30f;
             if (distance > moveSpeed && enablePlayerMovingAnimation) {
                 // Calculer le déplacement en normalisant la direction
                 x += dx / distance * moveSpeed;
@@ -77,16 +76,11 @@ public class Board_Player {
     }
     public void setMovingAnimationToTargetCase (boolean value) { //if false, no animation just a Teleportation
         enablePlayerMovingAnimation = value;
-        Log.d("Player", "enablePlayerMovingAnimation set to: " + enablePlayerMovingAnimation);
     }
 
 
     public boolean isMoving() {
         return isMoving;
-    }
-
-    public void setMoving(boolean moving) {
-        isMoving = moving;
     }
 
     public void setCaseNumber(int targetCaseNumber) {
@@ -101,14 +95,6 @@ public class Board_Player {
             currentPathIndex = 0;
             isMoving = true;
             moveToNextTileInPath(); // Move to the first tile in the path
-        } else {
-            // No valid path found, handle accordingly (e.g., display an error message)
-            Log.d("Player", "No valid path found to target case number: " + targetCaseNumber);
-        }
-
-        Board_Case currentTile = getTileByCaseNumber(caseNumber);
-        if (currentTile != null && currentTile.getAction() == 1) {
-            Log.d("Player","Action performed");
         }
     }
 
@@ -125,8 +111,8 @@ public class Board_Player {
         for (Board_Case gameBoardCase : Board_BoardView.boardCases) {
             if (gameBoardCase.getCaseNumber() == caseNumber) {
                 // Positionner directement le joueur sur sa case actuelle (sans animation)
-                this.x = gameBoardCase.getX() * Board_BoardView.cellSize + Board_BoardView.cellSize / 2;
-                this.y = gameBoardCase.getY() * Board_BoardView.cellSize + Board_BoardView.cellSize / 2;
+                this.x = gameBoardCase.getX() * Board_BoardView.cellSize + (float) Board_BoardView.cellSize / 2;
+                this.y = gameBoardCase.getY() * Board_BoardView.cellSize + (float) Board_BoardView.cellSize / 2;
                 break;
             }
         }
@@ -157,33 +143,6 @@ public class Board_Player {
 
         return adjacentTiles;
     }
-    public void moveToLastAccessibleTileIfScoreExceeds(int score) {
-        if (currentPath != null && currentPathIndex < currentPath.size()) {
-            // Nombre de cases restantes
-            int remainingTiles = currentPath.size() - currentPathIndex;
-
-            if (score >= remainingTiles) {
-                // Avancer directement à la dernière case accessible
-                Board_Case lastTile = currentPath.get(currentPath.size() - 1);
-                targetX = lastTile.getX() * Board_BoardView.cellSize + Board_BoardView.cellSize / 2;
-                targetY = lastTile.getY() * Board_BoardView.cellSize + Board_BoardView.cellSize / 2;
-
-                // Mettre à jour la position et la case actuelle
-                x = targetX;
-                y = targetY;
-                caseNumber = lastTile.getCaseNumber();
-
-                // Arrêter le mouvement et vider le chemin
-                isMoving = false;
-                currentPath = null;
-                currentPathIndex = 0;
-
-                Log.d("Player", "Moved directly to the last accessible tile due to score: " + score);
-            }
-        }
-    }
-
-
 
     private List<Board_Case> reconstructPath(Board_Case targetTile, Map<Board_Case, Board_Case> parentMap) {
         List<Board_Case> path = new ArrayList<>();
@@ -200,6 +159,8 @@ public class Board_Player {
     public void draw(Canvas canvas, Paint paint) {
         if (currentSprite != null) {
             // Redimensionner le sprite à la taille du joueur
+            // Rayon du joueur
+            int radius = 50;
             int newWidth = radius * 2;
             int newHeight = radius * 2;
             Bitmap resizedSprite = Bitmap.createScaledBitmap(currentSprite, newWidth, newHeight, true);
@@ -223,8 +184,8 @@ public class Board_Player {
     private void moveToNextTileInPath() {
         if (currentPath != null && currentPathIndex < currentPath.size()) {
             Board_Case nextTile = currentPath.get(currentPathIndex);
-            targetX = nextTile.getX() * Board_BoardView.cellSize + Board_BoardView.cellSize / 2;
-            targetY = nextTile.getY() * Board_BoardView.cellSize + Board_BoardView.cellSize / 2;
+            targetX = nextTile.getX() * Board_BoardView.cellSize + (float) Board_BoardView.cellSize / 2;
+            targetY = nextTile.getY() * Board_BoardView.cellSize + (float) Board_BoardView.cellSize / 2;
             currentPathIndex++;
 
             // Update the player's caseNumber to the current tile's caseNumber
@@ -249,6 +210,7 @@ public class Board_Player {
         while (!queue.isEmpty()) {
             Board_Case currentTile = queue.poll();
 
+            assert currentTile != null;
             if (currentTile.getCaseNumber() == targetCaseNumber) {
                 return reconstructPath(currentTile, parentMap);
             }

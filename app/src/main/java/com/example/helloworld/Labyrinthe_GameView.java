@@ -1,5 +1,6 @@
 package com.example.helloworld;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -12,7 +13,6 @@ import android.media.MediaPlayer;
 import android.os.CountDownTimer;
 import android.os.Vibrator;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Choreographer;
 import android.view.SurfaceView;
 
@@ -21,6 +21,7 @@ import androidx.core.content.res.ResourcesCompat;
 
 import java.util.Random;
 
+@SuppressLint("ViewConstructor")
 public class Labyrinthe_GameView extends SurfaceView implements Runnable {
 
     private boolean isPlaying;
@@ -28,10 +29,7 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
     private final float ballRadius = 60; // Rayon de la boule
     private float speedX = 0; // Vitesse sur l'axe X
     private float speedY = 0; // Vitesse sur l'axe Y
-    private final float friction = 0.98f; // Coefficient de friction pour ralentir la boule
-    private final float accelerationFactor = 1f; // Facteur d'accélération pour le gyroscope
 
-    private final Paint paint;
     // Attributs pour la largeur et la hauteur de l'écran
     private final int screenWidth;
     private final int screenHeight;
@@ -69,7 +67,6 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
     private final float tileSize_W;
     private final float tileSize_H;
     private final Vibrator vibrator;
-    private final boolean goalReached = false; // Drapeau pour suivre l'état de la collision avec le point d'arrivée
     private CountDownTimer countDownTimer;
     private final int[] DefaultUserPosition = {10, 10};
     private final int defaultTimerValue = 60; // Valeur par défaut du compteur
@@ -83,8 +80,6 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
 
     private final Labyrinthe_Player labyrinthePlayer;
 
-    private Canvas canvas = new Canvas();
-
     private boolean isPaused = false; // État du jeu
 
     private final Paint timerTextPaint = new Paint();
@@ -97,12 +92,10 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
 
     private MediaPlayer mediaPlayer;
 
-    private boolean hasVibratedForWin = false;
 
     public Labyrinthe_GameView(Context context, String selection) {
         super(context);
         vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-        hasVibratedForWin = false;
         // Obtenir les dimensions de l'écran
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
         screenWidth = displayMetrics.widthPixels; // Largeur de l'écran
@@ -134,13 +127,12 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
                     break;
             }
         } else {
-            Log.d("Labyrinthe_GameView", "selection is null");
             System.exit(1);
         }
 
         labyrinthePlayer = new Labyrinthe_Player(DefaultUserPosition[0], DefaultUserPosition[1], ballRadius, playerSpriteSheet);
 
-        paint = new Paint();
+        Paint paint = new Paint();
 
         // Charger une police personnalisée
         Typeface customFont = ResourcesCompat.getFont(getContext(), R.font.press2start);
@@ -150,7 +142,7 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
 
     }
 
-    private Labyrinthe_Goal randomGoalPositionning() {
+    private void randomGoalPositionning() {
         // Tableau des coordonnées de points d'arrivée
         int[][] arrivalPoints = {
                 calculateArrivalPoint(7, 8),  // Point d'arrivée à la position (8, 9)
@@ -167,11 +159,11 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
         goalY = arrivalPoints[randomIndex][1];
         labyrintheGoal = new Labyrinthe_Goal(goalX, goalY, goalRadius, keyImage);
         // Creating animation with key
-        return labyrintheGoal;
+
     }
 
     private int[] calculateArrivalPoint(int xMultiplier, int yMultiplier) {
-        int x = (int) ((int) (tileSize_W * xMultiplier) + goalRadius);
+        int x = (int) ((int) (tileSize_W * xMultiplier) + goalRadius + 10);
         int y = (int) ((int) (tileSize_H * yMultiplier) + goalRadius + 10);
         return new int[]{x, y};
     }
@@ -229,50 +221,55 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
     }
 
     private void draw() {
-        if (getHolder().getSurface().isValid()) {
-            canvas = getHolder().lockCanvas();
-            if (isPaused) {
-
-            } else {
-                // Dessiner les tuiles en fonction de mapSprite
-                for (int y = 0; y < map.length; y++) {
-                    for (int x = 0; x < map[y].length; x++) {
-                        int tileValue = map[y][x]; // Récupérer la valeur de la tuile
-                        // Gestion des différents cas pour chaque valeur de la tuile
-                        switch (tileValue) {
-                            case 0:
-                                // Dessiner l'image PNG redimensionnée pour les tuiles '0'
-                                canvas.drawBitmap(tileImagePath, x * tileSize_W, y * tileSize_H, null);
-                                break;
-                            case 1:
-                                // Dessiner un obstacle
-                                canvas.drawBitmap(tileImageWall, x * tileSize_W, y * tileSize_H, null);
-                                break;
-                            default:
-                                // Si la valeur n'est pas définie, on peut choisir de dessiner un carré par défaut
-                                break;
-                        }
-                    }
+        Canvas canvas = null;
+        try {
+            canvas = getHolder().lockCanvas(); // Bloque le canvas
+            if (canvas != null) {
+                synchronized (getHolder()) {
+                    canvas.drawColor(Color.BLACK); // Efface les pixels résiduels
+                    drawGame(canvas); // Dessine tout le jeu
                 }
-
-                // Dessiner le joueur
-                labyrinthePlayer.draw(canvas, null);
-
-                // Dessiner le point d'arrivée
-                labyrintheGoal.draw(canvas, null);
-
             }
-            // Charger une police personnalisée
-            Typeface customFont = ResourcesCompat.getFont(getContext(), R.font.press2start);
-            // Draw timer text
-            timerTextPaint.setTypeface(customFont); // Assuming customFont is defined elsewhere
-            timerTextPaint.setTextSize(70);
-            timerTextPaint.setColor(Color.WHITE);
-            canvas.drawText("" + timerValue, screenWidth - 200, (float) screenHeight / 1.8f, timerTextPaint);
-            getHolder().unlockCanvasAndPost(canvas);
-
+        } finally {
+            if (canvas != null) {
+                getHolder().unlockCanvasAndPost(canvas); // Libère le canvas
+            }
         }
     }
+
+
+
+    private void drawGame(Canvas canvas) {
+        // Dessiner les tuiles, joueur, et autres éléments ici
+        for (int y = 0; y < map.length; y++) {
+            for (int x = 0; x < map[y].length; x++) {
+                int tileValue = map[y][x];
+                float tileDrawX = x * tileSize_W;
+                float tileDrawY = y * tileSize_H;
+
+                switch (tileValue) {
+                    case 0:
+                        canvas.drawBitmap(tileImagePath, tileDrawX, tileDrawY, null);
+                        break;
+                    case 1:
+                        canvas.drawBitmap(tileImageWall, tileDrawX, tileDrawY, null);
+                        break;
+                }
+            }
+        }
+        labyrintheGoal.draw(canvas, null);
+        labyrinthePlayer.draw(canvas, null);
+
+        // Charger une police personnalisée
+        Typeface customFont = ResourcesCompat.getFont(getContext(), R.font.press2start);
+        timerTextPaint.setTypeface(customFont);
+        timerTextPaint.setTextSize(70);
+        timerTextPaint.setColor(Color.WHITE);
+
+        canvas.drawText("" + timerValue, screenWidth - 200, (float) screenHeight / 1.8f, timerTextPaint);
+    }
+
+
 
     public boolean isWin() {
         return win;
@@ -318,10 +315,14 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
         if (!isPaused) {
 
             // Mise à jour de la vitesse en fonction du gyroscope
+            // Facteur d'accélération pour le gyroscope
+            float accelerationFactor = 1f;
             speedX += x * accelerationFactor;
             speedY -= y * accelerationFactor;
 
             // Appliquer la friction
+            // Coefficient de friction pour ralentir la boule
+            float friction = 0.98f;
             speedX *= friction;
             speedY *= friction;
 
@@ -397,6 +398,8 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
         float distance = (float) Math.sqrt(dx * dx + dy * dy);
 
         // Vérifier si la distance est inférieure ou égale à la somme des rayons
+        // Drapeau pour suivre l'état de la collision avec le point d'arrivée
+        boolean goalReached = false;
         if (distance <= ballRadius + goalRadius && !goalReached) {
             win = true;
             long[] pattern = {0, 300, 100, 100}; // 0ms avant de commencer, 200ms de vibration, 100ms de pause, 200ms de vibration
@@ -404,7 +407,6 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
             // Appliquer le motif de vibration
             if (vibrator != null) {
                 vibrator.vibrate(pattern, -1); // -1 pour ne pas répéter le motif
-                hasVibratedForWin = true;
             }
         }
     }

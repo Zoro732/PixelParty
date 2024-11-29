@@ -1,5 +1,6 @@
 package com.example.helloworld;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,7 +9,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.os.Handler;
@@ -48,8 +48,6 @@ public class Board_BoardView extends View {
     };
 
     // FOR DEBUG OF COURSE
-
-
 //    public static int[][] mapAction = {
 //            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 //            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -60,7 +58,6 @@ public class Board_BoardView extends View {
 //            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 //            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 //    };
-
     // FOR DEBUG OF COURSE
 //    public static int[][] mapAction = {
 //            {0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -76,23 +73,16 @@ public class Board_BoardView extends View {
     public static final int numColumns = map[0].length;
     public static int cellSize = 100; // Taille de chaque cellule
     private Paint paint;
-
     private Board_Player boardPlayer;
-
 
     private int diceResult = 0; // Variable to store the dice roll result
     public boolean isRolling = false; // Flag to track if the dice is rolling
     private final Random random = new Random();
     private SpriteSheet diceSpriteSheet;
-    private Bitmap diceBitmap;
     private Bitmap currentPlayerBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.player_move_purple);
-    private Typeface font = ResourcesCompat.getFont(getContext(), R.font.press2start);
+    private final Typeface font = ResourcesCompat.getFont(getContext(), R.font.press2start);
 
     private final Handler animationHandler = new Handler(Looper.getMainLooper());
-
-    private String playerSprite;
-
-    private boolean isPlayerFinishedMoving = false;
 
     public int itemAction = 0; // 0=no action pending, 1 = dice +1, -1= dice -1 of oppenent
 
@@ -100,14 +90,13 @@ public class Board_BoardView extends View {
     public Board_BoardView(Context context, AttributeSet attrs) {
         super(context, attrs);
         // Storing number of cases of the map
-        for (int i = 0; i < map.length; i++) {
-            for (int j = 0; j < map[i].length; j++) {
-                if (map[i][j] == 1) {
+        for (int[] ints : map) {
+            for (int anInt : ints) {
+                if (anInt == 1) {
                     numberOfMapCase++; // Increment counter
                 }
             }
         }
-        Log.d("Board_BoardView", "numberOfMapCase = " + numberOfMapCase);
         init();
     }
 
@@ -117,9 +106,8 @@ public class Board_BoardView extends View {
     }
 
     public void setPlayerSpriteSelection(String selection) {
-        this.playerSprite = selection;
-        if (playerSprite != null) {
-            switch (playerSprite) {
+        if (selection != null) {
+            switch (selection) {
                 case "Red":
                     currentPlayerBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.player_move_red);
                     break;
@@ -131,16 +119,9 @@ public class Board_BoardView extends View {
                     break;
             }
 
-        } else {
-            Log.d("Board_BoardView", "playerSprite is null");
         }
         boardPlayer = new Board_Player(0, currentPlayerBitmap);
     }
-
-    public String getPlayerSpriteSelection() {
-        return this.playerSprite;
-    }
-
 
     private void init() {
 
@@ -190,7 +171,7 @@ public class Board_BoardView extends View {
         }
 
         // Load dice bitmap and set up player
-        diceBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.dice_6);
+        Bitmap diceBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.dice_6);
         diceSpriteSheet = new SpriteSheet(diceBitmap, 1, 6);
 
 
@@ -281,7 +262,7 @@ public class Board_BoardView extends View {
             Bitmap originalBitmap = diceSpriteSheet.getSprite(0, diceResult - 1);
             int scaledWidth = originalBitmap.getWidth() * 2;
             int scaledHeight = originalBitmap.getHeight() * 2;
-            Bitmap scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, scaledWidth, scaledHeight, false);
+            @SuppressLint("DrawAllocation") Bitmap scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, scaledWidth, scaledHeight, false);
 
             if (scaledBitmap == null || scaledBitmap.getWidth() != scaledWidth || scaledBitmap.getHeight() != scaledHeight) {
                 if (scaledBitmap != null) {
@@ -290,7 +271,7 @@ public class Board_BoardView extends View {
                 scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, scaledWidth, scaledHeight, true);
             }
 
-            canvas.drawBitmap(scaledBitmap, getWidth() / 2 - scaledWidth / 2, getHeight() / 2 - scaledHeight / 2, paint);
+            canvas.drawBitmap(scaledBitmap, (float) getWidth() / 2 - (float) scaledWidth / 2, (float) getHeight() / 2 - (float) scaledHeight / 2, paint);
         }
     }
 
@@ -339,7 +320,7 @@ public class Board_BoardView extends View {
 
             // Positionner le texte au centre de la case
             paint.setTextAlign(Paint.Align.CENTER);
-            float textX = left + cellSize / 2;
+            float textX = left + (float) cellSize / 2;
             float textY = bottom - paint.descent() - 10;
 
             // Afficher le numéro de la case
@@ -364,13 +345,10 @@ public class Board_BoardView extends View {
     }
 
     public void stopDiceRoll() {
-        Log.d("Board_BoardView", "in stopdiceroll() diceResult = " + diceResult);
-
         isRolling = false;
         // Only move if the target tile is valid (1)
         movePlayer();
         invalidate();
-        onPlayerMovementFinished();
     }
 
     // Method to move the player to the valid tile
@@ -403,15 +381,13 @@ public class Board_BoardView extends View {
         }
     }
 
-    public void onPlayerMovementFinished() {
-        isPlayerFinishedMoving = true;
-    }
 
 
     public int getCurrentCaseAction() {
         return boardCases.get(boardPlayer.getCaseNumber()).getAction();
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN && isRolling) {
@@ -434,11 +410,7 @@ public class Board_BoardView extends View {
     }
 
     public boolean getIsPlayerMoving() {
-        return boardPlayer.isMoving();
-    }
-
-    public void setPlayerFinishedMoving(boolean isPlayerFinishedMoving) {
-        this.isPlayerFinishedMoving = isPlayerFinishedMoving;
+        return !boardPlayer.isMoving();
     }
 
 }

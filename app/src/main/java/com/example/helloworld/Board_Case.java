@@ -4,7 +4,7 @@ public class Board_Case {
 
     private final int x;
     private final int y;
-    private int value;  // 0 pour une case vide, 1 pour une case grise (obstacle)
+    private final int value;  // 0 pour une case vide, 1 pour une case grise (obstacle)
     private int caseNumber;  // Numéro de la case (uniquement pour les cases grises)
     private int action; // Action associated with the case
 
@@ -13,9 +13,6 @@ public class Board_Case {
         this.y = y;
         this.value = value;
         this.action = action;
-    }
-    public Board_Case getCase () {
-        return this;
     }
 
     public int getAction() {
@@ -37,10 +34,6 @@ public class Board_Case {
 
     public int getValue() {
         return value;
-    }
-
-    public void setValue(int value) {
-        this.value = value;
     }
 
     public int getCaseNumber() {

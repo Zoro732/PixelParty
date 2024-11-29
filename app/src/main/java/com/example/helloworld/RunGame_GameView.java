@@ -7,7 +7,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Typeface;
@@ -44,9 +43,9 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
     private boolean isDead = false;
 
     // Ajoutez ce tableau pour suivre le nombre d'obstacles consécutifs par voie
-    private int[] consecutiveObstacles = new int[3]; // 0 = voie 1, 1 = voie 2, 2 = voie 3
+    private final int[] consecutiveObstacles = new int[3]; // 0 = voie 1, 1 = voie 2, 2 = voie 3
 
-    private MediaPlayer mediaPlayerCoin;
+    private final MediaPlayer mediaPlayerCoin;
 
     public RunGame_GameView(Context context, int screenWidth, int screenHeight) {
         super(context);
@@ -64,9 +63,9 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
 
         // Charger les images des voitures
         vehicles = new Bitmap[3];
-        vehicles[0] = resizeBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.car1), 100);
-        vehicles[1] = resizeBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.car2), 100);
-        vehicles[2] = resizeBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.car3), 100);
+        vehicles[0] = resizeBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.car1));
+        vehicles[1] = resizeBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.car2));
+        vehicles[2] = resizeBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.car3));
 
         generateObstacles();
 
@@ -90,18 +89,12 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
     }
 
 
-    private Bitmap resizeBitmap(Bitmap originalBitmap, int newWidth) {
+    private Bitmap resizeBitmap(Bitmap originalBitmap) {
         int originalWidth = originalBitmap.getWidth();
         int originalHeight = originalBitmap.getHeight();
         float aspectRatio = (float) originalHeight / (float) originalWidth;
-        int newHeight = Math.round(newWidth * aspectRatio); // Calculer la nouvelle hauteur pour garder le ratio
-        return Bitmap.createScaledBitmap(originalBitmap, newWidth, newHeight, true);
-    }
-
-    private Bitmap rotateBitmap(Bitmap originalBitmap, float degrees) {
-        Matrix matrix = new Matrix();
-        matrix.postRotate(degrees, originalBitmap.getWidth() / 2f, originalBitmap.getHeight() / 2f); // Pivoter autour du centre
-        return Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.getWidth(), originalBitmap.getHeight(), matrix, true);
+        int newHeight = Math.round(100 * aspectRatio); // Calculer la nouvelle hauteur pour garder le ratio
+        return Bitmap.createScaledBitmap(originalBitmap, 100, newHeight, true);
     }
 
     private RunGame_Coin createCoin() {
@@ -176,30 +169,6 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
         return newObstacle;
     }
 
-    // Lors de la réinitialisation d'un obstacle hors écran, vous devrez décrémenter le nombre d'obstacles consécutifs
-    private void resetObstacle(RunGame_Obstacle obstacle) {
-        int laneIndex = -1;
-        int laneX = (laneIndex * laneWidth) + (laneWidth / 2) - 50;  // Calcul de la position X de la voie
-
-
-        // Trouver la voie de l'obstacle
-        for (int i = 0; i < vehicles.length; i++) {
-            if (obstacle.getImage() == vehicles[i]) {
-                laneIndex = i;
-                break;
-            }
-        }
-
-        // Réinitialiser le compteur d'obstacles consécutifs
-        if (laneIndex != -1) {
-            consecutiveObstacles[laneIndex]--;
-        }
-
-        // Réinitialiser la position de l'obstacle
-        obstacle.reset(laneX);  // Méthode pour réinitialiser l'obstacle sans le recréer
-    }
-
-
     private void generateObstacles() {
         int numObstacles = 6; // Nombre aléatoire d'obstacles
         int currentY = -100; // Position de départ pour les obstacles
@@ -211,7 +180,6 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
             newRunGameObstacles.add(runGameObstacle);
 
             // Générer un espacement aléatoire pour chaque obstacle
-            int spacing = 501 + (int) (Math.random() * 301);
             currentY -= 1000;
 
         }

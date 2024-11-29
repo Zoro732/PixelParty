@@ -1,5 +1,6 @@
 package com.example.helloworld;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
@@ -17,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.Random;
@@ -24,26 +27,24 @@ import java.util.Random;
 public class Taquin_MA extends AppCompatActivity {
 
     // Variables globales
-    private ImageView[][] tiles = new ImageView[3][3];
-    private ImageView[][] solutionTiles = new ImageView[3][3];
+    private final ImageView[][] tiles = new ImageView[3][3];
+    private final ImageView[][] solutionTiles = new ImageView[3][3];
     private int emptyRow = 2, emptyCol = 2;
     private Bitmap originalBitmap;
 
     private TextView tvTimer, tvPause;
     private Button btnResume, btnRestart, btnQuit;
-    private int defaultTimerValue = 120;
+    private final int defaultTimerValue = 120;
     private int timerValue = defaultTimerValue;
-    private Handler timerHandler = new Handler();
+    private final Handler timerHandler = new Handler();
     private boolean isTimerRunning = false;
     private boolean isLoose = false;
     private boolean doPlayerQuitGame = false;
 
     private MediaPlayer mainTheme;
-    private Intent intent;
     private String game_mode;
 
     private LinearLayout llPauseMenu;
-    private ImageView ivSettings;
 
     private GridLayout glGame;
 
@@ -61,7 +62,9 @@ public class Taquin_MA extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        hideNavigationBar();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            hideNavigationBar();
+        }
         if (!isTimerRunning) startCountdownTimer();
         mainTheme.start();
     }
@@ -75,23 +78,30 @@ public class Taquin_MA extends AppCompatActivity {
 
     @Override
     public void finish() {
-        Log.d("Taquin_MA", "Finishing game with score: " + timerValue);
         Intent resultIntent = new Intent();
-        if (doPlayerQuitGame || isLoose) {
-            resultIntent.putExtra("score", "quit");
+        if (game_mode.equals("minigames")) {
+            onPause();
+            llPauseMenu.setVisibility(View.VISIBLE);
+            btnResume.setVisibility(View.GONE);
+            stopCountdownTimer();
+            glGame.setEnabled(false); // Disable interaction
+            mainTheme.pause();
         } else {
-            resultIntent.putExtra("score", String.valueOf(defaultTimerValue - timerValue));
+            if (doPlayerQuitGame || isLoose) {
+                resultIntent.putExtra("score", "quit");
+            } else {
+                resultIntent.putExtra("score", String.valueOf(defaultTimerValue - timerValue));
+            }
+            setResult(RESULT_OK, resultIntent);
         }
-        setResult(RESULT_OK, resultIntent);
+
         super.finish();
     }
 
     // Initialisation
     private void initializeGame() {
-        intent = getIntent();
+        Intent intent = getIntent();
         game_mode = intent.getStringExtra("game_mode");
-        Log.d("Taquin_MA", "Game mode: " + game_mode);
-
         mainTheme = MediaPlayer.create(this, R.raw.taquinmaintheme);
         mainTheme.setVolume(0.5f, 0.5f);
         mainTheme.setLooping(true);
@@ -102,15 +112,16 @@ public class Taquin_MA extends AppCompatActivity {
 
     private void initializeUI() {
         // Masquer l'interface système
-        hideNavigationBar();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            hideNavigationBar();
+        }
 
         // Initialisation des éléments UI
         glGame = findViewById(R.id.glGame);
-        GridLayout solutionGrid = findViewById(R.id.glSolution);
         tvTimer = findViewById(R.id.tvTimer);
 
-        initializeTiles(glGame, tiles);
-        initializeSolutionTiles(solutionGrid);
+        initializeTiles(tiles);
+        initializeSolutionTiles();
         shuffleTiles();
 
         // Pause menu
@@ -133,7 +144,7 @@ public class Taquin_MA extends AppCompatActivity {
         btnRestart = findViewById(R.id.btnRestart);
         btnQuit = findViewById(R.id.btnQuit);
         tvPause = findViewById(R.id.tvGamePause);
-        ivSettings = findViewById(R.id.ivSettings);
+        ImageView ivSettings = findViewById(R.id.ivSettings);
 
         glGame = findViewById(R.id.glGame); // Get the GridLayout
 
@@ -151,6 +162,7 @@ public class Taquin_MA extends AppCompatActivity {
         });
         btnQuit.setOnClickListener(v -> {
             finish();
+            llPauseMenu.setVisibility(View.GONE);
             playSoundEffect(R.raw.clik);
         });
 
@@ -173,9 +185,17 @@ public class Taquin_MA extends AppCompatActivity {
                 R.drawable.taquin_sus,
                 R.drawable.taquin_globe
         };
-        int randomImageIndex = new Random().nextInt(images.length);
+
+        // Initialiser un générateur de nombres aléatoires avec une graine basée sur l'heure
+        Random random = new Random(System.currentTimeMillis());
+
+        // Sélectionner un index aléatoire
+        int randomImageIndex = random.nextInt(images.length);
+
+        // Retourner l'image correspondante
         return BitmapFactory.decodeResource(getResources(), images[randomImageIndex]);
     }
+
 
     // Chronomètre
     private void startCountdownTimer() {
@@ -207,7 +227,7 @@ public class Taquin_MA extends AppCompatActivity {
     }
 
     // Gestion des tuiles
-    private void initializeTiles(GridLayout gridLayout, ImageView[][] tileArray) {
+    private void initializeTiles(ImageView[][] tileArray) {
         emptyRow = 2;
         emptyCol = 2;
 
@@ -231,7 +251,7 @@ public class Taquin_MA extends AppCompatActivity {
         }
     }
 
-    private void initializeSolutionTiles(GridLayout solutionGrid) {
+    private void initializeSolutionTiles() {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 int resID = getResources().getIdentifier("tile_" + (i * 3 + j + 1) + "_solution", "id", getPackageName());
@@ -260,10 +280,18 @@ public class Taquin_MA extends AppCompatActivity {
             int newRow = emptyRow, newCol = emptyCol;
 
             switch (direction) {
-                case 0: newRow--; break;
-                case 1: newRow++; break;
-                case 2: newCol--; break;
-                case 3: newCol++; break;
+                case 0:
+                    newRow--;
+                    break;
+                case 1:
+                    newRow++;
+                    break;
+                case 2:
+                    newCol--;
+                    break;
+                case 3:
+                    newCol++;
+                    break;
             }
 
             if (newRow >= 0 && newRow < 3 && newCol >= 0 && newCol < 3) {
@@ -316,6 +344,7 @@ public class Taquin_MA extends AppCompatActivity {
         return true;
     }
 
+    @SuppressLint("SetTextI18n")
     private void onGameWon() {
         if (game_mode.equals("board")) {
             stopCountdownTimer();
@@ -327,13 +356,13 @@ public class Taquin_MA extends AppCompatActivity {
             glGame.setEnabled(false); // Disable interaction
             mainTheme.pause();
             playSoundEffect(R.raw.win);
+            tvPause.setGravity(Gravity.CENTER);
             tvPause.setText("You won! in " + (defaultTimerValue - timerValue) + " seconds");
         }
-        Log.d("Taquin_MA", "Game won!");
-
     }
 
     // Divers
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void hideNavigationBar() {
         getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY

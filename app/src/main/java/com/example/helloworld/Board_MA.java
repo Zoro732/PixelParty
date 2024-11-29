@@ -8,12 +8,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -116,7 +116,6 @@ public class Board_MA extends AppCompatActivity {
         Intent intent = getIntent();
         if (intent != null) {
             spriteSelection = intent.getStringExtra("selection_key");
-            Log.d("Board_MA", "Received spriteSelection: " + spriteSelection + ", setting player sprite.");
             boardBoardView.setPlayerSpriteSelection(spriteSelection);
         }
     }
@@ -133,7 +132,7 @@ public class Board_MA extends AppCompatActivity {
 
                 btnDice.setTextColor(Color.WHITE);
 
-                if (newRound && !boardBoardView.getIsPlayerMoving()) {
+                if (newRound && boardBoardView.getIsPlayerMoving()) {
                     newRound = false;
                 }
             }
@@ -190,7 +189,7 @@ public class Board_MA extends AppCompatActivity {
     private final Runnable playerMovementRunnable = new Runnable() {
         @Override
         public void run() {
-            if (!boardBoardView.getIsPlayerMoving()) {
+            if (boardBoardView.getIsPlayerMoving()) {
                 handlePlayerIdleState();
             } else if (!newRound) {
                 btnDice.setEnabled(false);
@@ -221,7 +220,6 @@ public class Board_MA extends AppCompatActivity {
                 btnPlay.setTextColor(Color.WHITE);
             }
 
-            boardBoardView.setPlayerFinishedMoving(false);
         } else {
             btnDice.setEnabled(true);
             btnPlay.setEnabled(false);
@@ -235,7 +233,6 @@ public class Board_MA extends AppCompatActivity {
     private void handleDiceRollingState() {
         if (doPlayerUsePlusOneItem) {
             tvPlusOneToDice.setVisibility(View.VISIBLE);
-            Log.d("Board_MA", "Dice is rolling with +1");
         } else {
             btnPlusOne.setTextColor(Color.WHITE);
         }
@@ -246,7 +243,6 @@ public class Board_MA extends AppCompatActivity {
      * Start a mini-game based on the player's current case action.
      */
     private void startMiniGame() {
-        Log.d("Board_MA", "Starting mini-game.");
         Intent intent = null;
         int requestCode = -1;
 
@@ -268,7 +264,6 @@ public class Board_MA extends AppCompatActivity {
         if (intent != null) {
             intent.putExtra("game_mode", "board");
             intent.putExtra("selection_key", spriteSelection);
-            Log.d("Board_MA", "Starting game with request code: " + requestCode);
             if (requestCode == RUN_REQUEST_CODE) {
                 int finalRequestCode = requestCode;
                 Intent finalIntent = intent;
@@ -299,8 +294,6 @@ public class Board_MA extends AppCompatActivity {
         if (resultCode == Activity.RESULT_OK && data != null) {
             String result = data.getStringExtra("score");
             handleMiniGameResult(requestCode, result);
-            Log.d("Board_MA", "Result Intent from Labyrinthe_MA: " + data.toString());
-            Log.d("Board_MA", "Received result from mini-game: " + result);
         }
     }
 
@@ -321,9 +314,7 @@ public class Board_MA extends AppCompatActivity {
         } else {
             playSoundEffect(R.raw.win);
         }
-        Log.d("Board_MA", "Received result from mini-game: " + result);
         if (!result.equals("quit")) {
-            Log.d("Board_MA", "Incrementing stars number");
             doPlayerWinPreviousGame = true;
         }
 
@@ -366,24 +357,20 @@ public class Board_MA extends AppCompatActivity {
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         currentPlayerCaseNumber = boardBoardView.getPlayerCaseNumber();
         outState.putInt("playerCaseNumber", currentPlayerCaseNumber);
     }
 
     @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         if (boardBoardView != null) {
             boardBoardView.setPlayerMovingAnimationToTargetCase(false);
             currentPlayerCaseNumber = savedInstanceState.getInt("playerCaseNumber");
             boardBoardView.setPlayerCaseNumber(currentPlayerCaseNumber);
-        } else {
-            Log.d("Board_MA", "boardBoardView is null");
         }
-
-        Log.d("Board_MA", "End of onrestore");
     }
 
     @Override

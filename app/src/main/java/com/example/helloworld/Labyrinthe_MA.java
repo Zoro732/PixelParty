@@ -13,7 +13,6 @@ import android.hardware.SensorManager;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -25,7 +24,6 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
     private Labyrinthe_GameView labyrintheGameView;
     private SensorManager sensorManager;
     private Sensor gyroscope;
-    private String selection;
     private TextView tvGamePause, tvTimerIndicator;
     private Button btnResume, btnRestart, btnQuit;
     private ImageView ivSettings;
@@ -51,11 +49,10 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
 
         Intent intent = getIntent();
         game_mode = intent.getStringExtra("game_mode");
-        selection = intent.getStringExtra("selection_key");
-        if (intent != null) {
-            labyrintheGameView = new Labyrinthe_GameView(this, selection);
-            gameFrame.addView(labyrintheGameView);
-        }
+        String selection = intent.getStringExtra("selection_key");
+
+        labyrintheGameView = new Labyrinthe_GameView(this, selection);
+        gameFrame.addView(labyrintheGameView);
 
         if ("minigames".equals(game_mode)) {
             setupMinigameMode();
@@ -229,7 +226,6 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (labyrintheGameView == null) {
-            Log.e("Labyrinthe_MA", "Labyrinthe_GameView is null in onSensorChanged.");
             return;
         }
 
@@ -268,7 +264,6 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
             maintheme.pause();
 
         } else if ("board".equals(game_mode)) {
-            Log.d("Labyrinthe_MA", "Labyrinthe finished, returning to Board_MA");
             finish();
             labyrintheGameView.quitGame();
 
@@ -291,7 +286,6 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
     public void finish() {
         Intent resultIntent = new Intent();
         resultIntent.putExtra("score", doPlayerQuitGame ? "quit" : String.valueOf(labyrintheGameView.getRemainingTime()));
-        Log.d("Labyrinthe_MA", "Finishing Labyrinthe_MA with score: " + resultIntent.getStringExtra("score"));
         setResult(RESULT_OK, resultIntent);
         super.finish();
     }

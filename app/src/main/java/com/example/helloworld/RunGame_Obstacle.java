@@ -11,8 +11,7 @@ public class RunGame_Obstacle {
     private int y;
     private final boolean isJumpable;
     private final Bitmap image;
-    private int speed;
-    private boolean hasPlayedSound = false;  // Variable pour suivre si le son a été joué
+    private final boolean hasPlayedSound = false;  // Variable pour suivre si le son a été joué
 
     // Constructeur
     public RunGame_Obstacle(int x, int y, Bitmap image, Bitmap[] vehicles) {
@@ -68,7 +67,7 @@ public class RunGame_Obstacle {
         this.x = laneX; // Positionner dans une voie aléatoire
 
         // Réinitialiser la vitesse ou tout autre attribut, si nécessaire
-        this.speed = (int) RunGame_GameView.obstacleSpeed/* vitesse de base, si applicable */;
+        /* vitesse de base, si applicable */
     }
 
     public int getHeight() {

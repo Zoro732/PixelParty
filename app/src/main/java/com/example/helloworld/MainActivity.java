@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
@@ -30,7 +31,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView selectedCharacterText;
     private String selection;
 
-    private MediaPlayer soundEffect;
     private MediaPlayer mainTheme;
 
     @SuppressLint("ClickableViewAccessibility")
@@ -48,7 +48,9 @@ public class MainActivity extends AppCompatActivity {
         configureCharacterSelection();
         // Initialize Spinner
         // Hide Navigation Bar
-        hideNavigationBar();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            hideNavigationBar();
+        }
 
         mainTheme = MediaPlayer.create(this,R.raw.maintheme);
         mainTheme.setLooping(true);
@@ -234,6 +236,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void hideNavigationBar() {
         getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |          // Masque la barre de navigation
@@ -252,6 +255,7 @@ public class MainActivity extends AppCompatActivity {
         playerPurple.setBackgroundColor(Color.TRANSPARENT);
 
         // Highlight Selected Character
+        MediaPlayer soundEffect;
         if (selectedCharacter == playerBlue) {
             findViewById(R.id.ivSpriteSelectionSelectEffectForBlue).setVisibility(View.VISIBLE);
             findViewById(R.id.ivSpriteSelectionSelectEffectForRed).setVisibility(View.GONE);

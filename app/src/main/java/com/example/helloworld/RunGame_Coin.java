@@ -3,7 +3,6 @@ package com.example.helloworld;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.graphics.RectF;
 
 public class RunGame_Coin {
@@ -72,10 +71,6 @@ public class RunGame_Coin {
     public float getY() {
         return y;
     }
-    public Bitmap getImage() {
-        return coinSpriteSheet.getSprite(0, currentCoinIndex);
-    }
-
     public int getWidth() {
         return currentCoinImage.getWidth();
     }
