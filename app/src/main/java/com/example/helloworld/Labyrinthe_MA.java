@@ -63,7 +63,7 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
 
-        maintheme = MediaPlayer.create(this,R.raw.labyrinththeme);
+        maintheme = MediaPlayer.create(this,R.raw.labyrinth_maintheme);
         maintheme.setVolume(0.5f,0.5f);
         maintheme.setLooping(true);
         maintheme.start();
@@ -115,19 +115,19 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
         btnResume.setOnClickListener(v -> {
             resumeGame();
             maintheme.start();
-            playSoundEffect(R.raw.clik);
+            playSoundEffect(R.raw.button_clik);
         });
 
         btnRestart.setOnClickListener(v -> {
             restartGame();
             maintheme.seekTo(0);
             maintheme.start();
-            playSoundEffect(R.raw.clik);
+            playSoundEffect(R.raw.button_clik);
         });
 
         btnQuit.setOnClickListener(v -> {
             quitGame();
-            playSoundEffect(R.raw.clik);
+            playSoundEffect(R.raw.button_clik);
         });
     }
 

@@ -10,7 +10,6 @@ import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -102,7 +101,7 @@ public class Taquin_MA extends AppCompatActivity {
     private void initializeGame() {
         Intent intent = getIntent();
         game_mode = intent.getStringExtra("game_mode");
-        mainTheme = MediaPlayer.create(this, R.raw.taquinmaintheme);
+        mainTheme = MediaPlayer.create(this, R.raw.taquin_maintheme);
         mainTheme.setVolume(0.5f, 0.5f);
         mainTheme.setLooping(true);
         mainTheme.start();
@@ -153,17 +152,17 @@ public class Taquin_MA extends AppCompatActivity {
             startCountdownTimer();
             glGame.setEnabled(true); // Disable interaction
             mainTheme.start();
-            playSoundEffect(R.raw.clik);
+            playSoundEffect(R.raw.button_clik);
         });
 
         btnRestart.setOnClickListener(v -> {
             restartGame();
-            playSoundEffect(R.raw.clik);
+            playSoundEffect(R.raw.button_clik);
         });
         btnQuit.setOnClickListener(v -> {
             finish();
             llPauseMenu.setVisibility(View.GONE);
-            playSoundEffect(R.raw.clik);
+            playSoundEffect(R.raw.button_clik);
         });
 
         ivSettings.setOnClickListener(v -> {
@@ -171,7 +170,7 @@ public class Taquin_MA extends AppCompatActivity {
             stopCountdownTimer();
             glGame.setEnabled(false); // Disable interaction
             mainTheme.pause();
-            playSoundEffect(R.raw.clik);
+            playSoundEffect(R.raw.button_clik);
         });
 
         setButtonBackground();
@@ -309,7 +308,7 @@ public class Taquin_MA extends AppCompatActivity {
 
     private void onTileClick(int row, int col) {
         if (Math.abs(emptyRow - row) + Math.abs(emptyCol - col) == 1) {
-            playSoundEffect(R.raw.taquinmove);
+            playSoundEffect(R.raw.taquin_move);
             Bitmap tempBitmap = tiles[row][col].getDrawable() != null ?
                     ((BitmapDrawable) tiles[row][col].getDrawable()).getBitmap() : null;
 

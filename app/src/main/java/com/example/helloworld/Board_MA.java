@@ -126,7 +126,7 @@ public class Board_MA extends AppCompatActivity {
     private void setupListeners() {
         btnDice.setOnClickListener(v -> {
             if (btnDice.isEnabled()) {
-                playSoundEffect(R.raw.clik);
+                playSoundEffect(R.raw.button_clik);
                 boardBoardView.startDiceRoll();
                 btnPlusOne.setVisibility(View.VISIBLE);
 
@@ -140,12 +140,12 @@ public class Board_MA extends AppCompatActivity {
 
         btnPlay.setOnClickListener(v -> {
             startMiniGame();
-            playSoundEffect(R.raw.clik);
+            playSoundEffect(R.raw.button_clik);
 
         });
 
         btnPlusOne.setOnClickListener(v -> {
-            playSoundEffect(R.raw.itemuse);
+            playSoundEffect(R.raw.board_itemused);
             Toast.makeText(Board_MA.this, "Item Used: Dice +1", Toast.LENGTH_SHORT).show();
             btnPlusOne.setEnabled(false);
             btnPlusOne.setTextColor(Color.GRAY);
@@ -165,7 +165,7 @@ public class Board_MA extends AppCompatActivity {
         btnCloseInventory = findViewById(R.id.btnCloseInventory);
 
         btnInventory.setOnClickListener(v -> {
-            playSoundEffect(R.raw.clik);
+            playSoundEffect(R.raw.button_clik);
             inventoryWindow.setVisibility(View.VISIBLE);
             inventoryWindow.animate()
                     .translationX(10)
@@ -174,7 +174,7 @@ public class Board_MA extends AppCompatActivity {
         });
 
         btnCloseInventory.setOnClickListener(v -> {
-            playSoundEffect(R.raw.clik);
+            playSoundEffect(R.raw.button_clik);
             inventoryWindow.animate()
                     .translationX(0)
                     .setDuration(200)
@@ -323,7 +323,7 @@ public class Board_MA extends AppCompatActivity {
         btnPlay.setEnabled(false);
 
         btnContinue.setOnClickListener(v -> {
-            playSoundEffect(R.raw.clik);
+            playSoundEffect(R.raw.button_clik);
             newRound = true;
             tvScore.setVisibility(View.GONE);
             btnContinue.setVisibility(View.GONE);

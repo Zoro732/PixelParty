@@ -73,7 +73,7 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
         coins = BitmapFactory.decodeResource(getResources(), R.drawable.coin);
         generateCoins();
 
-        mediaPlayerCoin = MediaPlayer.create(getContext(), R.raw.coin);
+        mediaPlayerCoin = MediaPlayer.create(getContext(), R.raw.rungame_coin);
         mediaPlayerCoin.setVolume(0.1f, 0.1f);
     }
 

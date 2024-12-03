@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String PREFS_NAME = "GamePrefs";
 
     // UI Elements
-    private ImageView playerBlue, playerRed, playerPurple, ivTaquin, ivLabyrinthe, ivRunGame;
+    private ImageView playerBlue, playerRed, playerPurple, ivTaquin, ivLabyrinthe, ivRunGame, ivMole;
     private TextView selectedCharacterText;
     private String selection;
 
@@ -52,88 +52,61 @@ public class MainActivity extends AppCompatActivity {
             hideNavigationBar();
         }
 
-        mainTheme = MediaPlayer.create(this,R.raw.maintheme);
+        mainTheme = MediaPlayer.create(this,R.raw.mainactivity_maintheme);
         mainTheme.setLooping(true);
         mainTheme.setVolume(0.3f,0.3f);
         mainTheme.start();
     }
 
     private void initializeUI() {
-        // Main Frame and Background
+        // Initialiser le fond et le layout
         FrameLayout frameLayout = findViewById(R.id.flMainPage);
         ImageView imageView = new ImageView(this);
-
-
-        // UI Components
-        playerBlue = findViewById(R.id.ivCharacterBlue);
-        playerRed = findViewById(R.id.ivCharacterRed);
-        playerPurple = findViewById(R.id.ivCharacterPurple);
-        ivTaquin = findViewById(R.id.ivTaquin);
-        ivLabyrinthe = findViewById(R.id.ivLabyrinth);
-        ivRunGame = findViewById(R.id.ivRunGame);
-
-        selectedCharacterText = findViewById(R.id.tvSelectedCharacterForBoard);
-
-        // Buttons and Options
-        Button btnLaunchSpriteSelectionForBoard = findViewById(R.id.btnLaunchSpriteSelectionForBoard);
-        Button btnLaunchMiniGamesMenu = findViewById(R.id.btnLaunchMiniGamesMenu);
-        Button btnBackButtonBoardMenu = findViewById(R.id.btnBackButtonBoardMenu);
-        Button btnBackMiniGames = findViewById(R.id.btnBackMiniGames);
-        Button btnLaunchBoard = findViewById(R.id.btnLaunchBoard);
-        Button btnAbout = findViewById(R.id.btnAbout);
-
-        Button btnLaunchLabyrinth = findViewById(R.id.btnLaunchLabyrinth);
-        Button btnLaunchRunGame = findViewById(R.id.btnLaunchRunGame);
-        Button btnLaunchTaquin = findViewById(R.id.btnLaunchTaquin);
-
-        // Main Text
-        TextView mainpage_text = findViewById(R.id.tvMainPageTitle);
-
-        // Load Background Image
         Glide.with(this)
                 .asGif()
                 .load(R.drawable.mainpage_background)
                 .centerCrop()
-                .override(imageView.getWidth(), imageView.getHeight())
                 .into(imageView);
         frameLayout.addView(imageView);
 
-        // Bring UI elements to the front
-        mainpage_text.bringToFront();
-        btnLaunchSpriteSelectionForBoard.bringToFront();
-        btnLaunchMiniGamesMenu.bringToFront();
-        btnLaunchBoard.bringToFront();
-        btnBackButtonBoardMenu.bringToFront();
-        btnAbout.bringToFront();
+        // Initialiser les composants UI
+        playerBlue = findViewById(R.id.ivCharacterBlue);
+        playerRed = findViewById(R.id.ivCharacterRed);
+        playerPurple = findViewById(R.id.ivCharacterPurple);
+        ivTaquin = findViewById(R.id.ivTaquin);
+        ivMole = findViewById(R.id.ivMole);
+        ivLabyrinthe = findViewById(R.id.ivLabyrinth);
+        ivRunGame = findViewById(R.id.ivRunGame);
+        selectedCharacterText = findViewById(R.id.tvSelectedCharacterForBoard);
 
-        btnLaunchLabyrinth.bringToFront();
-        btnLaunchRunGame.bringToFront();
-        btnLaunchTaquin.bringToFront();
-        btnBackMiniGames.bringToFront();
+        // Initialiser les boutons
+        Button[] buttons = {
+                findViewById(R.id.btnLaunchSpriteSelectionForBoard),
+                findViewById(R.id.btnLaunchMiniGamesMenu),
+                findViewById(R.id.btnBackButtonBoardMenu),
+                findViewById(R.id.btnBackMiniGames),
+                findViewById(R.id.btnLaunchBoard),
+                findViewById(R.id.btnAbout),
+                findViewById(R.id.btnLaunchLabyrinth),
+                findViewById(R.id.btnLaunchRunGame),
+                findViewById(R.id.btnLaunchTaquin),
+                findViewById(R.id.btnLaunchMole)
+        };
 
-        // Set background for button
-        btnLaunchSpriteSelectionForBoard.setBackgroundResource(R.drawable.button_background_img);
-        btnLaunchMiniGamesMenu.setBackgroundResource(R.drawable.button_background_img);
-        btnLaunchBoard.setBackgroundResource(R.drawable.button_background_img);
-        btnBackButtonBoardMenu.setBackgroundResource(R.drawable.button_background_img);
-        btnAbout.setBackgroundResource(R.drawable.button_background_img);
-        btnLaunchLabyrinth.setBackgroundResource(R.drawable.button_background_img);
-        btnLaunchRunGame.setBackgroundResource(R.drawable.button_background_img);
-        btnLaunchTaquin.setBackgroundResource(R.drawable.button_background_img);
-        btnBackMiniGames.setBackgroundResource(R.drawable.button_background_img);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            btnLaunchSpriteSelectionForBoard.setBackgroundTintList(null);
-            btnLaunchMiniGamesMenu.setBackgroundTintList(null);
-            btnLaunchBoard.setBackgroundTintList(null);
-            btnBackButtonBoardMenu.setBackgroundTintList(null);
-            btnAbout.setBackgroundTintList(null);
-            btnLaunchLabyrinth.setBackgroundTintList(null);
-            btnLaunchRunGame.setBackgroundTintList(null);
-            btnLaunchTaquin.setBackgroundTintList(null);
-            btnBackMiniGames.setBackgroundTintList(null);
+        // Appliquer un arrière-plan et un éventuel tint sur tous les boutons
+        for (Button btn : buttons) {
+            btn.setBackgroundResource(R.drawable.button_background_img);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                btn.setBackgroundTintList(null);
+            }
+            btn.bringToFront();  // Apporte les boutons au premier plan
         }
+
+        // Texte principal
+        TextView mainpageText = findViewById(R.id.tvMainPageTitle);
+        mainpageText.bringToFront();  // Apporte le texte principal au premier plan
     }
+
 
     private void setBackgroundGif() {
         // Load GIFs for characters
@@ -167,13 +140,18 @@ public class MainActivity extends AppCompatActivity {
                 .load(R.drawable.taquin)
                 .into(ivTaquin);
 
+        Glide.with(this)
+                .asGif()
+                .load(R.drawable.mole_monster)
+                .into(ivMole);
+
     }
 
     private void configureButtons() {
         // In your button click listeners:
         findViewById(R.id.btnLaunchSpriteSelectionForBoard).setOnClickListener(v -> {
             showSpriteSelection();
-            playSoundEffect(R.raw.clik);
+            playSoundEffect(R.raw.button_clik);
         });
         findViewById(R.id.btnLaunchBoard).setOnClickListener(v -> {
             launchBoard();
@@ -181,19 +159,19 @@ public class MainActivity extends AppCompatActivity {
         });
         findViewById(R.id.btnLaunchMiniGamesMenu).setOnClickListener(v -> {
             showMiniGames();
-            playSoundEffect(R.raw.clik);
+            playSoundEffect(R.raw.button_clik);
         });
         findViewById(R.id.btnBackButtonBoardMenu).setOnClickListener(v -> {
             showMainMenu();
-            playSoundEffect(R.raw.clik);
+            playSoundEffect(R.raw.button_clik);
         });
         findViewById(R.id.btnBackMiniGames).setOnClickListener(v -> {
             showMainMenu();
-            playSoundEffect(R.raw.clik);
+            playSoundEffect(R.raw.button_clik);
         });
         findViewById(R.id.btnAbout).setOnClickListener(v -> {
             showAboutDialog();
-            playSoundEffect(R.raw.clik);
+            playSoundEffect(R.raw.button_clik);
         });
         findViewById(R.id.btnLaunchTaquin).setOnClickListener(v -> {
             launchActivity(Taquin_MA.class);
@@ -205,6 +183,10 @@ public class MainActivity extends AppCompatActivity {
         });
         findViewById(R.id.btnLaunchRunGame).setOnClickListener(v -> {
             launchActivity(RunGame_MA.class);
+            playSoundEffect(R.raw.startgame);
+        });
+        findViewById(R.id.btnLaunchMole).setOnClickListener(v -> {
+            launchActivity(Mole_MA.class);
             playSoundEffect(R.raw.startgame);
         });
 
@@ -260,21 +242,21 @@ public class MainActivity extends AppCompatActivity {
             findViewById(R.id.ivSpriteSelectionSelectEffectForBlue).setVisibility(View.VISIBLE);
             findViewById(R.id.ivSpriteSelectionSelectEffectForRed).setVisibility(View.GONE);
             findViewById(R.id.ivSpriteSelectionSelectEffectForPurple).setVisibility(View.GONE);
-            soundEffect = MediaPlayer.create(this, R.raw.select);
+            soundEffect = MediaPlayer.create(this, R.raw.spriteselection_select);
             soundEffect.setVolume(0.2f, 0.2f); // Volume gauche et droit à 50%
             soundEffect.start();
         } else if (selectedCharacter == playerRed) {
             findViewById(R.id.ivSpriteSelectionSelectEffectForBlue).setVisibility(View.GONE);
             findViewById(R.id.ivSpriteSelectionSelectEffectForRed).setVisibility(View.VISIBLE);
             findViewById(R.id.ivSpriteSelectionSelectEffectForPurple).setVisibility(View.GONE);
-            soundEffect = MediaPlayer.create(this, R.raw.select);
+            soundEffect = MediaPlayer.create(this, R.raw.spriteselection_select);
             soundEffect.setVolume(0.2f, 0.2f); // Volume gauche et droit à 50%
             soundEffect.start();
         } else if (selectedCharacter == playerPurple) {
             findViewById(R.id.ivSpriteSelectionSelectEffectForBlue).setVisibility(View.GONE);
             findViewById(R.id.ivSpriteSelectionSelectEffectForRed).setVisibility(View.GONE);
             findViewById(R.id.ivSpriteSelectionSelectEffectForPurple).setVisibility(View.VISIBLE);
-            soundEffect = MediaPlayer.create(this, R.raw.select);
+            soundEffect = MediaPlayer.create(this, R.raw.spriteselection_select);
             soundEffect.setVolume(0.2f, 0.2f); // Volume gauche et droit à 50%
             soundEffect.start();
         }
@@ -315,6 +297,8 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btnLaunchRunGame).setVisibility(View.VISIBLE);
         findViewById(R.id.btnLaunchLabyrinth).setVisibility(View.VISIBLE);
         findViewById(R.id.btnBackMiniGames).setVisibility(View.VISIBLE);
+        findViewById(R.id.btnLaunchMole).setVisibility(View.VISIBLE);
+
         // Enable textview
         findViewById(R.id.tvSelectGame).setVisibility(View.VISIBLE);
 
@@ -322,6 +306,7 @@ public class MainActivity extends AppCompatActivity {
         ivLabyrinthe.setVisibility(View.VISIBLE);
         ivRunGame.setVisibility(View.VISIBLE);
         ivTaquin.setVisibility(View.VISIBLE);
+        ivMole.setVisibility(View.VISIBLE);
 
         // Disable Main Menu UI
         disableMainMenuUI();
@@ -343,11 +328,13 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btnLaunchRunGame).setVisibility(View.GONE);
         findViewById(R.id.btnLaunchLabyrinth).setVisibility(View.GONE);
         findViewById(R.id.btnBackMiniGames).setVisibility(View.GONE);
+        findViewById(R.id.btnLaunchMole).setVisibility(View.GONE);
 
         // Disable gif
         ivLabyrinthe.setVisibility(View.GONE);
         ivRunGame.setVisibility(View.GONE);
         ivTaquin.setVisibility(View.GONE);
+        ivMole.setVisibility(View.GONE);
 
         // Disable TextViex of MiniGames
         findViewById(R.id.tvSelectGame).setVisibility(View.GONE);

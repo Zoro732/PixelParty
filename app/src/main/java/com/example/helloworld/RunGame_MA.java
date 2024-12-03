@@ -59,7 +59,7 @@ public class RunGame_MA extends AppCompatActivity {
         gameFrame.addView(gameView);
 
         // Main theme music
-        mainTheme = MediaPlayer.create(this, R.raw.rungametheme);
+        mainTheme = MediaPlayer.create(this, R.raw.rungame_maintheme);
         mainTheme.setVolume(0.5f, 0.5f);
         mainTheme.setLooping(true);
         mainTheme.start();
@@ -108,7 +108,7 @@ public class RunGame_MA extends AppCompatActivity {
 
         btnResume.setOnClickListener(v -> {
             gameView.resume();
-            playSoundEffect(R.raw.clik);
+            playSoundEffect(R.raw.button_clik);
             btnResume.setVisibility(View.GONE);
             btnRestart.setVisibility(View.GONE);
             btnQuit.setVisibility(View.GONE);
@@ -122,7 +122,7 @@ public class RunGame_MA extends AppCompatActivity {
             gameView.restartGame();
             isGameOver = false;
             ivSettings.setVisibility(View.VISIBLE);
-            playSoundEffect(R.raw.clik);
+            playSoundEffect(R.raw.button_clik);
             btnResume.setVisibility(View.GONE);
             btnRestart.setVisibility(View.GONE);
             btnQuit.setVisibility(View.GONE);
@@ -136,7 +136,7 @@ public class RunGame_MA extends AppCompatActivity {
 
         btnQuit.setOnClickListener(v -> {
             gameView.quitGame();
-            playSoundEffect(R.raw.clik);
+            playSoundEffect(R.raw.button_clik);
         });
 
 
