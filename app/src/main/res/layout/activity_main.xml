@@ -327,9 +327,8 @@
                 android:id="@+id/btnLaunchBoard"
                 android:layout_width="100dp"
                 android:layout_height="50dp"
+                android:layout_marginEnd="100dp"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginEnd="130dp"
-                android:layout_marginRight="130dp"
                 android:fontFamily="@font/press2start"
                 android:text="@string/play"
                 android:textColor="@color/white" />
@@ -339,11 +338,10 @@
                 android:layout_width="100dp"
                 android:layout_height="50dp"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginLeft="120dp"
                 android:fontFamily="@font/press2start"
                 android:text="@string/back"
                 android:textColor="@color/white" />
-
         </LinearLayout>
+
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

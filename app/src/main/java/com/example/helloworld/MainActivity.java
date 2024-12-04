@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initializeUI() {
-        // Initialiser le fond et le layout
+        // Initialize the background and layout
         FrameLayout frameLayout = findViewById(R.id.flMainPage);
         ImageView imageView = new ImageView(this);
         Glide.with(this)
@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
                 .into(imageView);
         frameLayout.addView(imageView);
 
-        // Initialiser les composants UI
+        // Initialize UI components
         playerBlue = findViewById(R.id.ivCharacterBlue);
         playerRed = findViewById(R.id.ivCharacterRed);
         playerPurple = findViewById(R.id.ivCharacterPurple);
@@ -79,13 +79,13 @@ public class MainActivity extends AppCompatActivity {
         ivRunGame = findViewById(R.id.ivRunGame);
         selectedCharacterText = findViewById(R.id.tvSelectedCharacterForBoard);
 
-        // Initialiser les boutons
+        // Initialize buttons
         Button[] buttons = {
                 findViewById(R.id.btnLaunchSpriteSelectionForBoard),
                 findViewById(R.id.btnLaunchMiniGamesMenu),
-                findViewById(R.id.btnBackButtonBoardMenu),
-                findViewById(R.id.btnBackMiniGames),
                 findViewById(R.id.btnLaunchBoard),
+                findViewById(R.id.btnBackMiniGames),
+                findViewById(R.id.btnBackButtonBoardMenu),
                 findViewById(R.id.btnAbout),
                 findViewById(R.id.btnLaunchLabyrinth),
                 findViewById(R.id.btnLaunchRunGame),
@@ -93,18 +93,18 @@ public class MainActivity extends AppCompatActivity {
                 findViewById(R.id.btnLaunchMole)
         };
 
-        // Appliquer un arrière-plan et un éventuel tint sur tous les boutons
+        // Apply background and bring buttons to the front
         for (Button btn : buttons) {
             btn.setBackgroundResource(R.drawable.button_background_img);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 btn.setBackgroundTintList(null);
             }
-            btn.bringToFront();  // Apporte les boutons au premier plan
+            btn.bringToFront();  // Bring buttons to the front
         }
 
-        // Texte principal
+        // Main text
         TextView mainpageText = findViewById(R.id.tvMainPageTitle);
-        mainpageText.bringToFront();  // Apporte le texte principal au premier plan
+        mainpageText.bringToFront();  // Bring main text to the front
     }
 
 
@@ -155,7 +155,11 @@ public class MainActivity extends AppCompatActivity {
         });
         findViewById(R.id.btnLaunchBoard).setOnClickListener(v -> {
             launchBoard();
-            playSoundEffect(R.raw.startgame);
+            if (selection == null) {
+                playSoundEffect(R.raw.error);
+            } else {
+                playSoundEffect(R.raw.startgame);
+            }
         });
         findViewById(R.id.btnLaunchMiniGamesMenu).setOnClickListener(v -> {
             showMiniGames();
@@ -186,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
             playSoundEffect(R.raw.startgame);
         });
         findViewById(R.id.btnLaunchMole).setOnClickListener(v -> {
-            launchActivity(Mole_MA.class);
+            launchActivity(Boss_MA.class);
             playSoundEffect(R.raw.startgame);
         });
 
@@ -378,7 +382,6 @@ public class MainActivity extends AppCompatActivity {
         // Redémarrer la musique si elle n'est pas en cours de lecture
         if (mainTheme != null && !mainTheme.isPlaying()) {
             mainTheme.start();
-            Log.d("MainActivity","restart theme");
         }
     }
 

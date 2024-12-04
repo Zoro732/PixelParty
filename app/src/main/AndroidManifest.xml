@@ -29,7 +29,7 @@
             android:screenOrientation="sensorLandscape">
         </activity>
 
-        <activity android:name=".Mole_MA"
+        <activity android:name=".Boss_MA"
             android:screenOrientation="sensorLandscape">
         </activity>
 

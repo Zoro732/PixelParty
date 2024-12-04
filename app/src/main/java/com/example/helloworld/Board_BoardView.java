@@ -37,14 +37,14 @@ public class Board_BoardView extends View {
 
     private int numberOfMapCase = -1;
     public static int[][] mapAction = {
-            {0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // 1 = Laby, 2 = Run, 3 = Taquin, Shop = 4 & MiniBoss = 5
-            {0, 0, 0, 3, 0, 2, 2, 0, 0, 0, 0, 0, 0},
+            {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 1, 2, 0, 3, 2, 0, 0, 0, 0, 0, 0},
             {0, 0, 0, 0, 0, 0, 0, 1, 3, 2, 0, 3, 0},
             {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
             {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3},
             {0, 0, 0, 0, 0, 1, 1, 3, 0, 1, 2, 2, 0},
             {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 5, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     };
 
     // FOR DEBUG OF COURSE
@@ -58,17 +58,7 @@ public class Board_BoardView extends View {
 //            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 //            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 //    };
-    // FOR DEBUG OF COURSE
-//    public static int[][] mapAction = {
-//            {0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-//            {0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0},
-//            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-//            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-//            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-//            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-//            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-//            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-//    };
+
     public static final int numRows = map.length;
     public static final int numColumns = map[0].length;
     public static int cellSize = 100; // Taille de chaque cellule
@@ -85,6 +75,8 @@ public class Board_BoardView extends View {
     private final Handler animationHandler = new Handler(Looper.getMainLooper());
 
     public int itemAction = 0; // 0=no action pending, 1 = dice +1, -1= dice -1 of oppenent
+
+    private Bitmap devilHeadBitmap;
 
 
     public Board_BoardView(Context context, AttributeSet attrs) {
@@ -125,6 +117,7 @@ public class Board_BoardView extends View {
 
     private void init() {
 
+        devilHeadBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.devil_head);
 
         // Initialize paints for drawing
         paint = new Paint();
@@ -290,10 +283,19 @@ public class Board_BoardView extends View {
         // Définir les paramètres de la peinture pour les bordures
         paint.setStyle(Paint.Style.STROKE); // Dessiner uniquement les contours
         paint.setStrokeWidth(10); // Épaisseur des contours
-        paint.setColor(Color.WHITE); // Couleur des bordures
+        paint.setColor(gameBoardCase.getCaseNumber() == 30 ? Color.RED : Color.WHITE);
 
         // Dessiner les contours de la case
         canvas.drawRect(left, top, right, bottom, paint);
+
+        // Draw the devil head on case 30
+        if (gameBoardCase.getCaseNumber() == 30) {
+            int textSize = (int) paint.getTextSize();
+            Bitmap scaledDevilHead = Bitmap.createScaledBitmap(devilHeadBitmap, textSize, textSize, false);
+            int bitmapLeft = left + (cellSize - textSize) / 2;
+            int bitmapTop = top + (cellSize - textSize) / 2;
+            canvas.drawBitmap(scaledDevilHead, bitmapLeft, bitmapTop, paint);
+        }
 
         // Afficher le texte si nécessaire (uniquement pour les cases valides)
         if (gameBoardCase.getValue() == 1) {
@@ -306,13 +308,16 @@ public class Board_BoardView extends View {
                     paint.setColor(Color.YELLOW);
                     break;
                 case 2:
-                    paint.setColor(Color.RED);
+                    paint.setColor(Color.CYAN);
                     break;
                 case 3:
                     paint.setColor(Color.GREEN);
                     break;
                 case 4:
                     paint.setColor(Color.MAGENTA);
+                    break;
+                case 5:
+                    paint.setColor(Color.RED);
                     break;
                 default:
                     paint.setColor(Color.WHITE);
