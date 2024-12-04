@@ -382,6 +382,7 @@ public class MainActivity extends AppCompatActivity {
         if (selection != null) {
             Intent intent = new Intent(this, Board_MA.class);
             intent.putExtra("selection_key", selection);
+            intent.putExtra("sound", sound);
             Log.d("MainActivity", "selection: " + selection);
             startActivity(intent);
         } else {
@@ -395,6 +396,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, activityClass);
         intent.putExtra("selection_key", "Bleu");
         intent.putExtra("game_mode", "minigames");
+        intent.putExtra("sound", sound);
         startActivity(intent);
     }
 

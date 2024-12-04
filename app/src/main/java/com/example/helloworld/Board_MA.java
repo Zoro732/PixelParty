@@ -46,6 +46,7 @@ public class Board_MA extends AppCompatActivity {
     private int starsNumberValue = 0;
     private boolean doPlayerWinPreviousGame = false;
     private boolean doPlayerEndBoard = false;
+    private boolean sound = true;
 
     // Media player for main theme
     private MediaPlayer mainTheme;
@@ -105,6 +106,7 @@ public class Board_MA extends AppCompatActivity {
         if (intent != null) {
             spriteSelection = intent.getStringExtra("selection_key");
             boardBoardView.setPlayerSpriteSelection(spriteSelection);
+            sound = intent.getBooleanExtra("sound", true);
         }
     }
 
@@ -117,7 +119,9 @@ public class Board_MA extends AppCompatActivity {
 
     private void handleDiceClick() {
         if (btnDice.isEnabled()) {
-            playSoundEffect(R.raw.button_clik);
+            if (sound) {
+                playSoundEffect(R.raw.button_clik);
+            }
             boardBoardView.startDiceRoll();
             btnPlusOne.setVisibility(View.VISIBLE);
             btnDice.setTextColor(Color.WHITE);
@@ -129,11 +133,15 @@ public class Board_MA extends AppCompatActivity {
 
     private void handlePlayClick() {
         startMiniGame();
-        playSoundEffect(R.raw.button_clik);
+        if (sound) {
+            playSoundEffect(R.raw.button_clik);
+        }
     }
 
     private void handlePlusOneClick() {
-        playSoundEffect(R.raw.board_itemused);
+        if (sound) {
+            playSoundEffect(R.raw.board_itemused);
+        }
         Toast.makeText(Board_MA.this, "Item Used: Dice +1", Toast.LENGTH_SHORT).show();
         btnPlusOne.setEnabled(false);
         btnPlusOne.setTextColor(Color.GRAY);
@@ -144,22 +152,28 @@ public class Board_MA extends AppCompatActivity {
     private void setupInventoryManagement() {
         View inventoryWindow = findViewById(R.id.inventoryWindow);
         btnInventory.setOnClickListener(v -> {
-            playSoundEffect(R.raw.button_clik);
+            if (sound) {
+                playSoundEffect(R.raw.button_clik);
+            }
             inventoryWindow.setVisibility(View.VISIBLE);
             inventoryWindow.animate().translationX(10).setDuration(200).start();
         });
 
         btnCloseInventory.setOnClickListener(v -> {
-            playSoundEffect(R.raw.button_clik);
+            if (sound) {
+                playSoundEffect(R.raw.button_clik);
+            }
             inventoryWindow.animate().translationX(0).setDuration(200).withEndAction(() -> inventoryWindow.setVisibility(View.GONE)).start();
         });
     }
 
     private void startMainTheme() {
-        mainTheme = MediaPlayer.create(this, R.raw.board_maintheme);
-        mainTheme.setLooping(true);
-        mainTheme.setVolume(0.5f, 0.5f);
-        mainTheme.start();
+        if (sound) {
+            mainTheme = MediaPlayer.create(this, R.raw.board_maintheme);
+            mainTheme.setLooping(true);
+            mainTheme.setVolume(0.5f, 0.5f);
+            mainTheme.start();
+        }
     }
 
     private final Runnable playerMovementRunnable = new Runnable() {
@@ -243,6 +257,7 @@ public class Board_MA extends AppCompatActivity {
         if (intent != null) {
             intent.putExtra("game_mode", "board");
             intent.putExtra("selection_key", spriteSelection);
+
             showGameDialog(title, message, intent, requestCode);
         }
     }
@@ -307,17 +322,26 @@ public class Board_MA extends AppCompatActivity {
                 break;
         }
         if (requestCode != END_BOSS_REQUEST_CODE) {
+
             if (result.equals("quit")) {
-                playSoundEffect(R.raw.lose);
+                if (sound) {
+                    playSoundEffect(R.raw.lose);
+                }
             } else {
-                playSoundEffect(R.raw.win);
+                if (sound) {
+                    playSoundEffect(R.raw.win);
+                }
                 doPlayerWinPreviousGame = true;
             }
         } else {
             if (result.equals("quit")) {
-                playSoundEffect(R.raw.board_lose);
+                if (sound) {
+                    playSoundEffect(R.raw.board_lose);
+                }
             } else {
-                playSoundEffect(R.raw.mole_victory);
+                if (sound) {
+                    playSoundEffect(R.raw.mole_victory);
+                }
             }
         }
 
@@ -331,7 +355,9 @@ public class Board_MA extends AppCompatActivity {
     }
 
     private void handleContinueClick() {
-        playSoundEffect(R.raw.button_clik);
+        if (sound) {
+            playSoundEffect(R.raw.button_clik);
+        }
         newRound = true;
         tvScore.setVisibility(View.GONE);
         btnContinue.setVisibility(View.GONE);

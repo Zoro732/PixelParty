@@ -24,6 +24,7 @@ public class RunGame_MA extends AppCompatActivity {
 
     private RunGame_GameView gameView;
     private boolean isGameOver = false;
+    private boolean sound = true;
     private Button btnResume, btnRestart, btnQuit;
     private String game_mode;
     private ImageView ivSettings;
@@ -67,6 +68,7 @@ public class RunGame_MA extends AppCompatActivity {
 
         Intent intent = getIntent();
         game_mode = intent.getStringExtra("game_mode");
+        sound = intent.getBooleanExtra("sound", true);
 
 
         flMainPage = findViewById(R.id.flMainPage);
@@ -94,7 +96,9 @@ public class RunGame_MA extends AppCompatActivity {
         ivSettings.setOnClickListener(v -> {
             // Action à réaliser lors du clic
             gameView.pause();
-            playSoundEffect(R.raw.pause);
+            if (sound) {
+                playSoundEffect(R.raw.pause);
+            }
             btnResume.setVisibility(View.VISIBLE);
             btnRestart.setVisibility(View.VISIBLE);
             btnQuit.setVisibility(View.VISIBLE);
@@ -108,7 +112,9 @@ public class RunGame_MA extends AppCompatActivity {
 
         btnResume.setOnClickListener(v -> {
             gameView.resume();
-            playSoundEffect(R.raw.button_clik);
+            if (sound) {
+                playSoundEffect(R.raw.button_clik);
+            }
             btnResume.setVisibility(View.GONE);
             btnRestart.setVisibility(View.GONE);
             btnQuit.setVisibility(View.GONE);
@@ -122,7 +128,9 @@ public class RunGame_MA extends AppCompatActivity {
             gameView.restartGame();
             isGameOver = false;
             ivSettings.setVisibility(View.VISIBLE);
-            playSoundEffect(R.raw.button_clik);
+            if (sound) {
+                playSoundEffect(R.raw.button_clik);
+            }
             btnResume.setVisibility(View.GONE);
             btnRestart.setVisibility(View.GONE);
             btnQuit.setVisibility(View.GONE);
@@ -136,7 +144,9 @@ public class RunGame_MA extends AppCompatActivity {
 
         btnQuit.setOnClickListener(v -> {
             gameView.quitGame();
-            playSoundEffect(R.raw.button_clik);
+            if (sound) {
+                playSoundEffect(R.raw.button_clik);
+            }
         });
 
 
@@ -172,7 +182,9 @@ public class RunGame_MA extends AppCompatActivity {
                                 tvPauseText.setText("Game Over");
                                 tvPauseText.setGravity(Gravity.CENTER);
                                 mainTheme.pause();
-                                playSoundEffect(R.raw.lose);
+                                if (sound) {
+                                    playSoundEffect(R.raw.lose);
+                                }
                             }
                             isGameOver = true;
                         }

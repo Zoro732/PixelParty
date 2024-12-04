@@ -39,6 +39,7 @@ public class Taquin_MA extends AppCompatActivity {
     private boolean isTimerRunning = false;
     private boolean isLoose = false;
     private boolean doPlayerQuitGame = false;
+    private boolean sound = true;
 
     private MediaPlayer mainTheme;
     private String game_mode;
@@ -101,6 +102,7 @@ public class Taquin_MA extends AppCompatActivity {
     private void initializeGame() {
         Intent intent = getIntent();
         game_mode = intent.getStringExtra("game_mode");
+        sound = intent.getBooleanExtra("sound", true);
         mainTheme = MediaPlayer.create(this, R.raw.taquin_maintheme);
         mainTheme.setVolume(0.5f, 0.5f);
         mainTheme.setLooping(true);
@@ -152,17 +154,23 @@ public class Taquin_MA extends AppCompatActivity {
             startCountdownTimer();
             glGame.setEnabled(true); // Disable interaction
             mainTheme.start();
-            playSoundEffect(R.raw.button_clik);
+            if (sound) {
+                playSoundEffect(R.raw.button_clik);
+            }
         });
 
         btnRestart.setOnClickListener(v -> {
             restartGame();
-            playSoundEffect(R.raw.button_clik);
+            if (sound) {
+                playSoundEffect(R.raw.button_clik);
+            }
         });
         btnQuit.setOnClickListener(v -> {
             finish();
             llPauseMenu.setVisibility(View.GONE);
-            playSoundEffect(R.raw.button_clik);
+            if (sound) {
+                playSoundEffect(R.raw.button_clik);
+            }
         });
 
         ivSettings.setOnClickListener(v -> {
@@ -170,7 +178,9 @@ public class Taquin_MA extends AppCompatActivity {
             stopCountdownTimer();
             glGame.setEnabled(false); // Disable interaction
             mainTheme.pause();
-            playSoundEffect(R.raw.button_clik);
+            if (sound) {
+                playSoundEffect(R.raw.button_clik);
+            }
         });
 
         setButtonBackground();
@@ -354,7 +364,9 @@ public class Taquin_MA extends AppCompatActivity {
             stopCountdownTimer();
             glGame.setEnabled(false); // Disable interaction
             mainTheme.pause();
-            playSoundEffect(R.raw.win);
+            if (sound) {
+                playSoundEffect(R.raw.win);
+            }
             tvPause.setGravity(Gravity.CENTER);
             tvPause.setText("You won! in " + (defaultTimerValue - timerValue) + " seconds");
         }

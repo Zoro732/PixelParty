@@ -30,6 +30,7 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
     private String game_mode;
     private boolean isGameFinished = false;
     private boolean doPlayerQuitGame = false;
+    private boolean sound = true;
 
     private MediaPlayer maintheme;
 
@@ -50,6 +51,7 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
         Intent intent = getIntent();
         game_mode = intent.getStringExtra("game_mode");
         String selection = intent.getStringExtra("selection_key");
+        sound = intent.getBooleanExtra("sound", true);
 
         labyrintheGameView = new Labyrinthe_GameView(this, selection);
         gameFrame.addView(labyrintheGameView);
@@ -106,7 +108,9 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
         imageSettings.setOnClickListener(v -> {
             if (labyrintheGameView != null) {
                 labyrintheGameView.pauseGame();
-                playSoundEffect(R.raw.pause);
+                if (sound) {
+                    playSoundEffect(R.raw.pause);
+                }
             }
             maintheme.pause();
             showPauseMenu();
@@ -115,19 +119,25 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
         btnResume.setOnClickListener(v -> {
             resumeGame();
             maintheme.start();
-            playSoundEffect(R.raw.button_clik);
+            if (sound) {
+                playSoundEffect(R.raw.button_clik);
+            }
         });
 
         btnRestart.setOnClickListener(v -> {
             restartGame();
             maintheme.seekTo(0);
             maintheme.start();
-            playSoundEffect(R.raw.button_clik);
+            if (sound) {
+                playSoundEffect(R.raw.button_clik);
+            }
         });
 
         btnQuit.setOnClickListener(v -> {
             quitGame();
-            playSoundEffect(R.raw.button_clik);
+            if (sound) {
+                playSoundEffect(R.raw.button_clik);
+            }
         });
     }
 
@@ -260,7 +270,9 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
             ivSettings.setVisibility(View.GONE);
             btnRestart.setVisibility(View.VISIBLE);
             btnQuit.setVisibility(View.VISIBLE);
-            playSoundEffect(R.raw.win);
+            if (sound) {
+                playSoundEffect(R.raw.win);
+            }
             maintheme.pause();
 
         } else if ("board".equals(game_mode)) {
