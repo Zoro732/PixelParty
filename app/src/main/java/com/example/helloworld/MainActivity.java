@@ -315,6 +315,8 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btnLaunchMiniGamesMenu).setVisibility(View.GONE);
         findViewById(R.id.tvMainPageTitle).setVisibility(View.GONE);
         findViewById(R.id.btnAbout).setVisibility(View.GONE);
+        findViewById(R.id.soundOn).setVisibility(View.GONE);
+        findViewById(R.id.soundOff).setVisibility(View.GONE);
     }
 
     private void showMiniGames() {
@@ -344,12 +346,13 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btnLaunchMiniGamesMenu).setVisibility(View.VISIBLE);
         findViewById(R.id.tvMainPageTitle).setVisibility(View.VISIBLE);
         findViewById(R.id.btnAbout).setVisibility(View.VISIBLE);
+        findViewById(R.id.soundOn).setVisibility(View.VISIBLE);
 
         // Disable SpriteSelection for Board Menu
         findViewById(R.id.llSpriteSelectionForBoard).setVisibility(View.GONE);
         findViewById(R.id.llBoardMenu).setVisibility(View.GONE);
 
-        // Disbale Mini Game UI
+        // Disable Mini Game UI
         findViewById(R.id.btnLaunchTaquin).setVisibility(View.GONE);
         findViewById(R.id.btnLaunchRunGame).setVisibility(View.GONE);
         findViewById(R.id.btnLaunchLabyrinth).setVisibility(View.GONE);
