@@ -88,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
         ivLabyrinthe = findViewById(R.id.ivLabyrinth);
         ivRunGame = findViewById(R.id.ivRunGame);
         selectedCharacterText = findViewById(R.id.tvSelectedCharacterForBoard);
+        soundOn = findViewById(R.id.soundOn);
         soundOff = findViewById(R.id.soundOff);
 
         // Initialize buttons
@@ -112,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
             }
             btn.bringToFront();  // Bring buttons to the front
         }
-
+        soundOn.bringToFront();
         // Main text
         TextView mainpageText = findViewById(R.id.tvMainPageTitle);
         mainpageText.bringToFront();  // Bring main text to the front
@@ -164,11 +165,13 @@ public class MainActivity extends AppCompatActivity {
             sound = false;
             soundOff.setVisibility(View.VISIBLE);
             soundOn.setVisibility(View.GONE);
+            soundOff.bringToFront();
         });
         findViewById(R.id.soundOff).setOnClickListener(v -> {
             sound = true;
             soundOff.setVisibility(View.GONE);
             soundOn.setVisibility(View.VISIBLE);
+            soundOn.bringToFront();
         });
         if (sound) {
             findViewById(R.id.btnLaunchSpriteSelectionForBoard).setOnClickListener(v -> {
