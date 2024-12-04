@@ -24,12 +24,22 @@ import com.bumptech.glide.Glide;
 public class MainActivity extends AppCompatActivity {
 
     // Constants
+    private boolean sound = true;
     private static final String PREFS_NAME = "GamePrefs";
 
     // UI Elements
-    private ImageView playerBlue, playerRed, playerPurple, ivTaquin, ivLabyrinthe, ivRunGame, ivMole;
+    private ImageView playerBlue;
+    private ImageView playerRed;
+    private ImageView playerPurple;
+    private ImageView ivTaquin;
+    private ImageView ivLabyrinthe;
+    private ImageView ivRunGame;
+    private ImageView ivMole;
+    private ImageView soundOff;
+    private ImageView soundOn;
     private TextView selectedCharacterText;
     private String selection;
+
 
     private MediaPlayer mainTheme;
 
@@ -78,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
         ivLabyrinthe = findViewById(R.id.ivLabyrinth);
         ivRunGame = findViewById(R.id.ivRunGame);
         selectedCharacterText = findViewById(R.id.tvSelectedCharacterForBoard);
+        soundOff = findViewById(R.id.soundOff);
 
         // Initialize buttons
         Button[] buttons = {
@@ -149,51 +160,62 @@ public class MainActivity extends AppCompatActivity {
 
     private void configureButtons() {
         // In your button click listeners:
-        findViewById(R.id.btnLaunchSpriteSelectionForBoard).setOnClickListener(v -> {
-            showSpriteSelection();
-            playSoundEffect(R.raw.button_clik);
+        findViewById(R.id.soundOn).setOnClickListener(v -> {
+            sound = false;
+            soundOff.setVisibility(View.VISIBLE);
+            soundOn.setVisibility(View.GONE);
         });
-        findViewById(R.id.btnLaunchBoard).setOnClickListener(v -> {
-            launchBoard();
-            if (selection == null) {
-                playSoundEffect(R.raw.error);
-            } else {
+        findViewById(R.id.soundOff).setOnClickListener(v -> {
+            sound = true;
+            soundOff.setVisibility(View.GONE);
+            soundOn.setVisibility(View.VISIBLE);
+        });
+        if (sound) {
+            findViewById(R.id.btnLaunchSpriteSelectionForBoard).setOnClickListener(v -> {
+                showSpriteSelection();
+                playSoundEffect(R.raw.button_clik);
+            });
+            findViewById(R.id.btnLaunchBoard).setOnClickListener(v -> {
+                launchBoard();
+                if (selection == null) {
+                    playSoundEffect(R.raw.error);
+                } else {
+                    playSoundEffect(R.raw.startgame);
+                }
+            });
+            findViewById(R.id.btnLaunchMiniGamesMenu).setOnClickListener(v -> {
+                showMiniGames();
+                playSoundEffect(R.raw.button_clik);
+            });
+            findViewById(R.id.btnBackButtonBoardMenu).setOnClickListener(v -> {
+                showMainMenu();
+                playSoundEffect(R.raw.button_clik);
+            });
+            findViewById(R.id.btnBackMiniGames).setOnClickListener(v -> {
+                showMainMenu();
+                playSoundEffect(R.raw.button_clik);
+            });
+            findViewById(R.id.btnAbout).setOnClickListener(v -> {
+                showAboutDialog();
+                playSoundEffect(R.raw.button_clik);
+            });
+            findViewById(R.id.btnLaunchTaquin).setOnClickListener(v -> {
+                launchActivity(Taquin_MA.class);
                 playSoundEffect(R.raw.startgame);
-            }
-        });
-        findViewById(R.id.btnLaunchMiniGamesMenu).setOnClickListener(v -> {
-            showMiniGames();
-            playSoundEffect(R.raw.button_clik);
-        });
-        findViewById(R.id.btnBackButtonBoardMenu).setOnClickListener(v -> {
-            showMainMenu();
-            playSoundEffect(R.raw.button_clik);
-        });
-        findViewById(R.id.btnBackMiniGames).setOnClickListener(v -> {
-            showMainMenu();
-            playSoundEffect(R.raw.button_clik);
-        });
-        findViewById(R.id.btnAbout).setOnClickListener(v -> {
-            showAboutDialog();
-            playSoundEffect(R.raw.button_clik);
-        });
-        findViewById(R.id.btnLaunchTaquin).setOnClickListener(v -> {
-            launchActivity(Taquin_MA.class);
-            playSoundEffect(R.raw.startgame);
-        });
-        findViewById(R.id.btnLaunchLabyrinth).setOnClickListener(v -> {
-            launchActivity(Labyrinthe_MA.class);
-            playSoundEffect(R.raw.startgame);
-        });
-        findViewById(R.id.btnLaunchRunGame).setOnClickListener(v -> {
-            launchActivity(RunGame_MA.class);
-            playSoundEffect(R.raw.startgame);
-        });
-        findViewById(R.id.btnLaunchMole).setOnClickListener(v -> {
-            launchActivity(Boss_MA.class);
-            playSoundEffect(R.raw.startgame);
-        });
-
+            });
+            findViewById(R.id.btnLaunchLabyrinth).setOnClickListener(v -> {
+                launchActivity(Labyrinthe_MA.class);
+                playSoundEffect(R.raw.startgame);
+            });
+            findViewById(R.id.btnLaunchRunGame).setOnClickListener(v -> {
+                launchActivity(RunGame_MA.class);
+                playSoundEffect(R.raw.startgame);
+            });
+            findViewById(R.id.btnLaunchMole).setOnClickListener(v -> {
+                launchActivity(Boss_MA.class);
+                playSoundEffect(R.raw.startgame);
+            });
+        }
         ivLabyrinthe.setOnClickListener(v -> {
             launchActivity(Labyrinthe_MA.class);
             playSoundEffect(R.raw.startgame);
