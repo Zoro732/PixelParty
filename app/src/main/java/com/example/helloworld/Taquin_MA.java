@@ -263,9 +263,7 @@ public class Taquin_MA extends AppCompatActivity {
                 }
 
                 final int row = i, col = j;
-                tile.setOnClickListener(v -> {
-                    onTileClick(row, col);
-                });
+                tile.setOnClickListener(v -> onTileClick(row, col));
             }
         }
     }

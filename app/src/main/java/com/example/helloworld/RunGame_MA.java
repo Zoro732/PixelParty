@@ -9,7 +9,6 @@ import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
@@ -49,10 +48,10 @@ public class RunGame_MA extends AppCompatActivity {
         setContentView(R.layout.rungame);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        FrameLayout gameFrame = findViewById(R.id.flMainPage);
+        flMainPage = findViewById(R.id.flMainPage);
         gameView = new RunGame_GameView(this, getWindowManager().getDefaultDisplay().getWidth(),
                 getWindowManager().getDefaultDisplay().getHeight());
-        gameFrame.addView(gameView);
+        flMainPage.addView(gameView);
 
         mainTheme = MediaPlayer.create(this, R.raw.rungame_maintheme);
         mainTheme.setVolume(0.5f, 0.5f);
@@ -64,7 +63,6 @@ public class RunGame_MA extends AppCompatActivity {
         Intent intent = getIntent();
         game_mode = intent.getStringExtra("game_mode");
 
-        flMainPage = findViewById(R.id.flMainPage);
 
         ivSettings = findViewById(R.id.ivSettings);
         ivSettings.bringToFront();
@@ -148,11 +146,8 @@ public class RunGame_MA extends AppCompatActivity {
         Runnable checkGameOver = new Runnable() {
             @Override
             public void run() {
-                Log.d("RunGame_MA", "In run()");
                 if (!isGameOver) {
-                    Log.d("RunGame_MA", "Vérification de la fin du jeu");
                     if (gameView.getIsDead()) {
-                        Log.d("RunGame_MA", "Le joueur est mort");
                         if (game_mode != null) {
                             if (game_mode.equals("board")) {
                                 finish();

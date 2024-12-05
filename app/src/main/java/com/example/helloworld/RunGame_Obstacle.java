@@ -1,7 +1,6 @@
 package com.example.helloworld;
 
 import android.graphics.Bitmap;
-import android.graphics.Rect;
 import android.graphics.RectF;
 
 import java.util.Arrays;
@@ -11,7 +10,6 @@ public class RunGame_Obstacle {
     private int y;
     private final boolean isJumpable;
     private final Bitmap image;
-    private final boolean hasPlayedSound = false;  // Variable pour suivre si le son a été joué
 
     // Constructeur
     public RunGame_Obstacle(int x, int y, Bitmap image, Bitmap[] vehicles) {

@@ -311,7 +311,7 @@ public class Labyrinthe_GameView extends SurfaceView implements Runnable {
         Choreographer.getInstance().removeFrameCallback(frameCallback);
     }
 
-    public void moveBall(float x, float y) {
+    public void movePlayer(float x, float y) {
         if (!isPaused) {
 
             // Mise à jour de la vitesse en fonction du gyroscope

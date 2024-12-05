@@ -30,7 +30,6 @@ public class Board_MA extends AppCompatActivity {
     private static final int LABY_REQUEST_CODE = 1;
     private static final int RUN_REQUEST_CODE = 2;
     private static final int TAQUIN_REQUEST_CODE = 3;
-    private static final int MINI_BOSS_REQUEST_CODE = 4;
     private static final int END_BOSS_REQUEST_CODE = 5;
 
     // UI Elements

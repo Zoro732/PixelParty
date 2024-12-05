@@ -47,18 +47,6 @@ public class Board_BoardView extends View {
             {0, 5, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     };
 
-    // FOR DEBUG OF COURSE
-//    public static int[][] mapAction = {
-//            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-//            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-//            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-//            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-//            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-//            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-//            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-//            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-//    };
-
     public static final int numRows = map.length;
     public static final int numColumns = map[0].length;
     public static int cellSize = 100; // Taille de chaque cellule

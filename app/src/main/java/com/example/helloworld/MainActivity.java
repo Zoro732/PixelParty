@@ -8,7 +8,6 @@ import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -293,7 +292,6 @@ public class MainActivity extends AppCompatActivity {
         playerPurple.setBackgroundColor(Color.TRANSPARENT);
 
         // Highlight Selected Character
-        MediaPlayer soundEffect;
         if (selectedCharacter == playerBlue) {
             findViewById(R.id.ivSpriteSelectionSelectEffectForBlue).setVisibility(View.VISIBLE);
             findViewById(R.id.ivSpriteSelectionSelectEffectForRed).setVisibility(View.GONE);
@@ -414,7 +412,6 @@ public class MainActivity extends AppCompatActivity {
         if (selection != null) {
             Intent intent = new Intent(this, Board_MA.class);
             intent.putExtra("selection_key", selection);
-            Log.d("MainActivity", "selection: " + selection);
             startActivity(intent);
         } else {
             Toast.makeText(this, "Aucun personnage sélectionné", Toast.LENGTH_SHORT).show();

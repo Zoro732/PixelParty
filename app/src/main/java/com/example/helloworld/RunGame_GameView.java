@@ -11,7 +11,6 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.media.MediaPlayer;
-import android.util.Log;
 import android.view.Choreographer;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
@@ -216,15 +215,6 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
         // Fermer le jeu ou revenir à un autre écran
         // Par exemple, dans une application Android, vous pourriez vouloir fermer cette activité:
         ((Activity) getContext()).finish();
-    }
-
-    // For debug
-    private void drawBorder(Canvas canvas, RectF rect, Paint paint) {
-        paint.setStyle(Paint.Style.STROKE); // Style de peinture pour les contours
-        paint.setStrokeWidth(5); // Largeur de la bordure
-        paint.setColor(Color.RED); // Couleur de la bordure
-        canvas.drawRect(rect, paint);
-        paint.setStyle(Paint.Style.FILL); // Remettre le style de peinture à remplissage après
     }
 
     private void update() {
@@ -435,7 +425,6 @@ public class RunGame_GameView extends SurfaceView implements Runnable {
     }
 
     void restartGame() {
-        Log.d("RunGame_MA", "Restart Game");
         score = 0;
         isDead = false;
         runGamePlayer.resetPosition(); // Reset player position

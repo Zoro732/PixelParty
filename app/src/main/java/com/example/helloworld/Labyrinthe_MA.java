@@ -245,7 +245,7 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
         if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
             float x = event.values[0];
             float y = event.values[1];
-            labyrintheGameView.moveBall(x, y);
+            labyrintheGameView.movePlayer(x, y);
         }
 
         checkGameStatus();
