@@ -30,7 +30,6 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
     private String game_mode;
     private boolean isGameFinished = false;
     private boolean doPlayerQuitGame = false;
-    private boolean sound = true;
 
     private MediaPlayer maintheme;
 
@@ -51,7 +50,6 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
         Intent intent = getIntent();
         game_mode = intent.getStringExtra("game_mode");
         String selection = intent.getStringExtra("selection_key");
-        sound = intent.getBooleanExtra("sound", true);
 
         labyrintheGameView = new Labyrinthe_GameView(this, selection);
         gameFrame.addView(labyrintheGameView);
@@ -68,7 +66,9 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
         maintheme = MediaPlayer.create(this,R.raw.labyrinth_maintheme);
         maintheme.setVolume(0.5f,0.5f);
         maintheme.setLooping(true);
-        maintheme.start();
+        if (SoundPreferences.isSoundEnabled(this)) {
+            maintheme.start();
+        }
     }
 
     private void setButtonBackground() {
@@ -108,7 +108,7 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
         imageSettings.setOnClickListener(v -> {
             if (labyrintheGameView != null) {
                 labyrintheGameView.pauseGame();
-                if (sound) {
+                if (SoundPreferences.isSoundEnabled(this)) {
                     playSoundEffect(R.raw.pause);
                 }
             }
@@ -119,7 +119,7 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
         btnResume.setOnClickListener(v -> {
             resumeGame();
             maintheme.start();
-            if (sound) {
+            if (SoundPreferences.isSoundEnabled(this)) {
                 playSoundEffect(R.raw.button_clik);
             }
         });
@@ -128,14 +128,14 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
             restartGame();
             maintheme.seekTo(0);
             maintheme.start();
-            if (sound) {
+            if (SoundPreferences.isSoundEnabled(this)) {
                 playSoundEffect(R.raw.button_clik);
             }
         });
 
         btnQuit.setOnClickListener(v -> {
             quitGame();
-            if (sound) {
+            if (SoundPreferences.isSoundEnabled(this)) {
                 playSoundEffect(R.raw.button_clik);
             }
         });
@@ -187,7 +187,9 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
     @Override
     protected void onResume() {
         super.onResume();
-        maintheme.start();
+        if (maintheme != null && SoundPreferences.isSoundEnabled(this) && !maintheme.isPlaying()) {
+            maintheme.start();
+        }
         if (gyroscope != null) {
             sensorManager.registerListener(this, gyroscope, SensorManager.SENSOR_DELAY_GAME);
         }
@@ -200,7 +202,9 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
     @Override
     protected void onPause() {
         super.onPause();
-        maintheme.pause();
+        if (maintheme != null && maintheme.isPlaying()) {
+            maintheme.pause();
+        }
         if (sensorManager != null) {
             sensorManager.unregisterListener(this);
         }
@@ -219,7 +223,6 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
             labyrintheGameView.quitGame();
         }
     }
-
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void hideNavigationBar() {
@@ -270,7 +273,7 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
             ivSettings.setVisibility(View.GONE);
             btnRestart.setVisibility(View.VISIBLE);
             btnQuit.setVisibility(View.VISIBLE);
-            if (sound) {
+            if (SoundPreferences.isSoundEnabled(this)) {
                 playSoundEffect(R.raw.win);
             }
             maintheme.pause();
@@ -316,6 +319,4 @@ public class Labyrinthe_MA extends AppCompatActivity implements SensorEventListe
                 .setCancelable(false)
                 .show();
     }
-
-
 }

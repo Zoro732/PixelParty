@@ -24,7 +24,6 @@ import com.bumptech.glide.Glide;
 public class MainActivity extends AppCompatActivity {
 
     // Constants
-    private boolean sound = true;
     private static final String PREFS_NAME = "GamePrefs";
 
     // UI Elements
@@ -35,13 +34,16 @@ public class MainActivity extends AppCompatActivity {
     private ImageView ivLabyrinthe;
     private ImageView ivRunGame;
     private ImageView ivMole;
-    private ImageView soundOff;
-    private ImageView soundOn;
+    private ImageView ivSoundOff;
+    private ImageView ivSoundOn;
     private TextView selectedCharacterText;
     private String selection;
 
 
     private MediaPlayer mainTheme;
+
+    private MediaPlayer toggleSoundButtonOn;
+    private MediaPlayer toggleSoundButtonOff;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -62,10 +64,15 @@ public class MainActivity extends AppCompatActivity {
             hideNavigationBar();
         }
 
-        mainTheme = MediaPlayer.create(this,R.raw.mainactivity_maintheme);
+        mainTheme = MediaPlayer.create(this, R.raw.mainactivity_maintheme);
         mainTheme.setLooping(true);
-        mainTheme.setVolume(0.3f,0.3f);
-        mainTheme.start();
+        mainTheme.setVolume(0.3f, 0.3f);
+        if (SoundPreferences.isSoundEnabled(this)) {
+            mainTheme.start();
+        }
+
+        toggleSoundButtonOn = MediaPlayer.create(this, R.raw.toggle_on_sound);
+        toggleSoundButtonOff = MediaPlayer.create(this, R.raw.toggle_off_sound);
     }
 
     private void initializeUI() {
@@ -88,8 +95,9 @@ public class MainActivity extends AppCompatActivity {
         ivLabyrinthe = findViewById(R.id.ivLabyrinth);
         ivRunGame = findViewById(R.id.ivRunGame);
         selectedCharacterText = findViewById(R.id.tvSelectedCharacterForBoard);
-        soundOn = findViewById(R.id.soundOn);
-        soundOff = findViewById(R.id.soundOff);
+
+        ivSoundOn = findViewById(R.id.ivSoundOn);
+        ivSoundOff = findViewById(R.id.ivSoundOff);
 
         // Initialize buttons
         Button[] buttons = {
@@ -113,7 +121,8 @@ public class MainActivity extends AppCompatActivity {
             }
             btn.bringToFront();  // Bring buttons to the front
         }
-        soundOn.bringToFront();
+        ivSoundOff.bringToFront();
+        ivSoundOn.bringToFront();
         // Main text
         TextView mainpageText = findViewById(R.id.tvMainPageTitle);
         mainpageText.bringToFront();  // Bring main text to the front
@@ -160,65 +169,80 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void configureButtons() {
+
         // In your button click listeners:
-        findViewById(R.id.soundOn).setOnClickListener(v -> {
-            sound = false;
-            soundOff.setVisibility(View.VISIBLE);
-            soundOn.setVisibility(View.GONE);
-            soundOff.bringToFront();
+        findViewById(R.id.ivSoundOn).setOnClickListener(v -> {
+            ivSoundOff.setVisibility(View.VISIBLE);
+            ivSoundOn.setVisibility(View.GONE);
+            ivSoundOff.bringToFront();
+            toggleSoundButtonOff.start();
+            SoundPreferences.setSoundEnabled(this, false);
+            mainTheme.pause();
         });
-        findViewById(R.id.soundOff).setOnClickListener(v -> {
-            sound = true;
-            soundOff.setVisibility(View.GONE);
-            soundOn.setVisibility(View.VISIBLE);
-            soundOn.bringToFront();
+        findViewById(R.id.ivSoundOff).setOnClickListener(v -> {
+            ivSoundOff.setVisibility(View.GONE);
+            ivSoundOn.setVisibility(View.VISIBLE);
+            ivSoundOn.bringToFront();
+            toggleSoundButtonOn.start();
+
+            SoundPreferences.setSoundEnabled(this, true);
+            mainTheme.start();
+
         });
-        if (sound) {
-            findViewById(R.id.btnLaunchSpriteSelectionForBoard).setOnClickListener(v -> {
-                showSpriteSelection();
-                playSoundEffect(R.raw.button_clik);
-            });
-            findViewById(R.id.btnLaunchBoard).setOnClickListener(v -> {
-                launchBoard();
-                if (selection == null) {
-                    playSoundEffect(R.raw.error);
-                } else {
-                    playSoundEffect(R.raw.startgame);
-                }
-            });
-            findViewById(R.id.btnLaunchMiniGamesMenu).setOnClickListener(v -> {
-                showMiniGames();
-                playSoundEffect(R.raw.button_clik);
-            });
-            findViewById(R.id.btnBackButtonBoardMenu).setOnClickListener(v -> {
-                showMainMenu();
-                playSoundEffect(R.raw.button_clik);
-            });
-            findViewById(R.id.btnBackMiniGames).setOnClickListener(v -> {
-                showMainMenu();
-                playSoundEffect(R.raw.button_clik);
-            });
-            findViewById(R.id.btnAbout).setOnClickListener(v -> {
-                showAboutDialog();
-                playSoundEffect(R.raw.button_clik);
-            });
-            findViewById(R.id.btnLaunchTaquin).setOnClickListener(v -> {
-                launchActivity(Taquin_MA.class);
-                playSoundEffect(R.raw.startgame);
-            });
-            findViewById(R.id.btnLaunchLabyrinth).setOnClickListener(v -> {
-                launchActivity(Labyrinthe_MA.class);
-                playSoundEffect(R.raw.startgame);
-            });
-            findViewById(R.id.btnLaunchRunGame).setOnClickListener(v -> {
-                launchActivity(RunGame_MA.class);
-                playSoundEffect(R.raw.startgame);
-            });
-            findViewById(R.id.btnLaunchMole).setOnClickListener(v -> {
-                launchActivity(Boss_MA.class);
-                playSoundEffect(R.raw.startgame);
-            });
+
+        if (SoundPreferences.isSoundEnabled(this)) {
+            ivSoundOn.setVisibility(View.VISIBLE);
+            ivSoundOff.setVisibility(View.GONE);
+        } else {
+            ivSoundOn.setVisibility(View.GONE);
+            ivSoundOff.setVisibility(View.VISIBLE);
         }
+
+        findViewById(R.id.btnLaunchSpriteSelectionForBoard).setOnClickListener(v -> {
+            showSpriteSelection();
+            playSoundEffect(R.raw.button_clik);
+        });
+        findViewById(R.id.btnLaunchBoard).setOnClickListener(v -> {
+            launchBoard();
+            if (selection == null) {
+                playSoundEffect(R.raw.error);
+            } else {
+                playSoundEffect(R.raw.startgame);
+            }
+        });
+        findViewById(R.id.btnLaunchMiniGamesMenu).setOnClickListener(v -> {
+            showMiniGames();
+            playSoundEffect(R.raw.button_clik);
+        });
+        findViewById(R.id.btnBackButtonBoardMenu).setOnClickListener(v -> {
+            showMainMenu();
+            playSoundEffect(R.raw.button_clik);
+        });
+        findViewById(R.id.btnBackMiniGames).setOnClickListener(v -> {
+            showMainMenu();
+            playSoundEffect(R.raw.button_clik);
+        });
+        findViewById(R.id.btnAbout).setOnClickListener(v -> {
+            showAboutDialog();
+            playSoundEffect(R.raw.button_clik);
+        });
+        findViewById(R.id.btnLaunchTaquin).setOnClickListener(v -> {
+            launchActivity(Taquin_MA.class);
+            playSoundEffect(R.raw.startgame);
+        });
+        findViewById(R.id.btnLaunchLabyrinth).setOnClickListener(v -> {
+            launchActivity(Labyrinthe_MA.class);
+            playSoundEffect(R.raw.startgame);
+        });
+        findViewById(R.id.btnLaunchRunGame).setOnClickListener(v -> {
+            launchActivity(RunGame_MA.class);
+            playSoundEffect(R.raw.startgame);
+        });
+        findViewById(R.id.btnLaunchMole).setOnClickListener(v -> {
+            launchActivity(Boss_MA.class);
+            playSoundEffect(R.raw.startgame);
+        });
+
         ivLabyrinthe.setOnClickListener(v -> {
             launchActivity(Labyrinthe_MA.class);
             playSoundEffect(R.raw.startgame);
@@ -235,6 +259,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void playSoundEffect(int soundResourceId) {
+        if (!SoundPreferences.isSoundEnabled(this)) {
+            return;
+        }
         MediaPlayer mediaPlayer = MediaPlayer.create(this, soundResourceId);
         mediaPlayer.start();
         mediaPlayer.setOnCompletionListener(MediaPlayer::release);
@@ -271,23 +298,17 @@ public class MainActivity extends AppCompatActivity {
             findViewById(R.id.ivSpriteSelectionSelectEffectForBlue).setVisibility(View.VISIBLE);
             findViewById(R.id.ivSpriteSelectionSelectEffectForRed).setVisibility(View.GONE);
             findViewById(R.id.ivSpriteSelectionSelectEffectForPurple).setVisibility(View.GONE);
-            soundEffect = MediaPlayer.create(this, R.raw.spriteselection_select);
-            soundEffect.setVolume(0.2f, 0.2f); // Volume gauche et droit à 50%
-            soundEffect.start();
+            playSoundEffect(R.raw.spriteselection_select);
         } else if (selectedCharacter == playerRed) {
             findViewById(R.id.ivSpriteSelectionSelectEffectForBlue).setVisibility(View.GONE);
             findViewById(R.id.ivSpriteSelectionSelectEffectForRed).setVisibility(View.VISIBLE);
             findViewById(R.id.ivSpriteSelectionSelectEffectForPurple).setVisibility(View.GONE);
-            soundEffect = MediaPlayer.create(this, R.raw.spriteselection_select);
-            soundEffect.setVolume(0.2f, 0.2f); // Volume gauche et droit à 50%
-            soundEffect.start();
+            playSoundEffect(R.raw.spriteselection_select);
         } else if (selectedCharacter == playerPurple) {
             findViewById(R.id.ivSpriteSelectionSelectEffectForBlue).setVisibility(View.GONE);
             findViewById(R.id.ivSpriteSelectionSelectEffectForRed).setVisibility(View.GONE);
             findViewById(R.id.ivSpriteSelectionSelectEffectForPurple).setVisibility(View.VISIBLE);
-            soundEffect = MediaPlayer.create(this, R.raw.spriteselection_select);
-            soundEffect.setVolume(0.2f, 0.2f); // Volume gauche et droit à 50%
-            soundEffect.start();
+            playSoundEffect(R.raw.spriteselection_select);
         }
 
         // Update Selected Character
@@ -318,8 +339,8 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btnLaunchMiniGamesMenu).setVisibility(View.GONE);
         findViewById(R.id.tvMainPageTitle).setVisibility(View.GONE);
         findViewById(R.id.btnAbout).setVisibility(View.GONE);
-        findViewById(R.id.soundOn).setVisibility(View.GONE);
-        findViewById(R.id.soundOff).setVisibility(View.GONE);
+        findViewById(R.id.ivSoundOn).setVisibility(View.GONE);
+        findViewById(R.id.ivSoundOff).setVisibility(View.GONE);
     }
 
     private void showMiniGames() {
@@ -349,7 +370,12 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btnLaunchMiniGamesMenu).setVisibility(View.VISIBLE);
         findViewById(R.id.tvMainPageTitle).setVisibility(View.VISIBLE);
         findViewById(R.id.btnAbout).setVisibility(View.VISIBLE);
-        findViewById(R.id.soundOn).setVisibility(View.VISIBLE);
+
+        if (!SoundPreferences.isSoundEnabled(this)) {
+            findViewById(R.id.ivSoundOff).setVisibility(View.VISIBLE);
+        } else {
+            findViewById(R.id.ivSoundOn).setVisibility(View.VISIBLE);
+        }
 
         // Disable SpriteSelection for Board Menu
         findViewById(R.id.llSpriteSelectionForBoard).setVisibility(View.GONE);
@@ -388,7 +414,6 @@ public class MainActivity extends AppCompatActivity {
         if (selection != null) {
             Intent intent = new Intent(this, Board_MA.class);
             intent.putExtra("selection_key", selection);
-            intent.putExtra("sound", sound);
             Log.d("MainActivity", "selection: " + selection);
             startActivity(intent);
         } else {
@@ -402,15 +427,13 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, activityClass);
         intent.putExtra("selection_key", "Bleu");
         intent.putExtra("game_mode", "minigames");
-        intent.putExtra("sound", sound);
         startActivity(intent);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        // Redémarrer la musique si elle n'est pas en cours de lecture
-        if (mainTheme != null && !mainTheme.isPlaying()) {
+        if (mainTheme != null && SoundPreferences.isSoundEnabled(this) && !mainTheme.isPlaying()) {
             mainTheme.start();
         }
     }
@@ -418,7 +441,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        // Mettre en pause la musique si elle est en cours de lecture
         if (mainTheme != null && mainTheme.isPlaying()) {
             mainTheme.pause();
         }
@@ -427,9 +449,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // Libérer les ressources du MediaPlayer
         if (mainTheme != null) {
-            mainTheme.pause();
+            mainTheme.release();
             mainTheme = null;
         }
     }

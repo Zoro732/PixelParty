@@ -39,7 +39,6 @@ public class Taquin_MA extends AppCompatActivity {
     private boolean isTimerRunning = false;
     private boolean isLoose = false;
     private boolean doPlayerQuitGame = false;
-    private boolean sound = true;
 
     private MediaPlayer mainTheme;
     private String game_mode;
@@ -66,14 +65,18 @@ public class Taquin_MA extends AppCompatActivity {
             hideNavigationBar();
         }
         if (!isTimerRunning) startCountdownTimer();
-        mainTheme.start();
+        if (mainTheme != null && SoundPreferences.isSoundEnabled(this) && !mainTheme.isPlaying()) {
+            mainTheme.start();
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         stopCountdownTimer();
-        mainTheme.pause();
+        if (mainTheme != null && mainTheme.isPlaying()) {
+            mainTheme.pause();
+        }
     }
 
     @Override
@@ -85,7 +88,9 @@ public class Taquin_MA extends AppCompatActivity {
             btnResume.setVisibility(View.GONE);
             stopCountdownTimer();
             glGame.setEnabled(false); // Disable interaction
-            mainTheme.pause();
+            if (mainTheme != null && mainTheme.isPlaying()) {
+                mainTheme.pause();
+            }
         } else {
             if (doPlayerQuitGame || isLoose) {
                 resultIntent.putExtra("score", "quit");
@@ -102,11 +107,12 @@ public class Taquin_MA extends AppCompatActivity {
     private void initializeGame() {
         Intent intent = getIntent();
         game_mode = intent.getStringExtra("game_mode");
-        sound = intent.getBooleanExtra("sound", true);
         mainTheme = MediaPlayer.create(this, R.raw.taquin_maintheme);
         mainTheme.setVolume(0.5f, 0.5f);
         mainTheme.setLooping(true);
-        mainTheme.start();
+        if (SoundPreferences.isSoundEnabled(this)) {
+            mainTheme.start();
+        }
 
         originalBitmap = chooseRandomImage();
     }
@@ -153,22 +159,24 @@ public class Taquin_MA extends AppCompatActivity {
             llPauseMenu.setVisibility(View.GONE);
             startCountdownTimer();
             glGame.setEnabled(true); // Disable interaction
-            mainTheme.start();
-            if (sound) {
+            if (mainTheme != null && SoundPreferences.isSoundEnabled(this)) {
+                mainTheme.start();
+            }
+            if (SoundPreferences.isSoundEnabled(this)) {
                 playSoundEffect(R.raw.button_clik);
             }
         });
 
         btnRestart.setOnClickListener(v -> {
             restartGame();
-            if (sound) {
+            if (SoundPreferences.isSoundEnabled(this)) {
                 playSoundEffect(R.raw.button_clik);
             }
         });
         btnQuit.setOnClickListener(v -> {
             finish();
             llPauseMenu.setVisibility(View.GONE);
-            if (sound) {
+            if (SoundPreferences.isSoundEnabled(this)) {
                 playSoundEffect(R.raw.button_clik);
             }
         });
@@ -177,8 +185,10 @@ public class Taquin_MA extends AppCompatActivity {
             llPauseMenu.setVisibility(View.VISIBLE);
             stopCountdownTimer();
             glGame.setEnabled(false); // Disable interaction
-            mainTheme.pause();
-            if (sound) {
+            if (mainTheme != null && mainTheme.isPlaying()) {
+                mainTheme.pause();
+            }
+            if (SoundPreferences.isSoundEnabled(this)) {
                 playSoundEffect(R.raw.button_clik);
             }
         });
@@ -318,7 +328,9 @@ public class Taquin_MA extends AppCompatActivity {
 
     private void onTileClick(int row, int col) {
         if (Math.abs(emptyRow - row) + Math.abs(emptyCol - col) == 1) {
-            playSoundEffect(R.raw.taquin_move);
+            if (SoundPreferences.isSoundEnabled(this)) {
+                playSoundEffect(R.raw.taquin_move);
+            }
             Bitmap tempBitmap = tiles[row][col].getDrawable() != null ?
                     ((BitmapDrawable) tiles[row][col].getDrawable()).getBitmap() : null;
 
@@ -363,8 +375,10 @@ public class Taquin_MA extends AppCompatActivity {
             btnResume.setVisibility(View.GONE);
             stopCountdownTimer();
             glGame.setEnabled(false); // Disable interaction
-            mainTheme.pause();
-            if (sound) {
+            if (mainTheme != null && mainTheme.isPlaying()) {
+                mainTheme.pause();
+            }
+            if (SoundPreferences.isSoundEnabled(this)) {
                 playSoundEffect(R.raw.win);
             }
             tvPause.setGravity(Gravity.CENTER);

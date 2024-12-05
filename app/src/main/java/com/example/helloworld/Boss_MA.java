@@ -37,14 +37,14 @@ public class Boss_MA extends AppCompatActivity {
     private final Handler handler = new Handler();
     private final SecureRandom random = new SecureRandom();
     private ImageView[] moles;
-    private int screenWidth, screenHeight;
+    private int screenHeight;
 
     private Vibrator vibrator;
     private MediaPlayer sfx;
     private MediaPlayer maintheme;
 
     private boolean[] moleTouched;
-    private final float INITIAL_PROBABILITY = 0.1f;
+    private final float INITIAL_PROBABILITY = 0.2f;
     private final float PROBABILITY_INCREMENT = 0.03f;
     private float currentProbability = INITIAL_PROBABILITY;
 
@@ -106,7 +106,6 @@ public class Boss_MA extends AppCompatActivity {
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        screenWidth = displayMetrics.widthPixels;
         screenHeight = displayMetrics.heightPixels;
 
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
@@ -118,8 +117,10 @@ public class Boss_MA extends AppCompatActivity {
         maintheme = MediaPlayer.create(this, R.raw.mole_maintheme);
         maintheme.setVolume(0.3f, 0.3f);
         maintheme.setLooping(true);
-        maintheme.start();
 
+        if (SoundPreferences.isSoundEnabled(this)) {
+            maintheme.start();
+        }
 
         // Load the GIF into the background ImageView
         ivBackground = findViewById(R.id.ivBackground);
@@ -153,6 +154,9 @@ public class Boss_MA extends AppCompatActivity {
     }
 
     private void playSoundEffect(int soundResourceId) {
+        if (!SoundPreferences.isSoundEnabled(this)) {
+            return;
+        }
         releaseMediaPlayer(sfx);
         sfx = MediaPlayer.create(this, soundResourceId);
         sfx.start();
@@ -270,15 +274,10 @@ public class Boss_MA extends AppCompatActivity {
     private void showMoleWithDelay(final int index) {
         if (isPaused || isGameOver || !countdownFinished) return;
 
-        int minDelay = 3000; // Minimum delay in milliseconds
-        int maxDelay = 4000; // Maximum delay in milliseconds
-        SecureRandom random = new SecureRandom();
-        final int randomDelay = random.nextInt(maxDelay - minDelay + 1) + minDelay;
-
         int cellWidth = frameWidth / 3;
         int cellHeight = frameHeight / 5;
 
-        new CountDownTimer(randomDelay, randomDelay) {
+        new CountDownTimer(2000, 2000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 // No action needed on tick
@@ -287,7 +286,8 @@ public class Boss_MA extends AppCompatActivity {
             @Override
             public void onFinish() {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                    if (isPaused || isGameOver || !countdownFinished || isFinishing() || isDestroyed()) return;
+                    if (isPaused || isGameOver || !countdownFinished || isFinishing() || isDestroyed())
+                        return;
                 }
 
                 // Exclude positions 7 and 10 (cells 3 and 4 of column 2)

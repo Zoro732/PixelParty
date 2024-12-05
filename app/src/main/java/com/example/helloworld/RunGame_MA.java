@@ -24,7 +24,6 @@ public class RunGame_MA extends AppCompatActivity {
 
     private RunGame_GameView gameView;
     private boolean isGameOver = false;
-    private boolean sound = true;
     private Button btnResume, btnRestart, btnQuit;
     private String game_mode;
     private ImageView ivSettings;
@@ -36,15 +35,12 @@ public class RunGame_MA extends AppCompatActivity {
 
     private boolean doPlayerQuitGame = false;
 
-    public int scoreToWinForBoard = 50;
-
+    public int scoreToWinForBoard = 20;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Afficher un AlertDialog dès le lancement de l'Activity
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             hideNavigationBar();
         }
@@ -54,22 +50,19 @@ public class RunGame_MA extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         FrameLayout gameFrame = findViewById(R.id.flMainPage);
-        // Initialiser GameView avec la largeur et hauteur de l'écran
         gameView = new RunGame_GameView(this, getWindowManager().getDefaultDisplay().getWidth(),
                 getWindowManager().getDefaultDisplay().getHeight());
         gameFrame.addView(gameView);
 
-        // Main theme music
         mainTheme = MediaPlayer.create(this, R.raw.rungame_maintheme);
         mainTheme.setVolume(0.5f, 0.5f);
         mainTheme.setLooping(true);
-        mainTheme.start();
-
+        if (SoundPreferences.isSoundEnabled(this)) {
+            mainTheme.start();
+        }
 
         Intent intent = getIntent();
         game_mode = intent.getStringExtra("game_mode");
-        sound = intent.getBooleanExtra("sound", true);
-
 
         flMainPage = findViewById(R.id.flMainPage);
 
@@ -82,7 +75,6 @@ public class RunGame_MA extends AppCompatActivity {
             }
         }
 
-        // Récupérer l'ImageView
         btnResume = findViewById(R.id.btnResume);
         btnRestart = findViewById(R.id.btnRestart);
         btnQuit = findViewById(R.id.btnQuit);
@@ -92,11 +84,9 @@ public class RunGame_MA extends AppCompatActivity {
         TextView tvPauseText = findViewById(R.id.tvGamePause);
         tvPauseText.bringToFront();
 
-        // Définir un OnClickListener
         ivSettings.setOnClickListener(v -> {
-            // Action à réaliser lors du clic
             gameView.pause();
-            if (sound) {
+            if (SoundPreferences.isSoundEnabled(this)) {
                 playSoundEffect(R.raw.pause);
             }
             btnResume.setVisibility(View.VISIBLE);
@@ -112,23 +102,24 @@ public class RunGame_MA extends AppCompatActivity {
 
         btnResume.setOnClickListener(v -> {
             gameView.resume();
-            if (sound) {
+            if (SoundPreferences.isSoundEnabled(this)) {
                 playSoundEffect(R.raw.button_clik);
             }
             btnResume.setVisibility(View.GONE);
             btnRestart.setVisibility(View.GONE);
             btnQuit.setVisibility(View.GONE);
             tvPauseText.setVisibility(View.GONE);
-            mainTheme.start();
+            if (SoundPreferences.isSoundEnabled(this)) {
+                mainTheme.start();
+            }
             flMainPage.setBackgroundColor(Color.TRANSPARENT);
-
         });
 
         btnRestart.setOnClickListener(v -> {
             gameView.restartGame();
             isGameOver = false;
             ivSettings.setVisibility(View.VISIBLE);
-            if (sound) {
+            if (SoundPreferences.isSoundEnabled(this)) {
                 playSoundEffect(R.raw.button_clik);
             }
             btnResume.setVisibility(View.GONE);
@@ -136,24 +127,20 @@ public class RunGame_MA extends AppCompatActivity {
             btnQuit.setVisibility(View.GONE);
             tvPauseText.setVisibility(View.GONE);
             mainTheme.seekTo(0);
-            mainTheme.start();
+            if (SoundPreferences.isSoundEnabled(this)) {
+                mainTheme.start();
+            }
             startGameLoop();
-
-
         });
 
         btnQuit.setOnClickListener(v -> {
             gameView.quitGame();
-            if (sound) {
+            if (SoundPreferences.isSoundEnabled(this)) {
                 playSoundEffect(R.raw.button_clik);
             }
         });
 
-
-        // Lancer la boucle de jeu
         startGameLoop();
-
-
     }
 
     private void startGameLoop() {
@@ -164,10 +151,8 @@ public class RunGame_MA extends AppCompatActivity {
                 Log.d("RunGame_MA", "In run()");
                 if (!isGameOver) {
                     Log.d("RunGame_MA", "Vérification de la fin du jeu");
-                    // Vérifie si le joueur est mort
                     if (gameView.getIsDead()) {
                         Log.d("RunGame_MA", "Le joueur est mort");
-                        // Le joueur est mort, gère la fin du jeu
                         if (game_mode != null) {
                             if (game_mode.equals("board")) {
                                 finish();
@@ -182,24 +167,20 @@ public class RunGame_MA extends AppCompatActivity {
                                 tvPauseText.setText("Game Over");
                                 tvPauseText.setGravity(Gravity.CENTER);
                                 mainTheme.pause();
-                                if (sound) {
+                                if (SoundPreferences.isSoundEnabled(RunGame_MA.this)) {
                                     playSoundEffect(R.raw.lose);
                                 }
                             }
                             isGameOver = true;
                         }
                     } else {
-                        // Sinon, vérifier à nouveau dans un certain délai
-                        handler.postDelayed(this, 100); // Vérifier toutes les secondes
+                        handler.postDelayed(this, 100);
                     }
                 }
             }
         };
-
-        // Lancer la vérification dès que le jeu commence ou redémarre
         handler.post(checkGameOver);
     }
-
 
     private void playSoundEffect(int soundResourceId) {
         MediaPlayer mediaPlayer = MediaPlayer.create(this, soundResourceId);
@@ -223,31 +204,32 @@ public class RunGame_MA extends AppCompatActivity {
         }
     }
 
-
     @Override
     public void finish() {
         Intent resultIntent = new Intent();
-        // Ajoutez des données si nécessaire
         if (gameView.getScore() >= scoreToWinForBoard) {
             resultIntent.putExtra("score", String.valueOf(gameView.getScore()));
         } else if (doPlayerQuitGame || gameView.getScore() < scoreToWinForBoard) {
             resultIntent.putExtra("score", "quit");
         }
         setResult(RESULT_OK, resultIntent);
-        super.finish(); // Terminez l'Activity
+        super.finish();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         gameView.pause();
+        if (mainTheme != null && mainTheme.isPlaying()) {
+            mainTheme.pause();
+        }
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         if (mainTheme != null && mainTheme.isPlaying()) {
-            mainTheme.pause(); // Arrête la musique
+            mainTheme.pause();
         }
     }
 
@@ -255,7 +237,7 @@ public class RunGame_MA extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         gameView.resume();
-        if (mainTheme != null && !mainTheme.isPlaying()) { // Si la musique est à l'arrêt
+        if (mainTheme != null && SoundPreferences.isSoundEnabled(this) && !mainTheme.isPlaying()) {
             mainTheme.start();
         }
     }
@@ -264,7 +246,7 @@ public class RunGame_MA extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         if (handler != null) {
-            handler.removeCallbacksAndMessages(null); // Arrête toutes les tâches
+            handler.removeCallbacksAndMessages(null);
         }
         if (mainTheme != null) {
             mainTheme.stop();
@@ -272,7 +254,6 @@ public class RunGame_MA extends AppCompatActivity {
             mainTheme = null;
         }
     }
-
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void hideNavigationBar() {
@@ -300,6 +281,4 @@ public class RunGame_MA extends AppCompatActivity {
                 .setCancelable(false)
                 .show();
     }
-
 }
-

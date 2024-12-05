@@ -22,7 +22,7 @@
         android:layout_marginEnd="10dp"  />
 
     <ImageView
-        android:id="@+id/soundOn"
+        android:id="@+id/ivSoundOn"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
         android:contentDescription="Sound"
@@ -32,7 +32,7 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <ImageView
-        android:id="@+id/soundOff"
+        android:id="@+id/ivSoundOff"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
         android:contentDescription="Sound"

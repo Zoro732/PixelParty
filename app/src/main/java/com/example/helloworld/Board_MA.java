@@ -46,7 +46,6 @@ public class Board_MA extends AppCompatActivity {
     private int starsNumberValue = 0;
     private boolean doPlayerWinPreviousGame = false;
     private boolean doPlayerEndBoard = false;
-    private boolean sound = true;
 
     // Media player for main theme
     private MediaPlayer mainTheme;
@@ -106,7 +105,6 @@ public class Board_MA extends AppCompatActivity {
         if (intent != null) {
             spriteSelection = intent.getStringExtra("selection_key");
             boardBoardView.setPlayerSpriteSelection(spriteSelection);
-            sound = intent.getBooleanExtra("sound", true);
         }
     }
 
@@ -119,7 +117,7 @@ public class Board_MA extends AppCompatActivity {
 
     private void handleDiceClick() {
         if (btnDice.isEnabled()) {
-            if (sound) {
+            if (SoundPreferences.isSoundEnabled(this)) {
                 playSoundEffect(R.raw.button_clik);
             }
             boardBoardView.startDiceRoll();
@@ -133,13 +131,13 @@ public class Board_MA extends AppCompatActivity {
 
     private void handlePlayClick() {
         startMiniGame();
-        if (sound) {
+        if (SoundPreferences.isSoundEnabled(this)) {
             playSoundEffect(R.raw.button_clik);
         }
     }
 
     private void handlePlusOneClick() {
-        if (sound) {
+        if (SoundPreferences.isSoundEnabled(this)) {
             playSoundEffect(R.raw.board_itemused);
         }
         Toast.makeText(Board_MA.this, "Item Used: Dice +1", Toast.LENGTH_SHORT).show();
@@ -152,7 +150,7 @@ public class Board_MA extends AppCompatActivity {
     private void setupInventoryManagement() {
         View inventoryWindow = findViewById(R.id.inventoryWindow);
         btnInventory.setOnClickListener(v -> {
-            if (sound) {
+            if (SoundPreferences.isSoundEnabled(this)) {
                 playSoundEffect(R.raw.button_clik);
             }
             inventoryWindow.setVisibility(View.VISIBLE);
@@ -160,7 +158,7 @@ public class Board_MA extends AppCompatActivity {
         });
 
         btnCloseInventory.setOnClickListener(v -> {
-            if (sound) {
+            if (SoundPreferences.isSoundEnabled(this)) {
                 playSoundEffect(R.raw.button_clik);
             }
             inventoryWindow.animate().translationX(0).setDuration(200).withEndAction(() -> inventoryWindow.setVisibility(View.GONE)).start();
@@ -168,7 +166,7 @@ public class Board_MA extends AppCompatActivity {
     }
 
     private void startMainTheme() {
-        if (sound) {
+        if (SoundPreferences.isSoundEnabled(this)) {
             mainTheme = MediaPlayer.create(this, R.raw.board_maintheme);
             mainTheme.setLooping(true);
             mainTheme.setVolume(0.5f, 0.5f);
@@ -237,7 +235,7 @@ public class Board_MA extends AppCompatActivity {
             case 2:
                 intent = new Intent(this, RunGame_MA.class);
                 requestCode = RUN_REQUEST_CODE;
-                message = "To Win --> Score >= 50\n (the game may be laggy at the beginning)";
+                message = "To Win --> Score >= 20\n (the game may be laggy at the beginning)";
                 title = "RunGame";
                 break;
             case 3:
@@ -324,22 +322,22 @@ public class Board_MA extends AppCompatActivity {
         if (requestCode != END_BOSS_REQUEST_CODE) {
 
             if (result.equals("quit")) {
-                if (sound) {
+                if (SoundPreferences.isSoundEnabled(this)) {
                     playSoundEffect(R.raw.lose);
                 }
             } else {
-                if (sound) {
+                if (SoundPreferences.isSoundEnabled(this)) {
                     playSoundEffect(R.raw.win);
                 }
                 doPlayerWinPreviousGame = true;
             }
         } else {
             if (result.equals("quit")) {
-                if (sound) {
+                if (SoundPreferences.isSoundEnabled(this)) {
                     playSoundEffect(R.raw.board_lose);
                 }
             } else {
-                if (sound) {
+                if (SoundPreferences.isSoundEnabled(this)) {
                     playSoundEffect(R.raw.mole_victory);
                 }
             }
@@ -355,7 +353,7 @@ public class Board_MA extends AppCompatActivity {
     }
 
     private void handleContinueClick() {
-        if (sound) {
+        if (SoundPreferences.isSoundEnabled(this)) {
             playSoundEffect(R.raw.button_clik);
         }
         newRound = true;
@@ -376,87 +374,91 @@ public class Board_MA extends AppCompatActivity {
     }
 
     private void handleEndGame() {
-        mainTheme.stop();
+        if (mainTheme != null && mainTheme.isPlaying()) {
+            mainTheme.stop();
+        }
         btnContinue.setVisibility(View.GONE);
         btnPlay.setVisibility(View.GONE);
         btnDice.setVisibility(View.GONE);
         btnInventory.setVisibility(View.GONE);
         tvStarsNumber.setVisibility(View.GONE);
         ivStar.setVisibility(View.GONE);
-
     }
 
-
-@RequiresApi(api = Build.VERSION_CODES.KITKAT)
-private void hideNavigationBar() {
-    getWindow().getDecorView().setSystemUiVisibility(
-            View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
-                    View.SYSTEM_UI_FLAG_FULLSCREEN |
-                    View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-    );
-}
-
-private int getPlayerCurrentCaseActionFromBoardView() {
-    return boardBoardView.getCurrentCaseAction();
-}
-
-private void playSoundEffect(int soundResourceId) {
-    MediaPlayer mediaPlayer = MediaPlayer.create(this, soundResourceId);
-    mediaPlayer.start();
-}
-
-@Override
-protected void onSaveInstanceState(@NonNull Bundle outState) {
-    super.onSaveInstanceState(outState);
-    currentPlayerCaseNumber = boardBoardView.getPlayerCaseNumber();
-    outState.putInt("playerCaseNumber", currentPlayerCaseNumber);
-}
-
-@Override
-protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-    super.onRestoreInstanceState(savedInstanceState);
-    if (boardBoardView != null) {
-        boardBoardView.setPlayerMovingAnimationToTargetCase(false);
-        currentPlayerCaseNumber = savedInstanceState.getInt("playerCaseNumber");
-        boardBoardView.setPlayerCaseNumber(currentPlayerCaseNumber);
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    private void hideNavigationBar() {
+        getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+                        View.SYSTEM_UI_FLAG_FULLSCREEN |
+                        View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        );
     }
-}
 
-@Override
-protected void onResume() {
-    super.onResume();
-    if (mainTheme != null && !mainTheme.isPlaying()) {
-        new Handler(Looper.getMainLooper()).postDelayed(() -> mainTheme.start(), 2000); // 2000 milliseconds delay
+    private int getPlayerCurrentCaseActionFromBoardView() {
+        return boardBoardView.getCurrentCaseAction();
     }
-}
 
-@Override
-protected void onPause() {
-    super.onPause();
-    if (mainTheme != null && mainTheme.isPlaying()) {
-        mainTheme.pause();
+    private void playSoundEffect(int soundResourceId) {
+        if (!SoundPreferences.isSoundEnabled(this)) {
+            return;
+        }
+        MediaPlayer mediaPlayer = MediaPlayer.create(this, soundResourceId);
+        mediaPlayer.start();
+        mediaPlayer.setOnCompletionListener(MediaPlayer::release);
     }
-}
 
-@Override
-protected void onDestroy() {
-    super.onDestroy();
-    playerMovementHandler.removeCallbacks(playerMovementRunnable);
-    if (mainTheme != null) {
-        mainTheme.pause();
-        mainTheme = null;
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        currentPlayerCaseNumber = boardBoardView.getPlayerCaseNumber();
+        outState.putInt("playerCaseNumber", currentPlayerCaseNumber);
     }
-}
 
-@Override
-public void onBackPressed() {
-    onPause();
-    new androidx.appcompat.app.AlertDialog.Builder(this)
-            .setTitle("Quit ?")
-            .setMessage("Are you sure you want to quit? Your progress will be lost")
-            .setPositiveButton("Yes", (dialog, which) -> finish())
-            .setNegativeButton("No", (dialog, which) -> dialog.dismiss())
-            .setCancelable(false)
-            .show();
-}
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if (boardBoardView != null) {
+            boardBoardView.setPlayerMovingAnimationToTargetCase(false);
+            currentPlayerCaseNumber = savedInstanceState.getInt("playerCaseNumber");
+            boardBoardView.setPlayerCaseNumber(currentPlayerCaseNumber);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mainTheme != null && SoundPreferences.isSoundEnabled(this) && !mainTheme.isPlaying()) {
+            mainTheme.start();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mainTheme != null && mainTheme.isPlaying()) {
+            mainTheme.pause();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        playerMovementHandler.removeCallbacks(playerMovementRunnable);
+        if (mainTheme != null) {
+            mainTheme.release();
+            mainTheme = null;
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        onPause();
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Quit ?")
+                .setMessage("Are you sure you want to quit? Your progress will be lost")
+                .setPositiveButton("Yes", (dialog, which) -> finish())
+                .setNegativeButton("No", (dialog, which) -> dialog.dismiss())
+                .setCancelable(false)
+                .show();
+    }
 }
